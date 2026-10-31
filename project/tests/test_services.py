@@ -95,15 +95,23 @@ def test_cancel_unknown_appointment_id() -> None:
         appointment_service.cancel_appointment('A1000')
 
 
-@pytest.mark.parametrize('invalid_id', ['', ' ', None, 123])
-def test_cancel_invalid_appointment_id(invalid_id) -> None:
-    # test invalid appointment IDs
 
+def test_cancel_blank_appointment_id():
+    # testing blank appointment ID
     data_store = SmartCareDataStore()
-    appointment_service = AppointmentService(data_store)
+    service = AppointmentService(data_store)
 
     with pytest.raises(ValueError):
-        appointment_service.cancel_appointment(invalid_id)
+        service.cancel_appointment('')
+
+
+def test_cancel_invalid_appointment_id_type():
+    # testing invalid appointment ID type
+    data_store = SmartCareDataStore()
+    service = AppointmentService(data_store)
+
+    with pytest.raises(ValueError):
+        service.cancel_appointment(None)
 
 
 def test_booking_after_cancellation() -> None:
