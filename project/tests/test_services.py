@@ -30,6 +30,8 @@ def test_cancel_scheduled_appointment() -> None:
     assert cancelled.status is AppointmentStatus.CANCELLED
     assert cancelled is appointment
     assert appointment_service.find_appointment('A1') is appointment
+    # Added assertion based on given feedback to show that proves the appointment remains in the data store's appointment list
+    assert appointment in data_store.list_appointments()
 
 
 def test_cancel_already_cancelled_appointment() -> None:
@@ -96,7 +98,7 @@ def test_cancel_unknown_appointment_id() -> None:
 
 
 
-def test_cancel_blank_appointment_id():
+def test_cancel_blank_appointment_id() -> None:
     # testing blank appointment ID
     data_store = SmartCareDataStore()
     service = AppointmentService(data_store)
@@ -104,8 +106,12 @@ def test_cancel_blank_appointment_id():
     with pytest.raises(ValueError):
         service.cancel_appointment('')
 
+    # added a test to show inputs that only contains spaces raises a value error
+    with pytest.raises(ValueError):
+        service.cancel_appointment('')
 
-def test_cancel_invalid_appointment_id_type():
+
+def test_cancel_invalid_appointment_id_type() -> None:
     # testing invalid appointment ID type
     data_store = SmartCareDataStore()
     service = AppointmentService(data_store)
@@ -123,7 +129,7 @@ def test_booking_after_cancellation() -> None:
     PractitionerService(data_store).register_practitioner('D1', 'Taylor Example', 'General')
     appointment_service = AppointmentService(data_store)
 
-    when = datetime( 2026, 10, 1, 9)
+    when = datetime(2026, 10, 1, 9)
 
     original = appointment_service.book_appointment('A1', 'P1', 'D1', when)
 
