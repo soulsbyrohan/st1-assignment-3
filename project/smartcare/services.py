@@ -77,6 +77,8 @@ class PractitionerService:
         NotImplementedError.
         """
 
+        raise NotImplementedError('Stage 6: practitioner lookup')
+
 
 class AppointmentService:
     """Coordinate booking, lookup and cancellation using the shared store."""
