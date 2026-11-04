@@ -257,11 +257,11 @@ Why is a high commit count not necessarily evidence of strong contribution?
 
 ## M Completion and handover
 
-- Starting SHA: [response]
-- Final Stage 6 code SHA: [response]
-- Test command: [response]
-- Working directory: [response]
-- Observed result: [response]
+- Starting SHA: 2e13f23faeb0f9b550bee18520295d350b6a5e42
+- Final Stage 6 code SHA: 65275cba8859f40bce27ad36f12d987c3150f2df
+- Test command: python -m pytest -v
+- Working directory: project/
+- Observed result: 27 passed, 0 failed
 - PR and another-member reviewer: [links]
 - Unresolved issue or none: [response]
 - Stage 7 handover status: [ready for tutor checkpoint / unresolved work]
