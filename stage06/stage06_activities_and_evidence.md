@@ -22,14 +22,20 @@ Complete this one group record. Link actual issues, diffs, tests and reviews; av
 
 ### FR-06 Appointment Cancellation with FR-07 retained history
 
-- Title: [response]
-- Context: [response]
-- Requirement: [response]
-- Acceptance criteria: [response]
-- Scope: [response]
-- Definition of Done: [response]
-- Owner: [response]
-- Actual issue link: [response]
+- Title: Implement Appointment Cancellation with Retained History
+- Context: The Appointment class already supports cancellation, but the service method was unfinished.
+- Requirement: FR-06 allows scheduled appointments to be cancelled. FR-07 requires cancelled records to remain stored.
+- Acceptance criteria:
+  - Scheduled appointments change to CANCELLED.
+  - Completed and already cancelled appointments cannot be cancelled.
+  - Invalid IDs raise ValueError; unknown IDs raise LookupError.
+  - Successful cancellation returns the original stored appointment.
+  - Cancelled records remain accessible.
+  - Existing booking and conflict behaviour is preserved.
+- Scope: Implement `cancel_appointment()` in `services.py` and add tests in `test_services.py`.
+- Definition of Done: Implementation and tests completed, starter tests passing, PR reviewed, feedback resolved and merged into main.
+- Owner: U3308969
+- Actual issue link: https://github.com/soulsbyrohan/st1-assignment-3/issues/1
 
 ## B Commit quality
 
@@ -79,12 +85,46 @@ Create at least two focused issues. Add a linked practitioner-lookup issue or an
 
 | Issue link | Requirement | Owner | Acceptance criteria or precise link | Status |
 |---|---|---|---|---|
-| [issue 1] | [response] | [response] | [response] | [response] |
+| [issue #1](https://github.com/soulsbyrohan/st1-assignment-3/issues/1) | FR-06/FR-07 | U3308969 | See Issue #1 acceptance criteria | Closed — PR #2 merged |
 | [issue 2] | [response] | [response] | [response] | [response] |
 
 ## G Pull request evidence
 
 Repeat this block per PR. Record actual events, not planned approvals.
+
+
+- PR link and title: https://github.com/soulsbyrohan/st1-assignment-3/pull/2 — Stage 06: Implemented appointment cancellation (FR-06)
+- Linked issue and requirement: Issue #1 — FR-06/FR-07
+- Feature branch: `feature/appointment_cancellation`
+- Changed behaviour: Scheduled appointments can be cancelled while retaining their records.
+- Meaningful commits: [Original commit](https://github.com/soulsbyrohan/st1-assignment-3/commit/f96134d150f7fb767979177cfe334c2f6e665deb); [feedback changes](https://github.com/soulsbyrohan/st1-assignment-3/pull/2/changes/e7772122f69b893abd399029c95a94dd5acde6b7)
+- Test command, directory and observed result: `python -m pytest -v` from `project/` — tests passed locally.
+- Key feedback: Add retained-history and whitespace-only ID assertions.
+- Author response/change and verification: Added the retained-history assertion and whitespace-only ID test in commit e777212 - tests passed locally.
+- Reviewer recheck and approval: [link]
+- Merge outcome and SHA: [response]
+- Significant Copilot assistance: [summary or none]
+- Linked issue closure: [response]
+- Each member updated main: [member and confirmation]
+- Integrated verification after merge: [command, directory, result and code SHA]
+
+- PR link and title: [response]
+- Linked issue and requirement: [response]
+- Feature branch: [response]
+- Changed behaviour: [response]
+- Meaningful commits: [links]
+- Test command, directory and observed result: [response]
+- Another-member reviewer: [response]
+- Human observations recorded before Copilot: [link and time]
+- Requirement, responsibilities, test assertions and unrelated-scope checks: [response]
+- Key feedback: [response]
+- Author response/change and verification: [response]
+- Reviewer recheck and approval: [link]
+- Merge outcome and SHA: [response]
+- Significant Copilot assistance: [summary or none]
+- Linked issue closure: [response]
+- Each member updated main: [member and confirmation]
+- Integrated verification after merge: [command, directory, result and code SHA]
 
 - PR link and title: [response]
 - Linked issue and requirement: [response]
@@ -130,6 +170,33 @@ Record meaningful required use, not every trivial completion. Repeat per signifi
 ## J Contributions
 
 Repeat per member. Include only categories that describe actual work; write not applicable where appropriate. Pairing or mentoring can be supported by a short corroborated note.
+
+- Member: U3308969
+- Implementation: Implemented `AppointmentService.cancel_appointment()` using existing lookup and domain cancellation methods. PR #2.
+- Testing: Added tests for successful cancellation, repeated cancellation, completed appointments, invalid IDs and retained history. all tests passed locally.
+- Review: Addressed reviewer feedback by adding retained-history and whitespace-only ID checks.
+- Issue refinement: Created Issue #1 with FR-06/FR-07 acceptance criteria.
+- Design and responsibility discussion: Used the existing `Appointment.cancel()` method instead of directly changing appointment status.
+- Debugging or integration: Corrected an incorrect status assertion during testing.
+- Documentation or team support: Completed FR-06/FR-07 requirement and did my parts in section A, F and G.
+
+- Member: [response]
+- Implementation: [work and evidence]
+- Testing: [work and evidence]
+- Review: [work and evidence]
+- Issue refinement: [work and evidence]
+- Design and responsibility discussion: [work and evidence]
+- Debugging or integration: [work and evidence]
+- Documentation or team support: [work and evidence]
+
+- Member: [response]
+- Implementation: [work and evidence]
+- Testing: [work and evidence]
+- Review: [work and evidence]
+- Issue refinement: [work and evidence]
+- Design and responsibility discussion: [work and evidence]
+- Debugging or integration: [work and evidence]
+- Documentation or team support: [work and evidence]
 
 - Member: [response]
 - Implementation: [work and evidence]
