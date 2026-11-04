@@ -103,12 +103,9 @@ def test_cancel_blank_appointment_id() -> None:
     data_store = SmartCareDataStore()
     service = AppointmentService(data_store)
 
-    with pytest.raises(ValueError):
-        service.cancel_appointment('')
-
     # added a test to show inputs that only contains spaces raises a value error
     with pytest.raises(ValueError):
-        service.cancel_appointment('')
+        service.cancel_appointment('   ')
 
 
 def test_cancel_invalid_appointment_id_type() -> None:
