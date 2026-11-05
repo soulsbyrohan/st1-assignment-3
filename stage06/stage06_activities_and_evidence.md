@@ -11,14 +11,19 @@ Complete this one group record. Link actual issues, diffs, tests and reviews; av
 
 ### FR-02 Patient Search
 
-- Title: [response]
-- Context: [response]
-- Requirement: [response]
-- Acceptance criteria: [response]
-- Scope: [response]
-- Definition of Done: [response]
-- Owner: [response]
-- Actual issue link: [response]
+- Title: Implement Patient Search
+- Context: The Patient class already has patient registration, but the search method was unfinished.
+- Requirement: FR-02 Find a patient by patient ID.
+- Acceptance criteria:
+  - Registered patient can be found by their ID
+  - Unknown ID raises LookupError
+  - Blank ID raises ValueError
+  - IDs are trimmed
+  - IDs are case sensitive
+- Scope: Implement 'find_patient()' in 'services.py' and add tests in 'test_services.py'.
+- Definition of Done: Implementation and tests completed, starter tests passing, PR reviewed, feedback resolved and merged into main.
+- Owner: u3306036
+- Actual issue link: https://github.com/soulsbyrohan/st1-assignment-3/issues/6
 
 ### FR-06 Appointment Cancellation with FR-07 retained history
 
@@ -86,7 +91,7 @@ Create at least two focused issues. Add a linked practitioner-lookup issue or an
 | Issue link | Requirement | Owner | Acceptance criteria or precise link | Status |
 |---|---|---|---|---|
 | [issue #1](https://github.com/soulsbyrohan/st1-assignment-3/issues/1) | FR-06/FR-07 | U3308969 | See Issue #1 acceptance criteria | Closed — PR #2 merged |
-| [issue 2] | [response] | [response] | [response] | [response] |
+| [issue #2](https://github.com/soulsbyrohan/st1-assignment-3/issues/6) | FR-02 | u3306036 | See Issue #2 acceptance criteria | Closed - PR #5 merged |
 
 ## G Pull request evidence
 
@@ -108,12 +113,12 @@ Repeat this block per PR. Record actual events, not planned approvals.
 - Each member updated main: [member and confirmation]
 - Integrated verification after merge: [command, directory, result and code SHA]
 
-- PR link and title: [response]
-- Linked issue and requirement: [response]
-- Feature branch: [response]
-- Changed behaviour: [response]
+- PR link and title: https://github.com/soulsbyrohan/st1-assignment-3/pull/5 — Stage 06: Implementation of Patient Lookup (FR-02)
+- Linked issue and requirement: Issue #2 - FR-02
+- Feature branch: 'feature/patient_search'
+- Changed behaviour: Registered patient can be searched for and found. 
 - Meaningful commits: [links]
-- Test command, directory and observed result: [response]
+- Test command, directory and observed result: `python -m pytest -v` from `project/` — tests passed.
 - Another-member reviewer: [response]
 - Human observations recorded before Copilot: [link and time]
 - Requirement, responsibilities, test assertions and unrelated-scope checks: [response]
@@ -180,14 +185,14 @@ Repeat per member. Include only categories that describe actual work; write not 
 - Debugging or integration: Corrected an incorrect status assertion during testing.
 - Documentation or team support: Completed FR-06/FR-07 requirement and did my parts in section A, F and G.
 
-- Member: [response]
-- Implementation: [work and evidence]
-- Testing: [work and evidence]
-- Review: [work and evidence]
-- Issue refinement: [work and evidence]
-- Design and responsibility discussion: [work and evidence]
-- Debugging or integration: [work and evidence]
-- Documentation or team support: [work and evidence]
+- Member: u3306036
+- Implementation: Implemented `PatientService.find_patient()`. PR #5.
+- Testing: Added tests for successful patient search. All tests passed locally. 
+- Review: Corrected the placement of the patient search implementation in services.py
+- Issue refinement: Created Issue #2 with FR-02 acceptance criteria.
+- Design and responsibility discussion: Used the existing `find_patient()` method.
+- Debugging or integration: Made sure the patient search tests passed
+- Documentation or team support: Completed FR-02 requirement and did my parts in section A, F and G.
 
 - Member: [response]
 - Implementation: [work and evidence]
