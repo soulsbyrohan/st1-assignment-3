@@ -5,7 +5,7 @@ from datetime import datetime
 import pytest
 
 from smartcare.data_store import SmartCareDataStore
-from smartcare.domain import (AppointmentStatus, Appointment)
+from smartcare.domain import (AppointmentStatus, Appointment, Patient)
 from smartcare.services import (AppointmentService, PatientService, PractitionerService)
 
 
@@ -262,3 +262,24 @@ def test_find_invalid_practitioner_id_type():
 
     with pytest.raises(ValueError):
         service.find_practitioner(None)
+
+
+def test_register_patient_valid_patient_unused_id_is_stored():
+    data_store = SmartCareDataStore()  
+    service = PatientService(data_store)
+
+    patient = service.register_patient('P1', 'Alex Example')
+
+    search = service.find_patient('P1')
+    
+    assert patient is search
+
+
+def test_duplicate_patient_id_is_rejected():
+    data_store = SmartCareDataStore()  
+    service = PatientService(data_store)
+     
+    service.register_patient('P1', 'Alex Example')
+
+    with pytest.raises(ValueError):
+         service.register_patient('P1', 'Bob Example')
