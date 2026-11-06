@@ -118,7 +118,6 @@ Use fresh shared SmartCareDataStore state, registered objects and completed Stag
 | TEST-06-07 | Rejects cancellation of an unknown appointment ID with LookupError | FR-06 / Unknown-ID service contract | `test_services.py::test_cancel_unknown_appointment_id` | Previously passed locally |
 | TEST-06-08 | Rejects a blank appointment ID with ValueError | FR-06 / Invalid-ID contract | `test_services.py::test_cancel_blank_appointment_id` | Previously passed locally |
 | TEST-06-09 | Rejects a non-string appointment ID with ValueError | FR-06 / Invalid-ID contract | `test_services.py::test_cancel_invalid_appointment_id_type` | Previously passed locally |
-| [complete] | [complete] | [complete] | [complete] | [complete] |
 
 ## G Negative and Boundary Cases
 
@@ -133,7 +132,6 @@ Connect cases to actual contracts and verify unchanged state after rejection.
 | Unknown appointment lookup during cancellation | Valid but unregistered appointment ID A1000 | LookupError raised | TEST-06-07 |
 | Blank appointment ID | Empty string ('') | ValueError raised | TEST-06-08 |
 | Invalid appointment ID type | None instead of a string | ValueError raised | TEST-06-09 |
-| [complete] | [complete] | [complete] | [complete] |
 
 ## H GitHub Copilot Test Design
 
@@ -173,6 +171,7 @@ Before accepting: traces to a requirement/criterion; can fail for the right reas
 
 Which Copilot-generated test looked convincing but was weak? 
 Copilot suggested testing a third cancellation test which at first appeared to give additional coverage.
+Why was it weak?
 It repeats a lot of the behaviour already checked by the second cancellation test, including  ValueError and unchanged CANCELLED status.
 How did you strengthen it? 
 I Kept the exisitng repeated-cancellation test because its assertions already verify the required behaviour.. No additional test should be needed.
@@ -185,8 +184,7 @@ Run python -m pytest from project/. Retain all accumulated tests. Record the tes
 
 | Command | Working directory | Code SHA | Passed | Failed | Failure summary | Product defect / test defect / unresolved | Evidence and interpretation |
 |---|---|---|---|---|---|---|---|
-| python -m pytest tests/test_domain.py -k domain_cancel -v | project/ | 18c20a60a2d3100f082ec757f2994f3a19f5eec5 | 3 | 0 | None | None identified | All three FR-06 domain tests passed locally |
-| [complete] | [complete] | [complete] | [complete] | [complete] | [complete] | [complete] | [complete] |
+| `python -m pytest tests/test_domain.py -k domain_cancel -v` | `project/` | 18c20a60a2d3100f082ec757f2994f3a19f5eec5 | 3 | 0 | None | None identified | All three FR-06 domain tests passed locally |
 
 Individual test runs and changed-order independence evidence: 
 - FR-06 domain tests: 3 passed, 0 failed.
@@ -195,7 +193,9 @@ Individual test runs and changed-order independence evidence:
 - Both orders passed, supporting test independence.
 Optional tutor-led demonstration notes: [optional; leave blank if not used]
 A meaningful test should detect a relevant incorrect result. Students do not have to perform the demonstration or submit failure/restoration evidence for assessment. The tutor restores the example and reruns its tests. This is not a Stage 8 fault activity.
-Requirement → test → failure/observation → diagnosis → change → verification: [concise links where applicable]
+
+Requirement → test → failure/observation → diagnosis → change → verification:
+FR-06 → TEST-06-01 to TEST-06-03 → Three domain tests passed with no failures.
 
 ## K What the Suite Still Does Not Prove
 
@@ -210,7 +210,7 @@ Use links rather than copying GitHub history. Continue the Stage 6 workflow; no 
 
 | Issue/task | Branch | PR | Reviewer | Key feedback | Outcome |
 |---|---|---|---|---|---|
-| [complete] | [complete] | [complete] | [complete] | [complete] | [complete] |
+| Stage 7 — FR-06 Cancellation Tests | `feature/stage7-cancellation-tests` | [PR #8](https://github.com/soulsbyrohan/st1-assignment-3/pull/8) | [Reviewer] | [Actual feedback] | [Actual outcome] |
 
 ## M Contribution Evidence
 
@@ -218,8 +218,7 @@ Record actual work in test design, implementation, review, traceability, diagnos
 
 | Member | Actual contribution | Evidence link |
 |---|---|---|
-| U3308969 | Created three FR-06 domain tests covering successful cancellation, repeated cancellation and rejection of completed appointments. Made sure all three tests passed locally and documented their requirement traceability, test design and negative cases in Sections B–G. | |
-| [complete] | [complete] | [complete] |
+| U3308969 | Created three FR-06 domain tests covering successful cancellation, repeated cancellation and rejection of completed appointments. Made sure all three tests passed locally and documented their requirement traceability, test design and negative cases in Sections B–G. | [PR #8](https://github.com/soulsbyrohan/st1-assignment-3/pull/8) |
 
 ## N Formative Questions
 
