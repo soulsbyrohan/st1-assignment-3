@@ -178,7 +178,7 @@ Run python -m pytest from project/. Retain all accumulated tests. Record the tes
 
 | Command | Working directory | Code SHA | Passed | Failed | Failure summary | Product defect / test defect / unresolved | Evidence and interpretation |
 |---|---|---|---|---|---|---|---|
-| [complete] | [complete] | [complete] | [complete] | [complete] | [complete] | [complete] | [complete] |
+| python -m pytest tests/test_domain.py -v | project/ | 8f436f3513d2dc62f6f3103990afe51aedc766f7 | 5 | 0 | None | None identified | All five FR-01 domain tests passed locally |
 
 Individual test runs and changed-order independence evidence: [commands, results, links]
 Optional tutor-led demonstration notes: [optional; leave blank if not used]
@@ -198,7 +198,7 @@ Use links rather than copying GitHub history. Continue the Stage 6 workflow; no 
 
 | Issue/task | Branch | PR | Reviewer | Key feedback | Outcome |
 |---|---|---|---|---|---|
-| [complete] | [complete] | [complete] | [complete] | [complete] | [complete] |
+| Stage 7 — FR-01 Patient Tests | feature/stage7-patient-testing | [#9](https://github.com/soulsbyrohan/st1-assignment-3/pull/9) | u3308969 | [complete] | [complete] |
 
 ## M Contribution Evidence
 
@@ -206,7 +206,7 @@ Record actual work in test design, implementation, review, traceability, diagnos
 
 | Member | Actual contribution | Evidence link |
 |---|---|---|
-| [complete] | [complete] | [complete] |
+| u3306036 | Created Stage 7 FR-01 tests, 2 service tests for AC-01.1 and AC-01.2 under FR-01 and 5 domain tests for patient construction and required-field validation. Tested all tests locally and documented behaviours and results in sections A-G.| [complete] |
 
 ## N Formative Questions
 
