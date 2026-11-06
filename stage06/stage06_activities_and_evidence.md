@@ -42,36 +42,58 @@ Complete this one group record. Link actual issues, diffs, tests and reviews; av
 - Owner: U3308969
 - Actual issue link: https://github.com/soulsbyrohan/st1-assignment-3/issues/1
 
+### Practitioner Lookup (Supporting FR-03)
+
+- Title: Implement Practitioner Search
+- Context: Practitioner lookup was unfinished in the service layer.
+- Requirement: Find a registered practitioner using their practitioner ID. This supports FR-03, which concerns practitioner registration.
+- Acceptance criteria:
+  - Registered practitioner can be found by their ID.
+  - Unknown practitioner ID raises LookupError.
+  - Blank or invalid practitioner ID raises ValueError.
+  - Leading and trailing whitespace in IDs is trimmed.
+  - Practitioner IDs are case-sensitive.
+- Scope: Implement `PractitionerService.find_practitioner()` in `project/smartcare/services.py` and add unit tests in `project/tests/test_services.py`.
+- Definition of Done: Implementation and tests completed, PR reviewed and merged into main.
+- Owner: [u3325731]
+- Actual issue link: https://github.com/soulsbyrohan/st1-assignment-3/issues/3
+
 ## B Commit quality
 
 | Original example | Strong or Weak | Reason |
 |---|---|---|
-| changes | [select] | [response] |
-| final version | [select] | [response] |
-| Add patient search by ID | [select] | [response] |
-| fix stuff | [select] | [response] |
-| Prevent cancellation of completed appointments | [select] | [response] |
+| changes | Weak | Too vague. It does not explain what was changed or why. |
+| final version | Weak | Does not identify the feature or improvement and gives no useful context. |
+| Add patient search by ID | Strong | Clearly identifies the functionality implemented, making the commit easy to understand and trace. |
+| fix stuff | Weak | Does not describe the problem or the specific fix, making review and future maintenance difficult. |
+| Prevent cancellation of completed appointments | Strong | Describes a specific behavioural rule and the change made to enforce it. |
 
 ## C Over scoped PR review
 
 A cancellation PR also renames unrelated patient fields, restructures unrelated code and adds a new dependency.
 
-- Scope concerns: [response]
-- Responsibility and architecture concerns: [response]
-- Testing and review concerns: [response]
-- Changes to remove or separate, with reasons: [response]
+- Scope concerns: The PR includes unrelated changes beyond appointment cancellation, making it harder to understand and review.
+- Responsibility and architecture concerns: Renaming patient fields and restructuring unrelated code could affect other components and violate separation of responsibilities.
+- Testing and review concerns: Unrelated changes increase the risk of regression and make it difficult to identify which changes caused a test failure.
+- Changes to remove or separate, with reasons: Remove the unrelated patient field renaming, code restructuring and new dependency from this PR. These should be handled in separate issues and PRs so each change can be reviewed and tested independently.
 
 ## D Challenge a weak Copilot review
 
 GitHub Copilot says: "Looks good; tests pass."
 
-- Missing evidence: [response]
-- Follow-up review question 1: [response]
-- Follow-up review question 2: [response]
-- Follow-up review question 3: [response]
-- Follow-up review question 4: [response]
-- Follow-up review question 5: [response]
-- Additional questions if useful: [response]
+- Missing evidence: The review does not explain which files were examined, whether the implementation meets the acceptance criteria, or whether the tests cover positive, negative and boundary cases. Passing tests alone does not guarantee correct behaviour.
+
+- Follow-up review question 1: Does the implementation satisfy all acceptance criteria for the assigned functional requirement?
+
+- Follow-up review question 2: Are invalid inputs and unknown IDs handled using the correct exceptions?
+
+- Follow-up review question 3: Do the tests contain meaningful assertions that verify actual behaviour rather than simply checking that an object exists?
+
+- Follow-up review question 4: Does the PR introduce any unrelated changes or modify existing functionality unexpectedly?
+
+- Follow-up review question 5: Were all existing tests and new tests executed successfully, and what evidence supports the results?
+
+- Additional questions if useful: Does the implementation follow the existing architecture and reuse the appropriate service, domain and data-store methods?
 
 ## E Team workflow agreement
 
@@ -92,6 +114,7 @@ Create at least two focused issues. Add a linked practitioner-lookup issue or an
 |---|---|---|---|---|
 | [issue #1](https://github.com/soulsbyrohan/st1-assignment-3/issues/1) | FR-06/FR-07 | U3308969 | See Issue #1 acceptance criteria | Closed — PR #2 merged |
 | [issue #2](https://github.com/soulsbyrohan/st1-assignment-3/issues/6) | FR-02 | u3306036 | See Issue #2 acceptance criteria | Closed - PR #5 merged |
+| [Issue #3](https://github.com/soulsbyrohan/st1-assignment-3/issues/3) | Practitioner Lookup (supporting FR-03) | u3325731 | See Issue #3 acceptance criteria | Closed — PR merged |
 
 ## G Pull request evidence
 
@@ -131,23 +154,23 @@ Repeat this block per PR. Record actual events, not planned approvals.
 - Each member updated main: [member and confirmation]
 - Integrated verification after merge: [command, directory, result and code SHA]
 
-- PR link and title: [response]
-- Linked issue and requirement: [response]
-- Feature branch: [response]
-- Changed behaviour: [response]
-- Meaningful commits: [links]
-- Test command, directory and observed result: [response]
-- Another-member reviewer: [response]
-- Human observations recorded before Copilot: [link and time]
-- Requirement, responsibilities, test assertions and unrelated-scope checks: [response]
-- Key feedback: [response]
-- Author response/change and verification: [response]
-- Reviewer recheck and approval: [link]
-- Merge outcome and SHA: [response]
-- Significant Copilot assistance: [summary or none]
-- Linked issue closure: [response]
-- Each member updated main: [member and confirmation]
-- Integrated verification after merge: [command, directory, result and code SHA]
+- PR link and title: [https://github.com/soulsbyrohan/st1-assignment-3/pull/3] — Implement Practitioner Search
+- Linked issue and requirement: Issue #3 — Practitioner Lookup (supporting FR-03)
+- Feature branch: `feature/practitioner-search`
+- Changed behaviour: Implemented PractitionerService.find_practitioner() to retrieve registered practitioners by ID. Unknown IDs raise LookupError, while invalid IDs raise ValueError. Practitioner IDs are trimmed and case-sensitive.
+- Meaningful commits: [https://github.com/soulsbyrohan/st1-assignment-3/pull/3/changes/6c8ef18037a73cefaf6978f811ab861a977386ae]
+- Test command, directory and observed result: `py -m pytest -v` from `project/` — 27 passed, 0 failed after pulling the integrated main branch.
+- Another-member reviewer: 
+- Human observations recorded before Copilot: 
+- Requirement, responsibilities, test assertions and unrelated-scope checks: Verified practitioner lookup behaviour, including valid IDs, unknown IDs, blank IDs, whitespace handling, case sensitivity and invalid input types. The implementation uses the existing data-store lookup method.
+- Key feedback: 
+- Author response/change and verification: 
+- Reviewer recheck and approval: 
+- Merge outcome and SHA: 
+- Significant Copilot assistance: 
+- Linked issue closure: Issue #3 — [CONFIRM STATUS]
+- Each member updated main: [CONFIRMATIONS]
+- Integrated verification after merge: `py -m pytest -v` from `project/` — 27 passed, 0 failed. Tested SHA: [RUN git rev-parse HEAD]
 
 ## H Copilot collaboration record
 
