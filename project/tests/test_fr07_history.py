@@ -1,7 +1,4 @@
 """Stage 7: FR-07 / AC-05.2 cancelled appointment history integration tests.
-
-Each test uses a new shared SmartCareDataStore and synthetic participants.
-These tests use public service and store operations, not private dictionaries.
 """
 
 from datetime import datetime
