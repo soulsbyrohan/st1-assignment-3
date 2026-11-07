@@ -267,19 +267,25 @@ def test_find_invalid_practitioner_id_type():
 FR07_WHEN = datetime(2026, 10, 1, 9)
 
 
-def make_fr07_registered_services():
-    # Create a new, empty store for this test.
+def make_registered_services():
+    # Create a new, empty data store for each test.
     store = SmartCareDataStore()
 
-    # Register a patient and practitioner in the same store.
-    PatientService(store).register_patient('P1', 'Alex Example')
-    PractitionerService(store).register_practitioner(
+    # Register a patient in the store.
+    patient = PatientService(store).register_patient(
+        'P1', 'Alex Example'
+    )
+
+    # Register a practitioner in the same store.
+    practitioner = PractitionerService(store).register_practitioner(
         'D1', 'Taylor Example', 'General'
     )
 
-    # Return the store and the appointment service that uses it.
-    return store, AppointmentService(store)
+    # Create an appointment service using the same store.
+    service = AppointmentService(store)
 
+    # Return all four objects needed by the tests.
+    return store, patient, practitioner, service
 
 # Test 1: A cancelled appointment should stay saved in the system.
 def test_fr07_cancelled_history_is_found_by_id_and_in_list():
