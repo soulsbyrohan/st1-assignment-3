@@ -71,7 +71,7 @@ Assign TEST IDs before implementation or generation. Use canonical AC IDs with t
 | FR-07 | AC-05.2 | TEST-FR07-03 | Negative | test_fr07_repeated_cancellation_preserves_history | `ValueError`; status and stored list exactly unchanged |passed locally| Student-authored |
 | FR-07 | AC-05.2 | TEST-FR07-04 | Negative | test_fr07_completed_cancel_rejection_retains_record | completed record remains in list and retrievable |passed locally | Student-authored |
 | FR-07 | AC-05.2 | TEST-FR07-05 | Negative | test_fr07_unknown_cancellation_does_not_mutate_history | existing cancelled history unchanged | Passed locally | Student-authored |
-| FR-07 | AC-05.2 | TEST-FR07-06 | test_fr07_invalid_id_cannot_mutate_history | `ValueError` for `""`, spaces, `None`; existing history unchanged | Passed locally | Student-authored |
+| FR-07 | AC-05.2 | TEST-FR07-06 | Boundary | test_fr07_invalid_id_cannot_mutate_history | `ValueError` for `""`, spaces, `None`; existing history unchanged | Passed locally | Student-authored |
 
 ## C Test Design
 
