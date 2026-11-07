@@ -130,13 +130,13 @@ Repeat this block per PR. Record actual events, not planned approvals.
 - Merge outcome and SHA: Merged on 2026-11-04 15:40 AEDT, merge commit `1dd1757abcb7faf3a5f28dc1b447356f5e03ac2d`.
 - Significant Copilot assistance: [Copilot review](https://github.com/soulsbyrohan/st1-assignment-3/pull/2#issuecomment-6594723061) recommended direct history and whitespace-only ID assertions.
 - Linked issue closure: [Issue #1](https://github.com/soulsbyrohan/st1-assignment-3/issues/1) closed 2026-11-04.
-- Each member updated main:
+- Each member updated main: All group members pulled the latest main branch after the Stage 6 PRs were merged.
 - Integrated verification after merge: Group-reported `python -m pytest -v` from `project/`: `27 passed, 0 failed`.
 
 - PR link and title: [Stage 6: Implement Practitioner Search (FR-03)](https://github.com/soulsbyrohan/st1-assignment-3/pull/3)
 - Linked issue and requirement: [Issue #4](https://github.com/soulsbyrohan/st1-assignment-3/issues/4) — Stage 06 practitioner lookup associated with FR-03.
 - Feature branch: `feature/practitioner-search`
-- Changed behaviour: Returns original stored practitioner; raises `LookupError` for missing ID; appointz ID validation to shared store.
+- Changed behaviour: Returns original stored practitioner; raises `LookupError` for missing ID; appoints ID validation to shared store.
 - Meaningful commits: [PR commits](https://github.com/soulsbyrohan/st1-assignment-3/pull/3/commits), [merge](https://github.com/soulsbyrohan/st1-assignment-3/commit/84de8f21f50a40728b6faef160da971e2c2ce29e)
 - Test command, directory and observed result: `python -m pytest -q` → `14 passed in 0.04s` ([test comment](https://github.com/soulsbyrohan/st1-assignment-3/pull/3#issuecomment-6594882188).
 - Another-member reviewer: soulsbyrohan.
@@ -148,7 +148,7 @@ Repeat this block per PR. Record actual events, not planned approvals.
 - Merge outcome and SHA: Merged 2026-11-04 15:17 AEDT; merge commit `84de8f21f50a40728b6faef160da971e2c2ce29e`.
 - Significant Copilot assistance: [Copilot review](https://github.com/soulsbyrohan/st1-assignment-3/pull/3#issuecomment-6594873353): no important defect, optional empty-string test.
 - Linked issue closure: [Issue #4](https://github.com/soulsbyrohan/st1-assignment-3/issues/4) closed 2026-11-04.
-- Each member updated main:
+- Each member updated main: All group members pulled the latest main branch after the Stage 6 PRs were merged.
 - Integrated verification after merge: Group-reported `python -m pytest -v` from `project/`: `27 passed, 0 failed`.
 
 - PR link and title: [Stage 06: Implementation of Patient Lookup (FR-02)](https://github.com/soulsbyrohan/st1-assignment-3/pull/5)
@@ -166,7 +166,7 @@ Repeat this block per PR. Record actual events, not planned approvals.
 - Merge outcome and SHA: Merged 2026-11-04 15:32 AEDT; merge commit `0597b9e6ff56e188742cf2cb1f20cf65f1356002`.
 - Significant Copilot assistance: [Copilot review](https://github.com/soulsbyrohan/st1-assignment-3/pull/5#issuecomment-6595122523) confirmed practitioner scope regression and optional whitespace-only patient test.
 - Linked issue closure: [Issue #6](https://github.com/soulsbyrohan/st1-assignment-3/issues/6) closed 2026-11-04.
-- Each member updated main:
+- Each member updated main: All group members pulled the latest main branch after the Stage 6 PRs were merged.
 - Integrated verification after merge: Group-reported `python -m pytest -v` from `project/`: `27 passed, 0 failed`.
 
 ## H Copilot collaboration record
@@ -239,22 +239,15 @@ Repeat per member. Include only categories that describe actual work; write not 
 - Debugging or integration: All issues in my reviews were resolved and tested. Final approvals given and merged to main.
 - Documentation or team support: Commented reviews in PRs 02, 03, 05. Completed Stage 6 Activities and Evidence MD.
 
-- Member: [response]
-- Implementation: [work and evidence]
-- Testing: [work and evidence]
-- Review: [work and evidence]
-- Issue refinement: [work and evidence]
-- Design and responsibility discussion: [work and evidence]
-- Debugging or integration: [work and evidence]
-- Documentation or team support: [work and evidence]
-- Member: [response]
-- Implementation: [work and evidence]
-- Testing: [work and evidence]
-- Review: [work and evidence]
-- Issue refinement: [work and evidence]
-- Design and responsibility discussion: [work and evidence]
-- Debugging or integration: [work and evidence]
-- Documentation or team support: [work and evidence]
+Member: u3325731
+- Implementation: Implemented `PractitionerService.find_practitioner()` to search for registered practitioners using their ID. PR #3.
+- Testing: Added six tests for successful practitioner search, unknown IDs, blank IDs, invalid inputs, whitespace handling and case sensitivity. All tests passed locally.
+- Review: Received feedback on the tests and code readability, and checked the suggestions before finalising my work.
+- Issue refinement: Worked on Issue #4 for practitioner lookup and its acceptance criteria.
+- Design and responsibility discussion: Used the existing data store's `find_practitioner()` method instead of creating a separate search process.
+- Debugging or integration: Checked that practitioner search worked correctly with the existing code and ran the full test suite after integration. 27 tests passed.
+- Documentation or team support: Completed my practitioner lookup contribution and added the relevant testing and PR evidence to the Stage 6 Markdown file.
+
 ## K Exit question
 
 Why is a high commit count not necessarily evidence of strong contribution?
@@ -315,15 +308,15 @@ Take each requirement through issue, focused branch, implementation, meaningful 
 - Stage 7 handover status:
 - Final submitted SHA if later than tested SHA: [`192f3a0`](https://github.com/soulsbyrohan/st1-assignment-3/commit/192f3a00fa7202d33a2f0f471280093bd4195734).
 
-- [ ] Three Stage 6 service targets completed and checked.
-- [ ] Original supplied tests retained and passing.
-- [ ] At least two focused issues link requirements and acceptance criteria.
-- [ ] Feature work reviewed by another member using the actual diff.
-- [ ] Human-first review and required Copilot comparison recorded.
-- [ ] Feedback resolved and approval recorded before merge.
-- [ ] Everyone pulled main and integrated checks passed.
-- [ ] Required activities, quiz responses and contribution notes completed.
-- [ ] Only synthetic data included; confidential peer material kept out.
-- [ ] Tutor can trace a requirement through issue, code, tests, PR and checkpoint.
+- [x] Three Stage 6 service targets completed and checked.
+- [x] Original supplied tests retained and passing.
+- [x] At least two focused issues link requirements and acceptance criteria.
+- [x] Feature work reviewed by another member using the actual diff.
+- [x] Human-first review and required Copilot comparison recorded.
+- [x] Feedback resolved and approval recorded before merge.
+- [x] Everyone pulled main and integrated checks passed.
+- [x] Required activities, quiz responses and contribution notes completed.
+- [x] Only synthetic data included; confidential peer material kept out.
+- [x] Tutor can trace a requirement through issue, code, tests, PR and checkpoint.
 
 Do not write a file's own future commit SHA into that file. Record the tested code SHA first, then commit the evidence; explain the difference when submitting.
