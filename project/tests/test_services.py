@@ -1,13 +1,21 @@
-# Stage 6 Services Test file
+
+# Stage 6 and Stage 7 Services Tests
 
 from datetime import datetime
 
 import pytest
 
 from smartcare.data_store import SmartCareDataStore
-from smartcare.domain import (AppointmentStatus, Appointment)
-from smartcare.services import (AppointmentService, PatientService, PractitionerService)
+from smartcare.domain import AppointmentStatus, Appointment
+from smartcare.services import (
+    AppointmentService,
+    PatientService,
+    PractitionerService,
+)
 
+# =========================================================
+# STAGE 6 - APPOINTMENT CANCELLATION TESTS
+# =========================================================
 
 def test_cancel_scheduled_appointment() -> None:
     # check if a scheduled appointment can be cancelled
@@ -15,7 +23,9 @@ def test_cancel_scheduled_appointment() -> None:
     data_store = SmartCareDataStore()
 
     PatientService(data_store).register_patient('P1', 'Alex Example')
-    PractitionerService(data_store).register_practitioner('D1', 'Taylor Example', 'General')
+    PractitionerService(data_store).register_practitioner(
+        'D1', 'Taylor Example', 'General'
+    )
     appointment_service = AppointmentService(data_store)
 
     appointment = appointment_service.book_appointment(
@@ -30,17 +40,18 @@ def test_cancel_scheduled_appointment() -> None:
     assert cancelled.status is AppointmentStatus.CANCELLED
     assert cancelled is appointment
     assert appointment_service.find_appointment('A1') is appointment
-    # Added assertion based on given feedback to show that proves the appointment remains in the data store's appointment list
     assert appointment in data_store.list_appointments()
 
 
 def test_cancel_already_cancelled_appointment() -> None:
-    # test if a already made appointment can be cancelled
+    # test if an already cancelled appointment can be cancelled
 
     data_store = SmartCareDataStore()
-    
+
     PatientService(data_store).register_patient('P1', 'Alex Example')
-    PractitionerService(data_store).register_practitioner('D1', 'Taylor Example', 'General')
+    PractitionerService(data_store).register_practitioner(
+        'D1', 'Taylor Example', 'General'
+    )
     appointment_service = AppointmentService(data_store)
 
     appointment = appointment_service.book_appointment(
@@ -51,7 +62,6 @@ def test_cancel_already_cancelled_appointment() -> None:
     )
 
     cancelled = appointment_service.cancel_appointment('A1')
-    
 
     with pytest.raises(ValueError):
         appointment_service.cancel_appointment('A1')
@@ -65,9 +75,13 @@ def test_cancel_completed_appointment() -> None:
     # test the cancellation of a completed appointment is rejected
 
     data_store = SmartCareDataStore()
-        
-    patient = PatientService(data_store).register_patient('P1', 'Alex Example')
-    practitioner = PractitionerService(data_store).register_practitioner('D1', 'Taylor Example', 'General')
+
+    patient = PatientService(data_store).register_patient(
+        'P1', 'Alex Example'
+    )
+    practitioner = PractitionerService(data_store).register_practitioner(
+        'D1', 'Taylor Example', 'General'
+    )
     appointment_service = AppointmentService(data_store)
 
     appointment = Appointment(
@@ -88,7 +102,7 @@ def test_cancel_completed_appointment() -> None:
 
 
 def test_cancel_unknown_appointment_id() -> None:
-    # test the cancellation of an appointment that doesn't exist is rejected
+    # test cancellation of an appointment that doesn't exist
 
     data_store = SmartCareDataStore()
     appointment_service = AppointmentService(data_store)
@@ -97,19 +111,19 @@ def test_cancel_unknown_appointment_id() -> None:
         appointment_service.cancel_appointment('A1000')
 
 
-
 def test_cancel_blank_appointment_id() -> None:
     # testing blank appointment ID
+
     data_store = SmartCareDataStore()
     service = AppointmentService(data_store)
 
-    # added a test to show inputs that only contains spaces raises a value error
     with pytest.raises(ValueError):
         service.cancel_appointment('   ')
 
 
 def test_cancel_invalid_appointment_id_type() -> None:
     # testing invalid appointment ID type
+
     data_store = SmartCareDataStore()
     service = AppointmentService(data_store)
 
@@ -123,65 +137,71 @@ def test_booking_after_cancellation() -> None:
     data_store = SmartCareDataStore()
 
     PatientService(data_store).register_patient('P1', 'Alex Example')
-    PractitionerService(data_store).register_practitioner('D1', 'Taylor Example', 'General')
+    PractitionerService(data_store).register_practitioner(
+        'D1', 'Taylor Example', 'General'
+    )
     appointment_service = AppointmentService(data_store)
 
     when = datetime(2026, 10, 1, 9)
 
-    original = appointment_service.book_appointment('A1', 'P1', 'D1', when)
+    original = appointment_service.book_appointment(
+        'A1', 'P1', 'D1', when
+    )
 
     appointment_service.cancel_appointment('A1')
 
-    replacement = appointment_service.book_appointment('A2', 'P1', 'D1', when)
+    replacement = appointment_service.book_appointment(
+        'A2', 'P1', 'D1', when
+    )
 
     assert original.status is AppointmentStatus.CANCELLED
     assert replacement.status is AppointmentStatus.SCHEDULED
     assert appointment_service.find_appointment('A1') is original
     assert appointment_service.find_appointment('A2') is replacement
 
-# test 1: find existing patient
+
+# =========================================================
+# STAGE 6 - PATIENT LOOKUP TESTS
+# =========================================================
+
 def test_find_patient_returns_patient():
     data_store = SmartCareDataStore()
     service = PatientService(data_store)
 
-    patient = service.register_patient('P1', 'Alex Example')  # register patient
+    patient = service.register_patient('P1', 'Alex Example')
 
-    search = service.find_patient('P1')  # search for registered patient
+    search = service.find_patient('P1')
 
-    assert search is patient  # check that the original patient is returned
+    assert search is patient
 
 
-# test 2: unknown lookup raises LookupError
 def test_find_patient_unknown_id_raises_lookup_error():
     data_store = SmartCareDataStore()
     service = PatientService(data_store)
 
     with pytest.raises(LookupError):
-        service.find_patient('P99')  # search for an unregistered patient
+        service.find_patient('P99')
 
 
-# test 3: trimmed ID
 def test_find_patient_trimmed():
     data_store = SmartCareDataStore()
     service = PatientService(data_store)
 
     patient = service.register_patient('P1', 'Alex Example')
 
-    search = service.find_patient('   P1   ')  # spaces around ID
+    search = service.find_patient('   P1   ')
 
-    assert search is patient  # confirms spaces are trimmed
+    assert search is patient
 
 
-# test 4: blank ID
 def test_find_patient_blank_id():
     data_store = SmartCareDataStore()
     service = PatientService(data_store)
 
     with pytest.raises(ValueError):
-        service.find_patient('')  # empty patient ID
+        service.find_patient('')
 
 
-# test 5: case-sensitive ID
 def test_find_patient_case_sensitive():
     data_store = SmartCareDataStore()
     service = PatientService(data_store)
@@ -189,18 +209,20 @@ def test_find_patient_case_sensitive():
     service.register_patient('P1', 'Alex Example')
 
     with pytest.raises(LookupError):
-        service.find_patient('p1')  # lowercase ID should not match P1
+        service.find_patient('p1')
 
 
-# test 6: invalid ID type
 def test_find_patient_invalid_id_type():
     data_store = SmartCareDataStore()
     service = PatientService(data_store)
 
     with pytest.raises(ValueError):
-        service.find_patient(None)  # None is not a valid patient ID
-from smartcare.services import PractitionerService
+        service.find_patient(None)
 
+
+# =========================================================
+# STAGE 6 - PRACTITIONER LOOKUP TESTS
+# =========================================================
 
 def test_find_existing_practitioner():
     store = SmartCareDataStore()
@@ -262,3 +284,228 @@ def test_find_invalid_practitioner_id_type():
 
     with pytest.raises(ValueError):
         service.find_practitioner(None)
+
+
+# =========================================================
+# STAGE 7 - FR-05 PRACTITIONER BOOKING CONFLICT TESTS
+# PERSON 2
+# =========================================================
+
+def test_fr05_available_practitioner_booking():
+    """TEST-FR05-01: An available practitioner can be booked."""
+
+    store = SmartCareDataStore()
+
+    patient = PatientService(store).register_patient(
+        'P1', 'Alex Example'
+    )
+    practitioner = PractitionerService(store).register_practitioner(
+        'D1', 'Dr Smith', 'General'
+    )
+    service = AppointmentService(store)
+
+    when = datetime(2026, 12, 1, 9, 0)
+
+    appointment = service.book_appointment(
+        'A1', 'P1', 'D1', when
+    )
+
+    assert appointment.status is AppointmentStatus.SCHEDULED
+    assert appointment.patient is patient
+    assert appointment.practitioner is practitioner
+    assert appointment.date_time == when
+    assert service.find_appointment('A1') is appointment
+
+
+def test_fr05_same_practitioner_same_time_rejected():
+    """TEST-FR05-02: A practitioner cannot be double-booked."""
+
+    store = SmartCareDataStore()
+
+    PatientService(store).register_patient(
+        'P1', 'Alex Example'
+    )
+    PatientService(store).register_patient(
+        'P2', 'Sam Example'
+    )
+    PractitionerService(store).register_practitioner(
+        'D1', 'Dr Smith', 'General'
+    )
+
+    service = AppointmentService(store)
+    when = datetime(2026, 12, 1, 9, 0)
+
+    original = service.book_appointment(
+        'A1', 'P1', 'D1', when
+    )
+
+    with pytest.raises(ValueError, match='Practitioner already has'):
+        service.book_appointment(
+            'A2', 'P2', 'D1', when
+        )
+
+    assert service.find_appointment('A1') is original
+    assert original.status is AppointmentStatus.SCHEDULED
+    assert store.find_appointment('A2') is None
+    assert len(store.list_appointments()) == 1
+
+
+def test_fr05_different_practitioners_same_time_allowed():
+    """TEST-FR05-03: Different practitioners can share a time slot."""
+
+    store = SmartCareDataStore()
+
+    PatientService(store).register_patient(
+        'P1', 'Alex Example'
+    )
+    PatientService(store).register_patient(
+        'P2', 'Sam Example'
+    )
+
+    PractitionerService(store).register_practitioner(
+        'D1', 'Dr Smith', 'General'
+    )
+    PractitionerService(store).register_practitioner(
+        'D2', 'Dr Jones', 'Cardiology'
+    )
+
+    service = AppointmentService(store)
+    when = datetime(2026, 12, 1, 9, 0)
+
+    first = service.book_appointment(
+        'A1', 'P1', 'D1', when
+    )
+    second = service.book_appointment(
+        'A2', 'P2', 'D2', when
+    )
+
+    assert first.status is AppointmentStatus.SCHEDULED
+    assert second.status is AppointmentStatus.SCHEDULED
+    assert first.date_time == second.date_time
+    assert first.practitioner.practitioner_id == 'D1'
+    assert second.practitioner.practitioner_id == 'D2'
+    assert len(store.list_appointments()) == 2
+
+
+def test_fr05_same_practitioner_different_times_allowed():
+    """TEST-FR05-04: The same practitioner can have different time slots."""
+
+    store = SmartCareDataStore()
+
+    PatientService(store).register_patient(
+        'P1', 'Alex Example'
+    )
+    PatientService(store).register_patient(
+        'P2', 'Sam Example'
+    )
+    PractitionerService(store).register_practitioner(
+        'D1', 'Dr Smith', 'General'
+    )
+
+    service = AppointmentService(store)
+
+    first = service.book_appointment(
+        'A1', 'P1', 'D1', datetime(2026, 12, 1, 9, 0)
+    )
+    second = service.book_appointment(
+        'A2', 'P2', 'D1', datetime(2026, 12, 1, 9, 1)
+    )
+
+    assert first.status is AppointmentStatus.SCHEDULED
+    assert second.status is AppointmentStatus.SCHEDULED
+    assert first.date_time != second.date_time
+    assert len(store.list_appointments()) == 2
+
+
+def test_fr05_cancelled_slot_can_be_rebooked():
+    """TEST-FR05-05: A cancelled appointment does not block its slot."""
+
+    store = SmartCareDataStore()
+
+    PatientService(store).register_patient(
+        'P1', 'Alex Example'
+    )
+    PatientService(store).register_patient(
+        'P2', 'Sam Example'
+    )
+    PractitionerService(store).register_practitioner(
+        'D1', 'Dr Smith', 'General'
+    )
+
+    service = AppointmentService(store)
+    when = datetime(2026, 12, 1, 9, 0)
+
+    original = service.book_appointment(
+        'A1', 'P1', 'D1', when
+    )
+
+    service.cancel_appointment('A1')
+
+    replacement = service.book_appointment(
+        'A2', 'P2', 'D1', when
+    )
+
+    assert original.status is AppointmentStatus.CANCELLED
+    assert replacement.status is AppointmentStatus.SCHEDULED
+    assert service.find_appointment('A1') is original
+    assert service.find_appointment('A2') is replacement
+    assert len(store.list_appointments()) == 2
+
+
+def test_fr05_conflict_does_not_modify_existing_booking():
+    """TEST-FR05-06: Rejected bookings must not mutate stored records."""
+
+    store = SmartCareDataStore()
+
+    PatientService(store).register_patient(
+        'P1', 'Alex Example'
+    )
+    PatientService(store).register_patient(
+        'P2', 'Sam Example'
+    )
+    PractitionerService(store).register_practitioner(
+        'D1', 'Dr Smith', 'General'
+    )
+
+    service = AppointmentService(store)
+    when = datetime(2026, 12, 1, 9, 0)
+
+    original = service.book_appointment(
+        'A1', 'P1', 'D1', when
+    )
+
+    with pytest.raises(ValueError):
+        service.book_appointment(
+            'A2', 'P2', 'D1', when
+        )
+
+    assert original.appointment_id == 'A1'
+    assert original.patient.patient_id == 'P1'
+    assert original.practitioner.practitioner_id == 'D1'
+    assert original.date_time == when
+    assert original.status is AppointmentStatus.SCHEDULED
+    assert store.list_appointments() == [original]
+    
+    
+def test_register_patient_valid_patient_unused_id_is_stored():
+    data_store = SmartCareDataStore()  
+    service = PatientService(data_store)
+
+    patient = service.register_patient('P1', 'Alex Example')
+
+    search = service.find_patient('P1')
+    
+    assert patient is search
+
+
+def test_duplicate_patient_id_is_rejected():
+    data_store = SmartCareDataStore()  
+    service = PatientService(data_store)
+     
+    original = service.register_patient('P1', 'Alex Example')
+
+    with pytest.raises(ValueError):
+        service.register_patient('P1', 'Bob Example')
+
+    assert service.find_patient('P1') is original
+    assert original.name == 'Alex Example'
