@@ -14,7 +14,7 @@ For each requirement, propose one positive test, one negative test and the key a
 
 | Requirement | Positive test | Negative test | Key assertion |
 |---|---|---|---|
-| FR-01 Register patient | [response] | [response] | [response] |
+| FR-01 Register patient | Register patient with valid ID | Register a patient with an existing ID | Patient can be found in data store from registered |
 | FR-05 Prevent practitioner conflict | [response] | [response] | [response] |
 | FR-06 Cancel appointment | [response] | [response] | [response] |
 | FR-07 Retain cancelled history | [response] | [response] | [response] |
@@ -41,7 +41,16 @@ Judgement: [Strong for stated behaviour / Weak/unclear]  Why: [response]
 ### Activity 3 Boundary thinking
 
 Design boundary or edge cases for blank identifiers, whitespace-only names, same-time practitioner bookings, cancelled appointments and invalid status transitions.
-For each input/state, expected result and supporting contract: [response]
+For each input/state, expected result and supporting contract: 
+
+| Candidate | Expected Result | Contract Supporting the Expectation |
+|---|---|---|
+| Patient ID = ‘’ | ValueError is raised | Blank patient IDs are rejected |
+| Patient name = ‘   ’ | ValueError is raised | Whitespace-only names are rejected |
+| Valid but unknown patient ID lookup | LookupError is raised | Known patient lookup succeeds; unknown patient lookup reports absence |
+| Two appointments book the same practitioner at the same datetime | Second booking attempt is rejected and ValueError is raised | Same practitioner/exact time/SCHEDULED conflicts; another practitioner at the same time is allowed |
+| Appointment status = CANCELLED and then appointment cancellation is attempted again | Status remains CANCELLED and ValueError is raised | Repeated cancellation is rejected |
+| Appointment status = COMPLETED and then appointment cancellation is attempted | Status remains COMPLETED and ValueError is raised | Cancelling a SCHEDULED appointment changes it to CANCELLED; cancelling is only permitted when status is SCHEDULED |
 
 ### Activity 4 Critique GitHub Copilot tests
 
@@ -66,7 +75,13 @@ Assign TEST IDs before implementation or generation. Use canonical AC IDs with t
 
 | Requirement | Acceptance criterion | Test ID | Test type | Test name / location | Expected behaviour | Result / observed status | Supplied or student-authored |
 |---|---|---|---|---|---|---|---|
-| [complete] | [complete] | [complete] | [complete] | [complete] | [complete] | [complete] | [complete] |
+| FR-01 | AC-01.1 under FR-01 | Test-01-01 | Service | test_register_patient_valid_patient_unused_id_is_stored() in test_services.py | Patient data is successfully registered and stored in data store | Passed | Student-authored  |
+| FR-01 | AC-01.2 under FR-01 | Test-01-02 | Service | test_duplicate_patient_id_is_rejected() in test_services.py | Duplicate patient ID is rejected at registration and raises ValueError | Passed | Student-authored  |
+| FR-01 | Patient with name and ID is created | Test-01-03 | Domain | test_patient_valid_construction() in test_domain.py | Patient is created with the correct ID and name | Passed | Student-authored  |
+| FR-01 | Blank ID is rejected | Test-01-04 | Domain | test_blank_patient_id_rejected() in test_domain.py | Patient ID is rejected and raises ValueError | Passed | Student-authored  |
+| FR-01 | Whitespace characters as ID are rejected | Test-01-05 | Domain | test_whitespace_patient_id_rejected() in test_domain.py | Patient ID is rejected and raises ValueError | Passed | Student-authored  |
+| FR-01 | Blank name is rejected | Test-01-06 | Domain | test_blank_patient_name_rejected() in test_domain.py | Patient name is rejected and raises ValueError | Passed | Student-authored  |
+| FR-01 | Whitespace characters as name are rejected | Test-01-07 | Domain | test_whitespace_patient_name_rejected() in test_domain.py | Patient name is rejected and raises ValueError | Passed | Student-authored  |
 
 ## C Test Design
 
@@ -74,7 +89,13 @@ Use descriptive test names such as test_cancel_changes_status() or test_blank_pa
 
 | Test ID | Requirement | Acceptance criterion | Positive / Negative / Boundary | Test intention | Observable result expected | Added evidence beyond supplied tests |
 |---|---|---|---|---|---|---|
-| [complete] | [complete] | [complete] | [complete] | [complete] | [complete] | [complete] |
+| Test-01-01 | FR-01 | AC-01.1 under FR-01 | Positive | Verify that a patient with valid data can be registered and stored | Patient data is successfully registered and stored in data store | [complete] |
+| Test-01-02 | FR-01 | AC-01.2 under FR-01 | Negative | Verify that duplicate patient IDs are rejected at registration | Duplicate patient ID is rejected at registration and raises ValueError | [complete] |
+| Test-01-03 | FR-01 | Patient with name and ID is created | Positive | Patient is created and its ID and name match the supplied values | Patient is successfully created | [complete] |
+| Test-01-04 | FR-01 | Blank ID is rejected | Negative | Verify blank patient IDs are rejected | Patient ID is rejected and raises ValueError | [complete] |
+| Test-01-05 | FR-01 | Whitespace characters as ID are rejected | Boundary | Verify patient IDs with whitespace characters are rejected | Patient ID is rejected and raises ValueError | [complete] |
+| Test-01-06 | FR-01 | Blank name is rejected | Negative | Verify blank patient names are rejected | Patient name is rejected and raises ValueError | [complete] |
+| Test-01-07 | FR-01 | Whitespace characters as name are rejected | Boundary | Verify patient names with whitespace characters are rejected | Patient name is rejected and raises ValueError | [complete] |
 
 ## D Arrange Act Assert Record
 
@@ -82,7 +103,13 @@ Arrange test data; act on one meaningful behaviour; assert the required observab
 
 | Test ID | Arrange | Act | Assert | Why meaningful / why assertion proves criterion |
 |---|---|---|---|---|
-| [complete] | [complete] | [complete] | [complete] | [complete] |
+| Test-01-01 | Create store for patient and PatientService | Register valid patient ID | Patient ID is found in datastore | Proves that a valid patient ID is stored (AC-01.1 under FR-01) |
+| Test-01-02 | Create store for patient and PatientService | Register existing patient ID | ValueError is raised | Proves that duplicate patient IDs are rejected (AC-01.2 under FR-01) |
+| Test-01-03 | Create patient object with ID and name | Construct patient object with ID and name | Patient object is created and its attributes are checked | Proves that patient construction works |
+| Test-01-04 | Create blank ID and valid name | Construct with blank patient ID | ValueError is raised | Proves that blank patient IDs are rejected |
+| Test-01-05 | Create ID with whitespace characters and valid name | Construct with patient ID with whitespace characters | ValueError is raised | Proves that patient IDs with whitespace characters are rejected |
+| Test-01-06 | Create valid ID and blank name | Construct with blank patient name | ValueError is raised | Proves that blank patient names are rejected |
+| Test-01-07 | Create valid ID and name with whitespace characters | Construct with patient name with whitespace characters | ValueError is raised | Proves that patient names with whitespace characters are rejected |
 
 ## E Domain Test Evidence
 
@@ -90,7 +117,11 @@ Cover Patient/Practitioner construction and validation; Appointment construction
 
 | Test ID | Behaviour | Test file/function | Result |
 |---|---|---|---|
-| [complete] | [complete] | [complete] | [complete] |
+| Test-01-03 | Patient is successfully created | test_patient_valid_construction() in test_domain.py | Passed |
+| Test-01-04 | Patient ID is rejected and raises ValueError | test_blank_patient_id_rejected() in test_domain.py | Passed |
+| Test-01-05 | Patient ID is rejected and raises ValueError | test_whitespace_patient_id_rejected() in test_domain.py | Passed |
+| Test-01-06 | Patient name is rejected and raises ValueError | test_blank_patient_name_rejected() in test_domain.py | Passed |
+| Test-01-07 | Patient name is rejected and raises ValueError | test_whitespace_patient_name_rejected() in test_domain.py | Passed |
 
 ## F Service Test Evidence
 
@@ -98,7 +129,8 @@ Use fresh shared SmartCareDataStore state, registered objects and completed Stag
 
 | Test ID | Behaviour | Requirement / criterion | Test file/function | Result |
 |---|---|---|---|---|
-| [complete] | [complete] | [complete] | [complete] | [complete] |
+| Test-01-01 | Patient data is successfully registered and stored in data store | AC-01.1 under FR-01 | test_register_patient_valid_patient_unused_id_is_stored() in test_services.py | Passed |
+| Test-01-02 | Duplicate patient ID is rejected at registration and raises ValueError | AC-01.2 under FR-01 | test_duplicate_patient_id_is_rejected() in test_service.py | Passed |
 
 ## G Negative and Boundary Cases
 
@@ -106,7 +138,9 @@ Connect cases to actual contracts and verify unchanged state after rejection.
 
 | Behaviour | Boundary/invalid input | Expected result | Test ID |
 |---|---|---|---|
-| [complete] | [complete] | [complete] | [complete] |
+| Patient register | Duplicate patient ID | ValueError is raised | Test-01-02 |
+| Patient construction | Patient ID with whitespace characters | ValueError is raised | Test-01-05 |
+| Patient construction | Patient name with whitespace characters | ValueError is raised | Test-01-07 |
 
 ## H GitHub Copilot Test Design
 
@@ -144,7 +178,7 @@ Run python -m pytest from project/. Retain all accumulated tests. Record the tes
 
 | Command | Working directory | Code SHA | Passed | Failed | Failure summary | Product defect / test defect / unresolved | Evidence and interpretation |
 |---|---|---|---|---|---|---|---|
-| [complete] | [complete] | [complete] | [complete] | [complete] | [complete] | [complete] | [complete] |
+| python -m pytest tests/test_domain.py -v | project/ | 8f436f3513d2dc62f6f3103990afe51aedc766f7 | 5 | 0 | None | None identified | All five FR-01 domain tests passed locally |
 
 Individual test runs and changed-order independence evidence: [commands, results, links]
 Optional tutor-led demonstration notes: [optional; leave blank if not used]
@@ -164,7 +198,7 @@ Use links rather than copying GitHub history. Continue the Stage 6 workflow; no 
 
 | Issue/task | Branch | PR | Reviewer | Key feedback | Outcome |
 |---|---|---|---|---|---|
-| [complete] | [complete] | [complete] | [complete] | [complete] | [complete] |
+| Stage 7 — FR-01 Patient Tests | feature/stage7-patient-testing | [#9](https://github.com/soulsbyrohan/st1-assignment-3/pull/9) | u3308969 | [complete] | [complete] |
 
 ## M Contribution Evidence
 
@@ -172,7 +206,7 @@ Record actual work in test design, implementation, review, traceability, diagnos
 
 | Member | Actual contribution | Evidence link |
 |---|---|---|
-| [complete] | [complete] | [complete] |
+| u3306036 | Created Stage 7 FR-01 tests, 2 service tests for AC-01.1 and AC-01.2 under FR-01 and 5 domain tests for patient construction and required-field validation. Tested all tests locally and documented behaviours and results in sections A-G.| [complete] |
 
 ## N Formative Questions
 
@@ -189,22 +223,22 @@ Record actual work in test design, implementation, review, traceability, diagnos
 [response]
 
 5. What is parametrisation in pytest?
-[response]
+Parametrisation in pytest allows for single test functions to be run multiple times with different sets of arguments. 
 
 6. What is regression testing?
-[response]
+Regression testing is a way of software testing that ensures recent changes to the code doesn't negatively impact existing functionality.
 
 7. What does code coverage tell us, and what does it not prove?
-[response]
+Code coverage tells us to what extent the source code is executed during testing, but it does not prove that all requirements were met. 
 
 8. What makes an assertion weak?
-[response]
+ A weak assertion is when it tests or checks very little about the code’s behaviour, for example assert True as it only checks whether a boolean condition is true or false. 
 
 9. What is the appropriate role of GitHub Copilot as a test assistant?
-[response]
+Github Copilot as a test assistant can suggest scenarios, edge cases, assertions or code. However, the group must decide whether or not those suggestions match the requirements. 
 
 10. What is the Stage 7 engineering rule?
-[response]
+The Stage 7 engineering rule is to use tests to gather evidence that your existing SmartCare application meets its requirements. We are to look at what required behaviour does these tests actually prove? In a group we are to write and review tests, interpret their results, and retain a traceable regression suite.
 
 ## O Stage Completion
 
