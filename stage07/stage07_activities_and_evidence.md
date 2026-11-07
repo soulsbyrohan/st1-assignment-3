@@ -16,7 +16,7 @@ Use the existing `project/` and preserve earlier tests and stage records.
 | FR-01 Register patient | Register patient with valid ID | Register a patient with an existing ID | Patient can be found in data store from registered |
 | FR-05 Prevent practitioner conflict | Book an available practitioner and confirm the appointment is scheduled. | Attempt to book the same practitioner at the same date and time as an existing scheduled appointment. | A valid booking is stored; a conflicting booking raises `ValueError` and leaves existing records unchanged. |
 | FR-06 Cancel appointment | Cancel a SCHEDULED appointment and verify its status changes to CANCELLED | Attempt to cancel an already CANCELLED appointment | Successful cancellation changes status to CANCELLED; repeated cancellation raises ValueError and leaves the status unchanged |
-| FR-07 Retain cancelled history | [response] | [response] | [response] |
+| FR-07 Retain cancelled history | Cancel A1; retrieve the same record by ID and from `list_appointments()`. | Try cancelling A1 again or a missing ID; history must remain unchanged. | `assert service.find_appointment("A1") is original` and `assert original in store.list_appointments()`. |
 
 ### Activity 2 Strong or weak assertion
 
@@ -96,6 +96,13 @@ These are the five example test problems from the tutorial, not tests that Copil
 | FR-06 | AC-05.1 | TEST-06-04 | Positive service | test_cancel_scheduled_appointment | Service cancels a scheduled appointment, changes its status to CANCELLED and returns the original object | Previously passed locally | Student-authored |
 | FR-06 | AC-05.3 | TEST-06-05 | Negative service | test_cancel_already_cancelled_appointment | Repeated cancellation raises ValueError and leaves the status unchanged | Previously passed locally | Student-authored |
 
+| FR-07 | AC-05.2| TEST-FR07-01 | Positive / integration | test_fr07_cancelled_history_is_found_by_id_and_in_list | Cancelled A1 remains identical via service lookup, store lookup and listing | Passed locally | Student-authored|
+| FR-07 | AC-05.2 | TEST-FR07-02 | Positive / integration |test_fr07_rebooking_does_not_erase_cancelled_history | Original cancelled and replacement bookings both remain stored | Passed locally | Student-authored |
+| FR-07 | AC-05.2 | TEST-FR07-03 | Negative | test_fr07_repeated_cancellation_preserves_history | `ValueError`; status and stored list exactly unchanged |passed locally| Student-authored |
+| FR-07 | AC-05.2 | TEST-FR07-04 | Negative | test_fr07_completed_cancel_rejection_retains_record | completed record remains in list and retrievable |passed locally | Student-authored |
+| FR-07 | AC-05.2 | TEST-FR07-05 | Negative | test_fr07_unknown_cancellation_does_not_mutate_history | existing cancelled history unchanged | Passed locally | Student-authored |
+| FR-07 | AC-05.2 | TEST-FR07-06 | Boundary | test_fr07_invalid_id_cannot_mutate_history | `ValueError` for `""`, spaces, `None`; existing history unchanged | Passed locally | Student-authored |
+
 ## C Test Design
 | Test ID | Requirement | Acceptance criterion | Positive / Negative / Boundary | Test intention | Observable result expected | Added evidence beyond supplied tests |
 |---|---|---|---|---|---|---|
@@ -117,6 +124,13 @@ These are the five example test problems from the tutorial, not tests that Copil
 | TEST-06-01 | FR-06 | AC-05.1 | Positive | Check that a scheduled appointment can be cancelled using the domain method | Appointment status changes from SCHEDULED to CANCELLED | Independently verifies the Appointment object's cancellation behaviour |
 | TEST-06-02 | FR-06| AC-05.3 | Negative | Check that an already cancelled appointment cannot be cancelled again | ValueError is raised and status remains CANCELLED | Verifies that repeated cancellation is rejected without changing the state |
 | TEST-06-03 | FR-06 | Completed-state cancellation contract | Negative | Check that a completed appointment cannot be cancelled | ValueError is raised and status remains COMPLETED | Verifies that completed appointments are protected from invalid status changes |
+
+| TEST-FR07-01 | FR-07 | AC-05.2 — retained history | Positive | test_fr07_cancelled_history_is_found_by_id_and_in_list | Cancelled A1 remains identical via service lookup, store lookup and listing | Adds both retrieval paths and exact one-record list assertion beyond supplied domain check. |
+| TEST-FR07-02 | FR-07 | AC-05.2 — retained history; FR-05 rebooking contract | Positive | test_fr07_rebooking_does_not_erase_cancelled_history | Original CANCELLED and replacement SCHEDULED bookings both remain stored | Checks two records coexist after rebooking the cancelled slot, beyond Stage 6 ID lookups. |
+| TEST-FR07-03 | FR-07 | AC-05.2; AC-05.3 repeated cancellation | Negative | test_fr07_repeated_cancellation_preserves_history | `ValueError`; status and stored list exactly unchanged | Checks full history unchanged after rejected transition. |
+| TEST-FR07-04 | FR-07 | AC-05.2; completed-state domain guard | Negative | test_fr07_completed_cancel_rejection_retains_record | `ValueError`; COMPLETED record remains in list and retrievable | Confirms illegal transition does not erase completed history. |
+| TEST-FR07-05 | FR-07 | AC-05.2; service unknown-ID lookup contract | Negative | test_fr07_unknown_cancellation_does_not_mutate_history | `LookupError`; existing cancelled history unchanged | Checks absent ID does not mutate unrelated retained record. |
+| TEST-FR07-06 | FR-07 | AC-05.2; `required_text()` invalid-ID validation | Boundary (3 inputs) | test_fr07_invalid_id_cannot_mutate_history | `ValueError` for `""`, spaces, `None`; existing history unchanged | Parametrised boundaries check that bad inputs do not mutate history. |
 
 ## D Arrange Act Assert Record
 | Test ID | Arrange | Act | Assert | Why meaningful / why assertion proves criterion |
@@ -189,11 +203,18 @@ All eight Practitioner domain tests passed locally. They check the required fiel
 | TEST-06-08 | Rejects a blank appointment ID with ValueError | FR-06 / Invalid-ID contract | `test_services.py::test_cancel_blank_appointment_id` | Previously passed locally |
 | TEST-06-09 | Rejects a non-string appointment ID with ValueError | FR-06 / Invalid-ID contract | `test_services.py::test_cancel_invalid_appointment_id_type` | Previously passed locally |
 
+| SUP-04 | Stage 6 service cancellation and retained lookup | FR-06 / FR-07 | `tests/test_services.py::test_cancel_scheduled_appointment` | Group reported Stage 6 full regression 27 passed; not rerun on live Stage 7 |
+| TEST-FR07-01 | Cancelled A1 remains identical via service lookup, store lookup and listing | FR-07 / AC-05.2 — retained history | `project/tests/test_fr07_history.py`::test_fr07_cancelled_history_is_found_by_id_and_in_list | Passed locally |
+| TEST-FR07-02 | Original CANCELLED and replacement SCHEDULED bookings both remain stored | FR-07 / AC-05.2 — retained history; FR-05 rebooking contract | `project/tests/test_fr07_history.py`::test_fr07_rebooking_does_not_erase_cancelled_history | Passed locally |
+| TEST-FR07-03 | `ValueError`; status and stored list exactly unchanged | FR-07 / AC-05.2; AC-05.3 repeated cancellation | `project/tests/test_fr07_history.py`::test_fr07_repeated_cancellation_preserves_history | Passed locally |
+| TEST-FR07-04 | `ValueError`; COMPLETED record remains in list and retrievable | FR-07 / AC-05.2; completed-state domain guard | `project/tests/test_fr07_history.py`::test_fr07_completed_cancel_rejection_retains_record | Passed locally |
+| TEST-FR07-05 | `LookupError`; existing cancelled history unchanged | FR-07 / AC-05.2; service unknown-ID lookup contract | `project/tests/test_fr07_history.py`::test_fr07_unknown_cancellation_does_not_mutate_history | Passed locally |
+| TEST-FR07-06 | `ValueError` for `""`, spaces, `None`; existing history unchanged | FR-07 / AC-05.2; `required_text()` invalid-ID validation | `project/tests/test_fr07_history.py`::test_fr07_invalid_id_cannot_mutate_history | Passed locally |
+
 ## G Negative and Boundary Cases
 | Behaviour | Boundary/invalid input | Expected result | Test ID |
 
 |---|---|---|---|
-
 | Patient register | Duplicate patient ID | ValueError is raised | Test-01-02 |
 | Patient construction | Patient ID with whitespace characters | ValueError is raised | Test-01-05 |
 | Patient construction | Patient name with whitespace characters | ValueError is raised | Test-01-07 |
@@ -211,6 +232,13 @@ All eight Practitioner domain tests passed locally. They check the required fiel
 | Unknown appointment lookup during cancellation | Valid but unregistered appointment ID A1000 | LookupError raised | TEST-06-07 |
 | Blank appointment ID | Empty string ('  ') | ValueError raised | TEST-06-08 |
 | Invalid appointment ID type | None instead of a string | ValueError raised | TEST-06-09 |
+
+| Repeated cancellation | A1 is already CANCELLED | `ValueError`; same status and history list | TEST-FR07-03 |
+| Completed cancellation | A1 is COMPLETED | `ValueError`; completed record still stored | TEST-FR07-04 |
+| Unknown appointment ID | A999 valid text but never stored | `LookupError`; existing A1 unchanged | TEST-FR07-05 |
+| Blank required ID | `""` | `ValueError`; existing records unchanged | TEST-FR07-06 |
+| Whitespace-only required ID | `"   "` | `ValueError`; existing records unchanged | TEST-FR07-06 |
+| Non-string required ID | `None` | `ValueError`; existing records unchanged | TEST-FR07-06 |
 
 ## H GitHub Copilot Test Design
 
