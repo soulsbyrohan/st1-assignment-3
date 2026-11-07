@@ -279,7 +279,10 @@ def test_duplicate_patient_id_is_rejected():
     data_store = SmartCareDataStore()  
     service = PatientService(data_store)
      
-    service.register_patient('P1', 'Alex Example')
+    original = service.register_patient('P1', 'Alex Example')
 
     with pytest.raises(ValueError):
-         service.register_patient('P1', 'Bob Example')
+        service.register_patient('P1', 'Bob Example')
+
+        assert service.find_paitent('P1') is original
+        assert original.name == 'Alex Example'

@@ -45,12 +45,12 @@ For each input/state, expected result and supporting contract:
 
 | Candidate | Expected Result | Contract Supporting the Expectation |
 |---|---|---|
-| Patient ID = ‘’ | ValuerError is raised | Blank patient IDs are rejected |
-| Patient name = ‘   ’ | ValuerError is raised | Whitespace-only names are rejected |
+| Patient ID = ‘’ | ValueError is raised | Blank patient IDs are rejected |
+| Patient name = ‘   ’ | ValueError is raised | Whitespace-only names are rejected |
 | Valid but unknown patient ID lookup | LookupError is raised | Known patient lookup succeeds; unknown patient lookup reports absence |
-| Two appointments book the same practitioner at the same datetime | Second booking attempt is rejected and ValuerError is raised | Same practitioner/exact time/SCHEDULED conflicts; another practitioner at the same time is allowed |
-| Appointment status = CANCELLED and then appointment cancellation is attempted again | Status remains CANCELLED and ValuerError is raised | Repeated cancellation is rejected |
-| Appointment status = COMPLETED and then appointment cancellation is attempted | Status remains COMPLETED and ValuerError is raised | Cancelling a SCHEDULED appointment changes it to CANCELLED; cancelling is only permitted when status is SCHEDULED |
+| Two appointments book the same practitioner at the same datetime | Second booking attempt is rejected and ValueError is raised | Same practitioner/exact time/SCHEDULED conflicts; another practitioner at the same time is allowed |
+| Appointment status = CANCELLED and then appointment cancellation is attempted again | Status remains CANCELLED and ValueError is raised | Repeated cancellation is rejected |
+| Appointment status = COMPLETED and then appointment cancellation is attempted | Status remains COMPLETED and ValueError is raised | Cancelling a SCHEDULED appointment changes it to CANCELLED; cancelling is only permitted when status is SCHEDULED |
 
 ### Activity 4 Critique GitHub Copilot tests
 
@@ -77,7 +77,7 @@ Assign TEST IDs before implementation or generation. Use canonical AC IDs with t
 |---|---|---|---|---|---|---|---|
 | FR-01 | AC-01.1 under FR-01 | Test-01-01 | Service | test_register_patient_valid_patient_unused_id_is_stored() in test_services.py | Patient data is successfully registered and stored in data store | Passed | Student-authored  |
 | FR-01 | AC-01.2 under FR-01 | Test-01-02 | Service | test_duplicate_patient_id_is_rejected() in test_services.py | Duplicate patient ID is rejected at registration and raises ValueError | Passed | Student-authored  |
-| FR-01 | Patient with name and ID is created | Test-01-03 | Domain | test_patient_valid_construction() in test_domain.py | Patient is successfully created and raises ValueError | Passed | Student-authored  |
+| FR-01 | Patient with name and ID is created | Test-01-03 | Domain | test_patient_valid_construction() in test_domain.py | Patient is created with the correct ID and name | Passed | Student-authored  |
 | FR-01 | Blank ID is rejected | Test-01-04 | Domain | test_blank_patient_id_rejected() in test_domain.py | Patient ID is rejected and raises ValueError | Passed | Student-authored  |
 | FR-01 | Whitespace characters as ID are rejected | Test-01-05 | Domain | test_whitespace_patient_id_rejected() in test_domain.py | Patient ID is rejected and raises ValueError | Passed | Student-authored  |
 | FR-01 | Blank name is rejected | Test-01-06 | Domain | test_blank_patient_name_rejected() in test_domain.py | Patient name is rejected and raises ValueError | Passed | Student-authored  |
@@ -91,7 +91,7 @@ Use descriptive test names such as test_cancel_changes_status() or test_blank_pa
 |---|---|---|---|---|---|---|
 | Test-01-01 | FR-01 | AC-01.1 under FR-01 | Positive | Verify that a patient with valid data can be registered and stored | Patient data is successfully registered and stored in data store | [complete] |
 | Test-01-02 | FR-01 | AC-01.2 under FR-01 | Negative | Verify that duplicate patient IDs are rejected at registration | Duplicate patient ID is rejected at registration and raises ValueError | [complete] |
-| Test-01-03 | FR-01 | Patient with name and ID is created | Positive | Verify patient construction and patient ID and name can be found in data store | Patient is successfully created and raises ValueError | [complete] |
+| Test-01-03 | FR-01 | Patient with name and ID is created | Positive | Patient is created and its ID and name match the supplied values | Patient is successfully created | [complete] |
 | Test-01-04 | FR-01 | Blank ID is rejected | Negative | Verify blank patient IDs are rejected | Patient ID is rejected and raises ValueError | [complete] |
 | Test-01-05 | FR-01 | Whitespace characters as ID are rejected | Boundary | Verify patient IDs with whitespace characters are rejected | Patient ID is rejected and raises ValueError | [complete] |
 | Test-01-06 | FR-01 | Blank name is rejected | Negative | Verify blank patient names are rejected | Patient name is rejected and raises ValueError | [complete] |
@@ -104,8 +104,8 @@ Arrange test data; act on one meaningful behaviour; assert the required observab
 | Test ID | Arrange | Act | Assert | Why meaningful / why assertion proves criterion |
 |---|---|---|---|---|
 | Test-01-01 | Create store for patient and PatientService | Register valid patient ID | Patient ID is found in datastore | Proves that a valid patient ID is stored (AC-01.1 under FR-01) |
-| Test-01-02 | Create store for patient and PatientService | Register existing patient ID | ValueError is raised | Proves that duplicate patient IDs are rejected (AC-01.1 under FR-01) |
-| Test-01-03 | Create patient object with ID and name | Construct patient object with ID and name | Patient ID and name is successfully stored in datastore | Proves that patient construction works |
+| Test-01-02 | Create store for patient and PatientService | Register existing patient ID | ValueError is raised | Proves that duplicate patient IDs are rejected (AC-01.2 under FR-01) |
+| Test-01-03 | Create patient object with ID and name | Construct patient object with ID and name | Patient object is created and its attributes are checked | Proves that patient construction works |
 | Test-01-04 | Create blank ID and valid name | Construct with blank patient ID | ValueError is raised | Proves that blank patient IDs are rejected |
 | Test-01-05 | Create ID with whitespace characters and valid name | Construct with patient ID with whitespace characters | ValueError is raised | Proves that patient IDs with whitespace characters are rejected |
 | Test-01-06 | Create valid ID and blank name | Construct with blank patient name | ValueError is raised | Proves that blank patient names are rejected |
@@ -130,7 +130,7 @@ Use fresh shared SmartCareDataStore state, registered objects and completed Stag
 | Test ID | Behaviour | Requirement / criterion | Test file/function | Result |
 |---|---|---|---|---|
 | Test-01-01 | Patient data is successfully registered and stored in data store | AC-01.1 under FR-01 | test_register_patient_valid_patient_unused_id_is_stored() in test_services.py | Passed |
-| Test-01-02 | Duplicate patient ID is rejected at registration and raises ValueError | AC-01.2 under FR-01 | test_duplicate_patient_id_is_rejected() in test_domain.py | Passed |
+| Test-01-02 | Duplicate patient ID is rejected at registration and raises ValueError | AC-01.2 under FR-01 | test_duplicate_patient_id_is_rejected() in test_service.py | Passed |
 
 ## G Negative and Boundary Cases
 
