@@ -1,6 +1,10 @@
+from datetime import datetime
 
 import pytest
-from smartcare.domain import Practitioner
+
+from smartcare.data_store import SmartCareDataStore
+from smartcare.domain import Appointment, AppointmentStatus, Patient, Practitioner
+from smartcare.services import AppointmentService, PatientService, PractitionerService
 
 
 # Test 1: Create a practitioner with valid information
@@ -83,3 +87,30 @@ def test_practitioner_removes_extra_spaces():
     assert doctor.practitioner_id == "DOC006"
     assert doctor.name == "Sarah Wilson"
     assert doctor.specialty == "Dermatology"
+
+
+def test_patient_valid_construction():
+    patient = Patient('P1', 'Alex Example')
+
+    assert patient.patient_id == 'P1'
+    assert patient.name == 'Alex Example'
+
+
+def test_blank_patient_id_rejected():
+    with pytest.raises(ValueError):
+        Patient('', 'Alex Example')
+
+
+def test_whitespace_patient_id_rejected():
+    with pytest.raises(ValueError):
+        Patient('  ', 'Alex Example')
+
+
+def test_blank_patient_name_rejected():
+    with pytest.raises(ValueError):
+        Patient('P1', '')
+
+
+def test_whitespace_patient_name_rejected():
+    with pytest.raises(ValueError):
+        Patient('P1', '  ')

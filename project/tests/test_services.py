@@ -13,7 +13,6 @@ from smartcare.services import (
     PractitionerService,
 )
 
-
 # =========================================================
 # STAGE 6 - APPOINTMENT CANCELLATION TESTS
 # =========================================================
@@ -486,3 +485,27 @@ def test_fr05_conflict_does_not_modify_existing_booking():
     assert original.date_time == when
     assert original.status is AppointmentStatus.SCHEDULED
     assert store.list_appointments() == [original]
+    
+    
+def test_register_patient_valid_patient_unused_id_is_stored():
+    data_store = SmartCareDataStore()  
+    service = PatientService(data_store)
+
+    patient = service.register_patient('P1', 'Alex Example')
+
+    search = service.find_patient('P1')
+    
+    assert patient is search
+
+
+def test_duplicate_patient_id_is_rejected():
+    data_store = SmartCareDataStore()  
+    service = PatientService(data_store)
+     
+    original = service.register_patient('P1', 'Alex Example')
+
+    with pytest.raises(ValueError):
+        service.register_patient('P1', 'Bob Example')
+
+    assert service.find_patient('P1') is original
+    assert original.name == 'Alex Example'
