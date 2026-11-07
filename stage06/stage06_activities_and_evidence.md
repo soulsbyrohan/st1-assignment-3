@@ -315,13 +315,13 @@ Take each requirement through issue, focused branch, implementation, meaningful 
 - Stage 7 handover status:
 - Final submitted SHA if later than tested SHA: [`192f3a0`](https://github.com/soulsbyrohan/st1-assignment-3/commit/192f3a00fa7202d33a2f0f471280093bd4195734).
 
-- [ ] Three Stage 6 service targets completed and checked.
-- [ ] Original supplied tests retained and passing.
-- [ ] At least two focused issues link requirements and acceptance criteria.
-- [ ] Feature work reviewed by another member using the actual diff.
-- [ ] Human-first review and required Copilot comparison recorded.
-- [ ] Feedback resolved and approval recorded before merge.
-- [ ] Everyone pulled main and integrated checks passed.
+- [x] Three Stage 6 service targets completed and checked.
+- [x] Original supplied tests retained and passing.
+- [x] At least two focused issues link requirements and acceptance criteria.
+- [x] Feature work reviewed by another member using the actual diff.
+- [x] Human-first review and required Copilot comparison recorded.
+- [x] Feedback resolved and approval recorded before merge.
+- [x] Everyone pulled main and integrated checks passed.
 - [ ] Required activities, quiz responses and contribution notes completed.
 - [ ] Only synthetic data included; confidential peer material kept out.
 - [ ] Tutor can trace a requirement through issue, code, tests, PR and checkpoint.
