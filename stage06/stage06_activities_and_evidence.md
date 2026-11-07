@@ -136,6 +136,7 @@ Repeat this block per PR. Record actual events, not planned approvals.
 - PR link and title: [Stage 6: Implement Practitioner Search (FR-03)](https://github.com/soulsbyrohan/st1-assignment-3/pull/3)
 - Linked issue and requirement: [Issue #4](https://github.com/soulsbyrohan/st1-assignment-3/issues/4) — Stage 06 practitioner lookup associated with FR-03.
 - Feature branch: `feature/practitioner-search`
+<<<<<<< HEAD
 - Changed behaviour: Returns original stored practitioner; raises `LookupError` for missing ID; appointz ID validation to shared store.
 - Meaningful commits: [PR commits](https://github.com/soulsbyrohan/st1-assignment-3/pull/3/commits), [merge](https://github.com/soulsbyrohan/st1-assignment-3/commit/84de8f21f50a40728b6faef160da971e2c2ce29e)
 - Test command, directory and observed result: `python -m pytest -q` → `14 passed in 0.04s` ([test comment](https://github.com/soulsbyrohan/st1-assignment-3/pull/3#issuecomment-6594882188).
@@ -168,6 +169,22 @@ Repeat this block per PR. Record actual events, not planned approvals.
 - Linked issue closure: [Issue #6](https://github.com/soulsbyrohan/st1-assignment-3/issues/6) closed 2026-11-04.
 - Each member updated main:
 - Integrated verification after merge: Group-reported `python -m pytest -v` from `project/`: `27 passed, 0 failed`.
+=======
+- Changed behaviour: Implemented PractitionerService.find_practitioner() to retrieve registered practitioners by ID. Unknown IDs raise LookupError, while invalid IDs raise ValueError. Practitioner IDs are trimmed and case-sensitive.
+- Meaningful commits: [https://github.com/soulsbyrohan/st1-assignment-3/pull/3/changes/6c8ef18037a73cefaf6978f811ab861a977386ae]
+- Test command, directory and observed result: `py -m pytest -v` from `project/` — 27 passed, 0 failed after pulling the integrated main branch.
+- Another-member reviewer: 
+- Human observations recorded before Copilot: 
+- Requirement, responsibilities, test assertions and unrelated-scope checks: Verified practitioner lookup behaviour, including valid IDs, unknown IDs, blank IDs, whitespace handling, case sensitivity and invalid input types. The implementation uses the existing data-store lookup method.
+- Key feedback: 
+- Author response/change and verification: 
+- Reviewer recheck and approval: 
+- Merge outcome and SHA:
+- Significant Copilot assistance: 
+- Linked issue closure: Issue #3 — [CONFIRM STATUS]
+- Each member updated main: [CONFIRMATIONS]
+- Integrated verification after merge: `py -m pytest -v` from `project/` — 27 passed, 0 failed. Tested SHA: [RUN git rev-parse HEAD]
+>>>>>>> 8997c6f (Update stage6 md file section J)
 
 ## H Copilot collaboration record
 
@@ -238,6 +255,16 @@ Repeat per member. Include only categories that describe actual work; write not 
 - Design and responsibility discussion: Identified correct domain-owned cancellation, existing data-store lookups, and unrelated practitioner deletion in PR #5.
 - Debugging or integration: All issues in my reviews were resolved and tested. Final approvals given and merged to main.
 - Documentation or team support: Commented reviews in PRs 02, 03, 05. Completed Stage 6 Activities and Evidence MD.
+
+
+Member: u3325731
+- Implementation: Implemented `PractitionerService.find_practitioner()` to search for registered practitioners using their ID. PR #3.
+- Testing: Added six tests for successful practitioner search, unknown IDs, blank IDs, invalid inputs, whitespace handling and case sensitivity. All tests passed locally.
+- Review: Received feedback on the tests and code readability, and checked the suggestions before finalising my work.
+- Issue refinement: Worked on Issue #4 for practitioner lookup and its acceptance criteria.
+- Design and responsibility discussion: Used the existing data store's `find_practitioner()` method instead of creating a separate search process.
+- Debugging or integration: Checked that practitioner search worked correctly with the existing code and ran the full test suite after integration. 27 tests passed.
+- Documentation or team support: Completed my practitioner lookup contribution and added the relevant testing and PR evidence to the Stage 6 Markdown file.
 
 - Member: [response]
 - Implementation: [work and evidence]
