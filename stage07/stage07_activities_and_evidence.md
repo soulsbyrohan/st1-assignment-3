@@ -24,29 +24,29 @@ Use the existing `project/` and preserve earlier tests and stage records.
 Judgement: Weak/unclear  Why: This assertion always passes True and doesn't check if the code actually produces the correct result. It doesn't show any required behaviour.
 
 `assert appointment is not None`
-Judgement: Weak/unclear  Why: This only checks if appoinment exists. It doesn't actually prove that it is the correct appointment has been returned or that the appointment's status is correct
+Judgement: Weak/unclear  Why: This only checks if appointment exists. It doesn't actually prove that it is the correct appointment has been returned or that the appointment's status is correct
 
 `assert appointment.status == AppointmentStatus.CANCELLED`
-Judgement: Strong for stated behaviour  Why: This checks that the appointment is expected to have the CANCELLED status. But it still doesn't say if its the correct appointment was cancelled or the appointment is still stored. 
+Judgement: Strong for stated behaviour  Why: This checks that the appointment is expected to have the CANCELLED status. But it still doesn't say if it's the correct appointment was cancelled or the appointment is still stored. 
 
 `assert len(results) > 0`
 Judgement: Weak/unclear  Why: This only checks if the results contain at least one item. It doesn't actually verify the results returned are correct or that none are missing.
 
 `assert data_store.find_appointment('A1') is appointment`
-Judgement: Strong for stated behaviour  Why: This checks that the data is store is returning the exact same appointment object for ID A1. This proves the original object is still accessible but it doesn't check its status
+Judgement: Strong for stated behaviour  Why: This checks that the data store is returning the exact same appointment object for ID A1. This proves the original object is still accessible but it doesn't check its status
 
 ### Activity 3 Boundary thinking
 For each input/state, expected result and supporting contract:
 
-- ****Same-time practitioner booking:** Two appointments with the same practitioner and exact date/time, with the first appointment `SCHEDULED`, must cause the second booking to raise `ValueError` (FR-05).
+- **Same-time practitioner booking:** Two appointments with the same practitioner and exact date/time, with the first appointment `SCHEDULED`, must cause the second booking to raise `ValueError` (FR-05).
 
-- ****Different practitioner at the same time:** Both bookings are allowed because the conflict rule applies per practitioner (FR-05).
+- **Different practitioner at the same time:** Both bookings are allowed because the conflict rule applies per practitioner (FR-05).
 
-- ****Same practitioner one minute later:** Both bookings are allowed under the exact-datetime conflict rule (FR-05).
+- **Same practitioner one minute later:** Both bookings are allowed under the exact-datetime conflict rule (FR-05).
 
-- ****Cancelled appointment:** The original appointment remains stored with `CANCELLED` status and its time slot may be booked again (FR-05 / FR-07).
+- **Cancelled appointment:** The original appointment remains stored with `CANCELLED` status and its time slot may be booked again (FR-05 / FR-07).
 
-- ****Rejected conflict:** No new appointment is stored and the original appointment remains unchanged (FR-05).
+- **Rejected conflict:** No new appointment is stored and the original appointment remains unchanged (FR-05).
 Design boundary or edge cases for blank identifiers, whitespace-only names, same-time practitioner bookings, cancelled appointments and invalid status transitions.
 For each input/state, expected result and supporting contract: 
 
@@ -72,6 +72,10 @@ These are the five example test problems from the tutorial, not tests that Copil
 | 5 — Expects an SMS after cancellation | Same problem as above. It assumes the system sends messages when that isn't in the stated contract. | Cancel the appointment, find it again, and check that it is still saved as `CANCELLED` (FR-06/FR-07). |
 
 ### Tutorial exit question
+Why can 100% code coverage coexist with poor software verification?
+
+100% code coverage means that all measured lines of code should be executed while testing, but it doesn't prove the code is behaving correctly. Tests could have weak assertions, missing important edge cases or fail to check what the actual requirments are. Good verification suggests more meaningful tests that check the behaviour that is expected, not just executing code.
+
 ## B Requirement to Test Traceability Matrix
 | Requirement | Acceptance criterion | Test ID | Test type | Test name / location | Expected behaviour | Result / observed status | Supplied or student-authored |
 |---|---|---|---|---|---|---|---|
@@ -83,43 +87,43 @@ These are the five example test problems from the tutorial, not tests that Copil
 | FR-01 | Blank name is rejected | Test-01-06 | Domain | test_blank_patient_name_rejected() in test_domain.py | Patient name is rejected and raises ValueError | Passed | Student-authored  |
 | FR-01 | Whitespace characters as name are rejected | Test-01-07 | Domain | test_whitespace_patient_name_rejected() in test_domain.py | Patient name is rejected and raises ValueError | Passed | Student-authored  |
 
-| FR-05 | | TEST-FR05-01 | Positive | `tests/test_services.py::test_fr05_available_practitioner_booking` | Available practitioner can be booked; appointment has correct participants, date/time and `SCHEDULED` status. | PASS | Student-authored |
-| FR-05 | | TEST-FR05-02 | Negative | `tests/test_services.py::test_fr05_same_practitioner_same_time_rejected` | Same practitioner at the same date/time is rejected with `ValueError`; no second record is created. | PASS | Student-authored |
-| FR-05 | | TEST-FR05-03 | Positive | `tests/test_services.py::test_fr05_different_practitioners_same_time_allowed` | Different practitioners may each have an appointment at the same date/time. | PASS | Student-authored |
-| FR-05 | | TEST-FR05-04 | Boundary | `tests/test_services.py::test_fr05_same_practitioner_different_times_allowed` | Same practitioner can be booked at 09:00 and 09:01. | PASS | Student-authored |
-| FR-05 / FR-07 | | TEST-FR05-05 | Positive / state transition | `tests/test_services.py::test_fr05_cancelled_slot_can_be_rebooked` | Cancelled appointment remains stored; a replacement booking at the same slot succeeds. | PASS | Student-authored |
-| FR-05 | | TEST-FR05-06 | Negative / integrity | `tests/test_services.py::test_fr05_conflict_does_not_modify_existing_booking` | Rejected booking leaves original appointment fields and appointment collection unchanged. | PASS | Student-authored |
+| FR-05 | successful booking contract | TEST-FR05-01 | Positive | `tests/test_services.py::test_fr05_available_practitioner_booking` | Available practitioner can be booked; appointment has correct participants, date/time and `SCHEDULED` status. | PASS | Student-authored |
+| FR-05 | AC-04.1 | TEST-FR05-02 | Negative | `tests/test_services.py::test_fr05_same_practitioner_same_time_rejected` | Same practitioner at the same date/time is rejected with `ValueError`; no second record is created. | PASS | Student-authored |
+| FR-05 | AC-04.2 | TEST-FR05-03 | Positive | `tests/test_services.py::test_fr05_different_practitioners_same_time_allowed` | Different practitioners may each have an appointment at the same date/time. | PASS | Student-authored |
+| FR-05 | exact datetime conflict contract | TEST-FR05-04 | Boundary | `tests/test_services.py::test_fr05_same_practitioner_different_times_allowed` | Same practitioner can be booked at 09:00 and 09:01. | PASS | Student-authored |
+| FR-05 / FR-07 | cancelled bookings do not block rebookings | TEST-FR05-05 | Positive / state transition | `tests/test_services.py::test_fr05_cancelled_slot_can_be_rebooked` | Cancelled appointment remains stored; a replacement booking at the same slot succeeds. | PASS | Student-authored |
+| FR-05 | AC-04.1 | TEST-FR05-06 | Negative / integrity | `tests/test_services.py::test_fr05_conflict_does_not_modify_existing_booking` | Rejected booking leaves original appointment fields and appointment collection unchanged. | PASS | Student-authored |
 
-| FR-06 | AC-05.1 | TEST-06-01 | Positive domain | test_domain_cancel_scheduled_appointment | Scheduled appointment changes to CANCELLED | Passed locally | Student-authored |
-| FR-06 | AC-05.3 | TEST-06-02 | Negative domain | test_domain_cancel_already_cancelled | Repeated cancellation raises ValueError; status remains CANCELLED | Passed locally | Student-authored |
-| FR-06 | Completed-state cancellation contract | TEST-06-03 | Negative domain | test_domain_cancel_completed_appointment | Completed cancellation raises ValueError; status remains COMPLETED | Passed locally | Student-authored |
-| FR-06 | AC-05.1 | TEST-06-04 | Positive service | test_cancel_scheduled_appointment | Service cancels a scheduled appointment, changes its status to CANCELLED and returns the original object | Previously passed locally | Student-authored |
-| FR-06 | AC-05.3 | TEST-06-05 | Negative service | test_cancel_already_cancelled_appointment | Repeated cancellation raises ValueError and leaves the status unchanged | Previously passed locally | Student-authored |
+| FR-06 | AC-05.1 | TEST-06-01 | Positive domain | test_domain_cancel_scheduled_appointment | Scheduled appointment changes to CANCELLED | PASS | Student-authored |
+| FR-06 | AC-05.3 | TEST-06-02 | Negative domain | test_domain_cancel_already_cancelled | Repeated cancellation raises ValueError; status remains CANCELLED | PASS | Student-authored |
+| FR-06 | Completed-state cancellation contract | TEST-06-03 | Negative domain | test_domain_cancel_completed_appointment | Completed cancellation raises ValueError; status remains COMPLETED | PASS | Student-authored |
+| FR-06 | AC-05.1 | TEST-06-04 | Positive service | test_cancel_scheduled_appointment | Service cancels a scheduled appointment, changes its status to CANCELLED and returns the original object | Previously PASS | Student-authored |
+| FR-06 | AC-05.3 | TEST-06-05 | Negative service | test_cancel_already_cancelled_appointment | Repeated cancellation raises ValueError and leaves the status unchanged | PASS | Student-authored |
 
-| FR-07 | AC-05.2| TEST-FR07-01 | Positive / integration | test_fr07_cancelled_history_is_found_by_id_and_in_list | Cancelled A1 remains identical via service lookup, store lookup and listing | Passed locally | Student-authored|
-| FR-07 | AC-05.2 | TEST-FR07-02 | Positive / integration |test_fr07_rebooking_does_not_erase_cancelled_history | Original cancelled and replacement bookings both remain stored | Passed locally | Student-authored |
-| FR-07 | AC-05.2 | TEST-FR07-03 | Negative | test_fr07_repeated_cancellation_preserves_history | `ValueError`; status and stored list exactly unchanged |passed locally| Student-authored |
-| FR-07 | AC-05.2 | TEST-FR07-04 | Negative | test_fr07_completed_cancel_rejection_retains_record | completed record remains in list and retrievable |passed locally | Student-authored |
-| FR-07 | AC-05.2 | TEST-FR07-05 | Negative | test_fr07_unknown_cancellation_does_not_mutate_history | existing cancelled history unchanged | Passed locally | Student-authored |
-| FR-07 | AC-05.2 | TEST-FR07-06 | Boundary | test_fr07_invalid_id_cannot_mutate_history | `ValueError` for `""`, spaces, `None`; existing history unchanged | Passed locally | Student-authored |
+| FR-07 | AC-05.2| TEST-FR07-01 | Positive / integration | test_fr07_cancelled_history_is_found_by_id_and_in_list | Cancelled A1 remains identical via service lookup, store lookup and listing | PASS | Student-authored|
+| FR-07 | AC-05.2 | TEST-FR07-02 | Positive / integration |test_fr07_rebooking_does_not_erase_cancelled_history | Original cancelled and replacement bookings both remain stored | PASS | Student-authored |
+| FR-07 | AC-05.2 | TEST-FR07-03 | Negative | test_fr07_repeated_cancellation_preserves_history | `ValueError`; status and stored list exactly unchanged | PASS | Student-authored |
+| FR-07 | AC-05.2 | TEST-FR07-04 | Negative | test_fr07_completed_cancel_rejection_retains_record | completed record remains in list and retrievable | PASS | Student-authored |
+| FR-07 | AC-05.2 | TEST-FR07-05 | Negative | test_fr07_unknown_cancellation_does_not_mutate_history | existing cancelled history unchanged | PASS | Student-authored |
+| FR-07 | AC-05.2 | TEST-FR07-06 | Boundary | test_fr07_invalid_id_cannot_mutate_history | `ValueError` for `""`, spaces, `None`; existing history unchanged | PASS | Student-authored |
 
 ## C Test Design
 | Test ID | Requirement | Acceptance criterion | Positive / Negative / Boundary | Test intention | Observable result expected | Added evidence beyond supplied tests |
 |---|---|---|---|---|---|---|
 | Test-01-01 | FR-01 | AC-01.1 under FR-01 | Positive | Verify that a patient with valid data can be registered and stored | Patient data is successfully registered and stored in data store | Proves that patient with valid details can be registered, stored and found in system |
-| Test-01-02 | FR-01 | AC-01.2 under FR-01 | Negative | Verify that duplicate patient IDs are rejected at registration | Duplicate patient ID is rejected at registration and raises ValueError | Proves that duplicate patient IDs are rejected at registeration |
-| Test-01-03 | FR-01 | Patient with name and ID is created | Positive | Patient is created and its ID and name match the supplied values | Patient is successfully created | Proves that a patient object can be created with valid required fields and patient data is stored correctly |
+| Test-01-02 | FR-01 | AC-01.2 under FR-01 | Negative | Verify that duplicate patient IDs are rejected at registration | Duplicate patient ID is rejected at registration and raises ValueError | Proves that duplicate patient IDs are rejected at registration |
+| Test-01-03 | FR-01 | Patient with name and ID is created | Positive | Patient is created and its ID and name match the supplied values | Patient is successfully created | Confirms that a Patient object can be created with valid required fields and that its ID and name are assigned correctly. |
 | Test-01-04 | FR-01 | Blank ID is rejected | Negative | Verify blank patient IDs are rejected | Patient ID is rejected and raises ValueError | Proves that empty patient IDs are rejected |
 | Test-01-05 | FR-01 | Whitespace characters as ID are rejected | Boundary | Verify patient IDs with whitespace characters are rejected | Patient ID is rejected and raises ValueError | Proves that patient IDs cannot be only whitespace characters |
 | Test-01-06 | FR-01 | Blank name is rejected | Negative | Verify blank patient names are rejected | Patient name is rejected and raises ValueError | Proves that empty patient names are rejected |
 | Test-01-07 | FR-01 | Whitespace characters as name are rejected | Boundary | Verify patient names with whitespace characters are rejected | Patient name is rejected and raises ValueError | Proves that patient names cannot be only whitespace characters |
 
-| TEST-FR05-01 | FR-05 | | Positive | Book a registered practitioner in an available slot. | Stored appointment is `SCHEDULED`, with correct patient, practitioner and date/time. | Establishes the successful booking baseline for conflict tests. |
-| TEST-FR05-02 | FR-05 | | Negative | Book the same practitioner at the exact same time as an existing scheduled booking. | `ValueError`; original remains and attempted second booking is absent. | Explicitly verifies conflict rejection and no additional record. |
-| TEST-FR05-03 | FR-05 | | Positive | Book two different practitioners at the same time. | Both appointments are `SCHEDULED`. | Confirms conflict checking is practitioner-specific. |
-| TEST-FR05-04 | FR-05 | | Boundary | Book the same practitioner at 09:00 and 09:01. | Both bookings succeed. | Verifies the exact-datetime boundary, not duration overlap. |
-| TEST-FR05-05 | FR-05 / FR-07 | | Positive / state transition | Cancel an appointment, then book its former slot. | Original remains `CANCELLED`; replacement is `SCHEDULED`; both records remain. | Checks that cancelled history does not block rebooking. |
-| TEST-FR05-06 | FR-05 | | Negative / integrity | Attempt a conflicting booking and inspect the stored appointment. | Original appointment fields remain unchanged; collection contains only original. | Verifies preservation of state after rejection. |
+| TEST-FR05-01 | FR-05 | successful booking contract | Positive | Book a registered practitioner in an available slot. | Stored appointment is `SCHEDULED`, with correct patient, practitioner and date/time. | Establishes the successful booking baseline for conflict tests. |
+| TEST-FR05-02 | FR-05 | AC-04.1 | Negative | Book the same practitioner at the exact same time as an existing scheduled booking. | `ValueError`; original remains and attempted second booking is absent. | Explicitly verifies conflict rejection and no additional record. |
+| TEST-FR05-03 | FR-05 | AC-04.2 | Positive | Book two different practitioners at the same time. | Both appointments are `SCHEDULED`. | Confirms conflict checking is practitioner-specific. |
+| TEST-FR05-04 | FR-05 | exact datatime conflict contract | Boundary | Book the same practitioner at 09:00 and 09:01. | Both bookings succeed. | Verifies the exact-datetime boundary, not duration overlap. |
+| TEST-FR05-05 | FR-05 / FR-07 | cancelled bookings do not block rebookings | Positive / state transition | Cancel an appointment, then book its former slot. | Original remains `CANCELLED`; replacement is `SCHEDULED`; both records remain. | Checks that cancelled history does not block rebooking. |
+| TEST-FR05-06 | FR-05 | AC-04.1 | Negative / integrity | Attempt a conflicting booking and inspect the stored appointment. | Original appointment fields remain unchanged; collection contains only original. | Verifies preservation of state after rejection. |
 
 | TEST-06-01 | FR-06 | AC-05.1 | Positive | Check that a scheduled appointment can be cancelled using the domain method | Appointment status changes from SCHEDULED to CANCELLED | Independently verifies the Appointment object's cancellation behaviour |
 | TEST-06-02 | FR-06| AC-05.3 | Negative | Check that an already cancelled appointment cannot be cancelled again | ValueError is raised and status remains CANCELLED | Verifies that repeated cancellation is rejected without changing the state |
@@ -204,12 +208,12 @@ All eight Practitioner domain tests passed locally. They check the required fiel
 | TEST-06-09 | Rejects a non-string appointment ID with ValueError | FR-06 / Invalid-ID contract | `test_services.py::test_cancel_invalid_appointment_id_type` | Previously passed locally |
 
 | SUP-04 | Stage 6 service cancellation and retained lookup | FR-06 / FR-07 | `tests/test_services.py::test_cancel_scheduled_appointment` | Group reported Stage 6 full regression 27 passed; not rerun on live Stage 7 |
-| TEST-FR07-01 | Cancelled A1 remains identical via service lookup, store lookup and listing | FR-07 / AC-05.2 — retained history | `project/tests/test_fr07_history.py`::test_fr07_cancelled_history_is_found_by_id_and_in_list | Passed locally |
-| TEST-FR07-02 | Original CANCELLED and replacement SCHEDULED bookings both remain stored | FR-07 / AC-05.2 — retained history; FR-05 rebooking contract | `project/tests/test_fr07_history.py`::test_fr07_rebooking_does_not_erase_cancelled_history | Passed locally |
-| TEST-FR07-03 | `ValueError`; status and stored list exactly unchanged | FR-07 / AC-05.2; AC-05.3 repeated cancellation | `project/tests/test_fr07_history.py`::test_fr07_repeated_cancellation_preserves_history | Passed locally |
-| TEST-FR07-04 | `ValueError`; COMPLETED record remains in list and retrievable | FR-07 / AC-05.2; completed-state domain guard | `project/tests/test_fr07_history.py`::test_fr07_completed_cancel_rejection_retains_record | Passed locally |
-| TEST-FR07-05 | `LookupError`; existing cancelled history unchanged | FR-07 / AC-05.2; service unknown-ID lookup contract | `project/tests/test_fr07_history.py`::test_fr07_unknown_cancellation_does_not_mutate_history | Passed locally |
-| TEST-FR07-06 | `ValueError` for `""`, spaces, `None`; existing history unchanged | FR-07 / AC-05.2; `required_text()` invalid-ID validation | `project/tests/test_fr07_history.py`::test_fr07_invalid_id_cannot_mutate_history | Passed locally |
+| TEST-FR07-01 | Cancelled A1 remains identical via service lookup, store lookup and listing | FR-07 / AC-05.2 — retained history | `project/tests/test_services.py`::test_fr07_cancelled_history_is_found_by_id_and_in_list | Passed locally |
+| TEST-FR07-02 | Original CANCELLED and replacement SCHEDULED bookings both remain stored | FR-07 / AC-05.2 — retained history; FR-05 rebooking contract | `project/tests/test_services.py`::test_fr07_rebooking_does_not_erase_cancelled_history | Passed locally |
+| TEST-FR07-03 | `ValueError`; status and stored list exactly unchanged | FR-07 / AC-05.2; AC-05.3 repeated cancellation | `project/tests/test_services.py`::test_fr07_repeated_cancellation_preserves_history | Passed locally |
+| TEST-FR07-04 | `ValueError`; COMPLETED record remains in list and retrievable | FR-07 / AC-05.2; completed-state domain guard | `project/tests/test_services.py`::test_fr07_completed_cancel_rejection_retains_record | Passed locally |
+| TEST-FR07-05 | `LookupError`; existing cancelled history unchanged | FR-07 / AC-05.2; service unknown-ID lookup contract | `project/tests/test_services.py`::test_fr07_unknown_cancellation_does_not_mutate_history | Passed locally |
+| TEST-FR07-06 | `ValueError` for `""`, spaces, `None`; existing history unchanged | FR-07 / AC-05.2; `required_text()` invalid-ID validation | `project/tests/test_services.py`::test_fr07_invalid_id_cannot_mutate_history | Passed locally |
 
 ## G Negative and Boundary Cases
 | Behaviour | Boundary/invalid input | Expected result | Test ID |
@@ -230,7 +234,7 @@ All eight Practitioner domain tests passed locally. They check the required fiel
 | Service rejects repeated cancellation | Attempt to cancel an already CANCELLED appointment | ValueError raised; status remains CANCELLED | TEST-06-05 |
 | Service rejects completed cancellation | Attempt to cancel a COMPLETED appointment | ValueError raised; status remains COMPLETED | TEST-06-06 |
 | Unknown appointment lookup during cancellation | Valid but unregistered appointment ID A1000 | LookupError raised | TEST-06-07 |
-| Blank appointment ID | Empty string ('  ') | ValueError raised | TEST-06-08 |
+| Blank appointment ID | Whitespace only string ('  ') | ValueError raised | TEST-06-08 |
 | Invalid appointment ID type | None instead of a string | ValueError raised | TEST-06-09 |
 
 | Repeated cancellation | A1 is already CANCELLED | `ValueError`; same status and history list | TEST-FR07-03 |
@@ -289,62 +293,69 @@ Accepted the repeated domain cancellation test idea as it is already covered by 
 
 |---|---|---|---|---|---|---|---|
 | `python -m pytest tests/test_domain.py -k domain_cancel -v` | `project/` | 18c20a60a2d3100f082ec757f2994f3a19f5eec5 | 3 | 0 | None | None identified | All three FR-06 domain tests passed locally |
-
 | python -m pytest tests/test_domain.py -v | project/ | 8f436f3513d2dc62f6f3103990afe51aedc766f7 | 5 | 0 | None | None identified | All five FR-01 domain tests passed locally |
-
-| `py -m pytest -v` | `project/` | Not recorded | 33 | 0 | None observed | None observed | Earlier run after adding the six FR-05 service tests. |
 | `py -m pytest -v` | `project/` | Not recorded | 41 | 0 | None observed | None observed | Latest local run after adding eight Practitioner domain tests. |
+| `python -m pytest -v` | `project/` | 03905a0c7803f72aaccb917b35736e0897ea6f81| 59 | 0 | None | None identified | Full Stage 7 regression suite passed with all 59 tests. |
+
 
 Individual test runs and changed-order independence evidence: 
-- FR-06 domain tests: 3 passed, 0 failed.
-- Original order (repeated then completed cancellation): 2 passed, 0 failed.
-- Reversed order (completed then repeated cancellation): 2 passed, 0 failed.
-- Both orders passed, supporting test independence.
-Optional tutor-led demonstration notes: [optional; leave blank if not used]
+- Full suite, normal order: 59 passed, 0 failed.
+- Full suite, reversed order: 59 passed, 0 failed.
+- Both runs passed, providing evidence that the integrated tests are independent of execution order.
+Optional tutor-led demonstration notes: =
 A meaningful test should detect a relevant incorrect result. Students do not have to perform the demonstration or submit failure/restoration evidence for assessment. The tutor restores the example and reruns its tests. This is not a Stage 8 fault activity.
 
 Requirement → test → failure/observation → diagnosis → change → verification:
-FR-06 → TEST-06-01 to TEST-06-03 → Three domain tests passed with no failures.
+- FR-01 → TEST-01-01 to TEST-01-07 → Patient registration and validation tests passed. No failures.
+- FR-05 → TEST-FR05-01 through TEST-FR05-06 → six passing tests; no failure or fix recorded.
+- FR-06 → TEST-06-01 to TEST-06-03 → Three domain tests passed with no failures.
+- FR-07 → TEST-FR07-01 to TEST-FR07-06 → Retained-history tests passed. No failures.
 
-
-Individual test runs: `py -m pytest tests/test_services.py -k "fr05" -v` — six FR-05 tests passed. The latest full run passed 41 tests in total. No separate changed-order run was recorded.  
-
-Optional tutor-led demonstration notes:  
-
-Requirement → test → failure/observation → diagnosis → change → verification: FR-05 → TEST-FR05-01 through TEST-FR05-06 → six passing tests; no failure or fix recorded.
+Full regression: 59 passed, 0 failed.
 
 ## K What the Suite Still Does Not Prove
-What does your test suite still not prove? The FR-05 tests verify exact-datetime conflicts in an in-memory store. They do not establish behaviour for overlapping appointment durations, simultaneous requests, persistent storage, or external notifications. Those behaviours are outside the verified FR-05 test scope.  
+What does your test suite still not prove? 
 
-Coverage if used:  
+The tests verify the main requirements for patient registration, practitioner booking conflicts, appointment cancellation and retained history. But they do not prove how the system behaves under multiple requests, persistent storage across restarts, or unexpected system failures. These behaviours are outside the current in-memory SmartCare implementation.
 
-Which uncovered areas matter, and why does coverage percentage alone not establish correctness? These tests do not measure concurrency or persistence behaviour. Even high line coverage would not prove the correct conflict rule or adequate assertions; tests must check observable requirements.  
 
-Optional fixtures/parametrisation used and why, if any: I did not use fixtures or parametrisation in my six FR-05 tests or eight Practitioner tests. Each test sets up its own data, which makes it easy to follow.
+Coverage if used:
+
+Which uncovered areas matter, and why does coverage percentage alone not establish correctness? 
+
+These tests do not measure concurrency or persistence behaviour. Even high line coverage would not prove the correct conflict rule or adequate assertions; tests must check observable requirements.  
+
+Optional fixtures/parametrisation used and why, if any: 
+
+FR-07 uses pytest.mark.parametrize to test empty, whitespace-only and None appointment IDs without repeating the same test code. A shared setup helper creates a fresh data store for each FR-07 test. No pytest fixtures were used in any tests.
 
 ## L Git and Review Evidence
+
 | Issue/task | Branch | PR | Reviewer | Key feedback | Outcome |
 |---|---|---|---|---|---|
-| Stage 7 — FR-01 Patient Tests | feature/stage7-patient-testing | [#9](https://github.com/soulsbyrohan/st1-assignment-3/pull/9) | u3308969 | [complete] | [complete] |
-| FR-05 practitioner booking conflict tests | `feature/stage7-conflict-tests` | [#7](https\://github.com/soulsbyrohan/st1-assignment-3/pull/7) | | | Six tests pushed; local regression 33 passed, 0 failed. |
-| Stage 7 — FR-06 Cancellation Tests | `feature/stage7-cancellation-tests` | [PR #8](https://github.com/soulsbyrohan/st1-assignment-3/pull/8) | [Reviewer] | [Actual feedback] | [Actual outcome] |
+| Stage 7 — FR-01 Patient Tests | `feature/stage7-patient-testing` | [PR #9](https://github.com/soulsbyrohan/st1-assignment-3/pull/9) | u3308969 | Documentation corrections identified during review | Merged into `main`|
+| Stage 7 — FR-05 Practitioner Conflict Tests | `feature/stage7-conflict-tests` | [PR #7](https://github.com/soulsbyrohan/st1-assignment-3/pull/7) | u3306036 | Missing Practitioner domains | Merged into `main` |
+| Stage 7 — FR-06 Cancellation Tests | `feature/stage7-cancellation-tests` | [PR #8](https://github.com/soulsbyrohan/st1-assignment-3/pull/8) | u3119457 | Positive feedback; no changes requested | Merged into `main` |
+| Stage 7 — FR-07 Retained History Tests | `feature/stage7-fr07-history` | [PR #10](https://github.com/soulsbyrohan/st1-assignment-3/pull/10) | u3325731 | Positive feedback; no changes requested | Merged into `main` |
+
+
 
 ## M Contribution Evidence
 | Member | Actual contribution | Evidence link |
 
 |---|---|---|
 | u3325731 | Wrote six FR-05 service tests for booking conflicts and related cases. After the PR review, I also added eight Practitioner domain tests for valid details, empty fields, spaces-only fields and trimming extra spaces. The latest full test run passed all 41 tests. | [#7](https\://github.com/soulsbyrohan/st1-assignment-3/pull/7) |
-| U3308969 | Created three FR-06 domain tests covering successful cancellation, repeated cancellation and rejection of completed appointments. Made sure all three tests passed locally and documented their requirement traceability, test design and negative cases in Sections B–G. | [PR #8](https://github.com/soulsbyrohan/st1-assignment-3/pull/8) |
+| U3308969 | Created three FR-06 domain tests covering successful cancellation, repeated cancellation and rejection of completed appointments. Made sure all three tests passed locally and documented their requirement traceability, test design and negative cases in Sections B–G. Did Activity 2 in Section A and do the Copilot Sections H and I. | [PR #8](https://github.com/soulsbyrohan/st1-assignment-3/pull/8) |
 | u3306036 | Created Stage 7 FR-01 tests, 2 service tests for AC-01.1 and AC-01.2 under FR-01 and 5 domain tests for patient construction and required-field validation. Tested all tests locally and documented behaviours and results in sections A-G.| [#9](https://github.com/soulsbyrohan/st1-assignment-3/pull/9) |
 
 ## N Formative Questions
 1. What question does verification answer?  
 
-Verification asks: ****Does the implemented software meet its specified requirements?**** Tests compare observed behaviour with the documented contract.
+Verification asks: **Does the implemented software meet its specified requirements?**** Tests compare observed behaviour with the documented contract.
 
 2. What question does validation answer?  
 
-Validation asks: ****Does the software meet the users' intended needs?**** It checks whether the specified solution solves the right problem.
+Validation asks: **Does the software meet the users' intended needs?**** It checks whether the specified solution solves the right problem.
 
 3. What is a unit test?  
 
@@ -373,14 +384,14 @@ Github Copilot as a test assistant can suggest scenarios, edge cases, assertions
 The Stage 7 engineering rule is to use tests to gather evidence that your existing SmartCare application meets its requirements. We are to look at what required behaviour does these tests actually prove? In a group we are to write and review tests, interpret their results, and retain a traceable regression suite.
 
 ## O Stage Completion
-Tested Stage 7 main SHA:  
+Tested Stage 7 main SHA: 03905a0c7803f72aaccb917b35736e0897ea6f81
 
-Full-suite result:  
+Full-suite result:  `python -m pytest -v` from `project/` — 59 passed, 0 failed.
 
-Unresolved defects and effect on baseline:  
+Unresolved defects and effect on baseline: No unresolved defects identified when doing the full regression run.
 
-Clean working tree and integration evidence:  
+Clean working tree and integration evidence:  All four Stage 7 PRs merged into `main`
 
-Stage 8 handover status:  
+Stage 8 handover status:  Stage 7 implementation, testing and integration completed. Ready to start Stage 8.
 
 All tutorial/formative responses and traceability/Copilot decisions complete:

@@ -305,7 +305,7 @@ Take each requirement through issue, focused branch, implementation, meaningful 
 - Observed result: **27 passed, 0 failed**.
 - PR and another-member reviewer: [#2](https://github.com/soulsbyrohan/st1-assignment-3/pull/2) — soulsbyrohan COMMENTED/CHANGES_REQUESTED; [#3](https://github.com/soulsbyrohan/st1-assignment-3/pull/3) — soulsbyrohan COMMENTED; [#5](https://github.com/soulsbyrohan/st1-assignment-3/pull/5) — soulsbyrohan CHANGES_REQUESTED then [APPROVED](https://github.com/soulsbyrohan/st1-assignment-3/pull/5#pullrequestreview-5763140111).
 - Unresolved issue or none: Issues #1, #4 and #6 are closed; all three PRs are merged and all three Stage 06 implementations are on `main`.
-- Stage 7 handover status:
+- Stage 7 handover status: Stage 6 completed and integrated into main. All three service implementations are merged, and the final Stage 6 regression recorded 27 passed, 0 failed. Ready for Stage 7.
 - Final submitted SHA if later than tested SHA: [`192f3a0`](https://github.com/soulsbyrohan/st1-assignment-3/commit/192f3a00fa7202d33a2f0f471280093bd4195734).
 
 - [x] Three Stage 6 service targets completed and checked.
