@@ -198,43 +198,43 @@ Each member's substantive contribution and artefact: [complete]
 
 1. What should an engineer do before changing code in response to a failure?
 
-Response: [complete]
+Response: Before changing code in response to a failure an engineer should reproduce the error, assess the impact and identify the root clause. The root clause should always be investigated before making code changes. 
 
 2. Where should expected behaviour come from during debugging?
 
-Response: [complete]
+Response: During debugging expected behaviour should come from a requirement or acceptance criteria rather than actual code or assumptions. 
 
 3. What is a debugging hypothesis?
 
-Response: [complete]
+Response: A debugging hypothesis is a detailed explanation on how the current code produces a specific error or unexpected behaviour. 
 
 4. What is a regression test and why is it retained?
 
-Response: [complete]
+Response: A regression test is a software test that reruns previously executed tests after the code has been modified, a bug has been fixed or a new feature has been added to ensure the changes haven’t negatively affected the existing functionality. 
 
 5. What is meant by root cause?
 
-Response: [complete]
+Response: A root clause is the underlying cause of a problem. 
 
 6. What is refactoring?
 
-Response: [complete]
+Response: Refactoring is when the internal structure of a program’s existing code while keeping its external behaviour in tact. 
 
 7. What is a swallowed exception?
 
-Response: [complete]
+Response: A swallowed exception is when a program catches an error, or exception, and ignores it instead of logging or rethrowing it.
 
 8. What is a code smell?
 
-Response: [complete]
+Response: A code smell is a surface-level warning that points to a deeper structural or design problem in your program.
 
 9. How should GitHub Copilot-generated debugging diagnoses be treated?
 
-Response: [complete]
+Response: GitHub Copilot-generated debugged diagnoses should be treated as a baseline in debugging. GitHub Copilot should be an agent that assists in debugging, but you should not rely solely on it for debugging diagnoses.
 
 10. What is the Stage 8 engineering rule?
 
-Response: [complete]
+Response: The Stage 8 engineering rule is to always observe and identify the root clause before fixing an issue. The root clause should always be investigated before making code changes. 
 
 ## L. Completion and handover
 
