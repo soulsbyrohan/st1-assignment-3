@@ -56,16 +56,26 @@ Traceback — exception/assertion; expected/observed values; test line; call pat
 
 ## B. Stage 7 baseline and safe preparation
 
-- Stage 7 code SHA and requirement baseline: [complete]
-- Baseline test command / working directory / observed result / evidence: [complete]
-- Clean preparation SHA if a record-only commit followed Stage 7: [complete]
-- Branch and preparer / how teammates obtained this branch: [complete]
-- Downloaded tool version, source SHA256 and --check outcome: [complete]
-- --apply and --verify output summaries / artefact references: [complete]
-- Bounded diff inspected and recovery location (not committed): [complete]
-- Prepared faulty-state commit SHA: [complete]
-- Preparation or recovery issues and resolution, if any: [complete]
-- Initial prepared full-suite command / result / key failures: [complete]
+- Stage 7 code SHA and requirement baseline:
+  `3774afb4ea6b86ff05ee99e43ef3a0769b300a9b` SmartCare Assignment 3 Requirements Baseline 2026, revision 2. This is the baseline Git SHA reported by the tutor.
+- Baseline test command / working directory / observed result / evidence:
+  `python -m pytest -v` from `project/`; 59 passed, 0 failed, as recorded in the Stage 7 testing and verification document.
+- Clean preparation SHA if a record-only commit followed Stage 7:
+  `3774afb4ea6b86ff05ee99e43ef3a0769b300a9b` — the clean baseline commit identified by the tutor before fault injection.
+- Branch and preparer / how teammates obtained this branch:
+  Tutor prepared `debug/stage08` and pushed it to the group's GitHub repository. Group members obtained the branch using `git fetch origin` and `git switch --track origin/debug/stage08`.
+- Downloaded tool version, source SHA256 and --check outcome:
+  Tutor staff used `prepare_debugging.py` version 1.1. The reported baseline SHA256 was `b4a1993e878c59a9df5e9055320702b2d318c5b6055bb1693a3afc25cd8fd375`. The `--check` preflight passed, confirming that the original project was unchanged and both proposed fault signatures were verified in a temporary copy. The utility's source SHA256 was not supplied to the group.
+- --apply and --verify output summaries / artefact references:
+  The tutor applied two prepared faults: F8-01 (practitioner booking conflict) and F8-02 (retained-history lookup). The `--apply` output reported two expected failing tests: `test_f8_01_conflict` and `test_f8_02_history`. The `--verify` output confirmed exactly two approved fault signatures. Evidence was provided in the tutor's Stage 8 preparation email.
+- Bounded diff inspected and recovery location (not committed):
+  The introduced faults affected the practitioner ID comparison in `SmartCareDataStore.has_practitioner_conflict()` and the cancelled-appointment status restriction in `SmartCareDataStore.find_appointment()`. Both were identified during debugging. The tutor reported backup/hash metadata in `.stage8_faults`, which must remain excluded from Git and the final submission. No staff recovery utility was provided to the group.
+- Prepared faulty-state commit SHA:
+  `8991aa4f59e2b3023910790e399d0e4cb9f55bbf` tutor commit "Prepare stage 08 Debug" on `debug/stage08`, before the group's repairs.
+- Preparation or recovery issues and resolution, if any:
+  No preparation issues were reported by the tutor. The prepared branch was fetched successfully, and the expected fault symptoms were reproduced during local testing. No recovery operation was required.
+- Initial prepared full-suite command / result / key failures:
+  `python -m pytest -q` from `project/` on the debugging branch, 44 passed, 15 failed. Failures included the incorrect acceptance of same-practitioner bookings at the same time (F8-01), incorrect rejection of different-practitioner bookings at the same time (F8-01), and `LookupError: Appointment not found` during cancellation and retained-history operations (F8-02).
 
 ## C. F8-01 diagnosis and repair
 
@@ -150,25 +160,29 @@ Final human conclusion and comparison with initial hypothesis: Copilot's highest
 
 ### F8-02 Copilot review
 Actual prompt / output reference and member: 
-u3308969 - Asked Copilot to investigate the F8-02 retained-history lookup error and suggest three possible causes. Copilot's response was reviewed against the existing code. No files were modified by Copilot.
+u3308969 [Copilot review prompt](https://github.com/soulsbyrohan/st1-assignment-3/commit/1d6c447fef2b3fba9496644bb10cebc8e957c41d#commitcomment-208850034) [Copilot Response](https://github.com/soulsbyrohan/st1-assignment-3/commit/1d6c447fef2b3fba9496644bb10cebc8e957c41d#commitcomment-208850172)
 
 1. Ranked suggestion / evidence check / observed evidence / correct, partly correct or wrong / accept, modify or reject with reason:
-- Suggestion: Cancelled appointments is explicitly filtered out
-- Evidence: `data_store.py` checks `appointment.status.value != "cancelled"`.
-- Assesment: Correct
-- Decision: Accept. This explains well why the data store is returning None for cancelled appointments
+- Suggestion: Cancelled appointments are excluded from `SmartCareDataStore.find_appointment()`.
+- Evidence check: Inspected the lookup condition in `smartcare/data_store.py` and compareed it with the failed FR-07 tests.
+- Observed evidence: The faulty condition is `appointment.status.value != "cancelled"`. Its excludes cancelled appointments from lookup, causing the data store to return `None` and the service to raise `LookupError: Appointment not found`.
+- Assessment: Correct.
+- Decision: Accept. The status restriction explains the failure and violates FR-07 / AC-05.2. The smallest justified repair is removing the incorrect condition.
 
 2. Ranked suggestion / evidence check / observed evidence / correct, partly correct or wrong / accept, modify or reject with reason:
-- Suggestion: The lookup could use a different or empty store
-- Evidence: The test creates the service using the same store where the appointment is first registered.
-- Assesment: Doesn't seem likely based on the tests setup
-- Decision: Reject, I don't see it being the cause of this failure.
+- Suggestion: The lookup could be using a different or empty data store.
+- Evidence check: Inspect how the test creates `SmartCareDataStore` and passes it to `AppointmentService`. Check whether the service uses the same store as the booking.
+- Observed evidence: The test creates one data store and passes it to the appointment service. There is no indication that a different store is being used.
+- Assessment: Not supported as the cause of the observed failure.
+- Decision: Reject. The incorrect status restriction already explains why cancelled appointments cannot be retrieved.
 
 3. Ranked suggestion / evidence check / observed evidence / correct, partly correct or wrong / accept, modify or reject with reason:
-Suggestion: The requested ID could differ from the stored ID
-- Evidence: The test should book and retrieve appointment A1 using the same ID
-- Assesment: Very unlikely
-- Decision: Reject, I don't see it being the cause of this failure.
+- Suggestion: The requested appointment ID could be different from the stored appointment ID.
+- Evidence check: Compare the appointment ID used during booking with the ID supplied to `find_appointment()`.
+- Observed evidence: The test books appointment `A1` and later attempts to retrieve the same ID, `A1`. The IDs match, so this does not explain the failure.
+- Assessment: Very unlikely based on the test inputs.
+- Decision: Reject. No change to ID matching is justified by the available evidence.
+
 
 Final human conclusion and comparison with initial hypothesis:
 Copilot helped confirmed what I thought in my intitial hypothesis that cancelled appointments were being excluded from lookup. Inspection of `SmartCareDataStore.find_appointment()` identified the status restriction responsible for the failure. The other explanations were less consistent with the test setup and observed behaviour.
