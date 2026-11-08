@@ -80,10 +80,10 @@ Traceback — exception/assertion; expected/observed values; test line; call pat
 
 ## D. F8-02 diagnosis and repair
 
-- Symptom / observed behaviour: [complete]
-- Expected behaviour and requirement: [complete]
-- Minimal synthetic reproduction steps: [complete]
-- Meaningful failing test path/name and exact relevant failure: [complete]
+- Symptom / observed behaviour: Looking up appointment A1 raises a `LookupError: Appointment not found` when the retained history tests expect the original appointment to still be retrivable.
+- Expected behaviour and requirement: FR-07 / AC-05.2 requires cancelled appointments to still be stored and accessible by their IDs.  
+- Minimal synthetic reproduction steps: Register patient P1 and practitioner D1, book appointment A1, cancel A1 and then retrieve A1.
+- Meaningful failing test path/name and exact relevant failure: `tests/test_services.py::test_fr07_cancelled_history_is_found_by_id_and_in_list` - `LookupError: Appointment not found` at `smartcare/services.py:138`
 - Human hypothesis and intended checks: see E, F8-02.
 - Supported root cause and inspected code/runtime evidence: [complete after diagnosis]
 - Smallest justified fix / diff / why other behaviour is preserved: [complete]
@@ -99,9 +99,12 @@ Evidence intended to inspect / competing explanation / discriminating check: [co
 Member and saved sequence/time or commit showing this preceded consultation: [complete]
 
 ### F8-02 human entry
-Likely cause and why plausible: [complete]
-Evidence intended to inspect / competing explanation / discriminating check: [complete]
-Member and saved sequence/time or commit showing this preceded consultation: [complete]
+Likely cause and why plausible:
+The possible issue the appointment lookup could be incorrectly excluding cancelled appointments because find_appointment() retrieves None from the data store, which is resulting in a LookupError even whn FR-07 requires cancelled appointments to remain retirevable.
+
+Evidence intended to inspect / competing explanation / discriminating check:
+I intent to inspect SmartCareDataStore.find_appointment() to see if is filtering appointments by status. Another possibilty is that when appointments are cancelled, its just deleting the appointments from the data store. So checking list_appointment() after cancellation to see if A1 is still being stored.
+Member and saved sequence/time or commit showing this preceded consultation: u3308969 - this hypothisis was recorded before consulting Copilot or touching any of the code.
 
 ## F. GitHub Copilot prompts, findings and human decisions
 
