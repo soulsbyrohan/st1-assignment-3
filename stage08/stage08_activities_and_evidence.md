@@ -104,7 +104,7 @@ Complete both entries BEFORE Copilot. C/D supply observed/expected/reproduction/
 ### F8-01 human entry
 Likely cause and why plausible: Based on the three failed tests, I suspect the practitioner conflict check is comparing practitioner IDs incorrectly. The system allows bookings for the same practitioner at the same time, but rejects bookings for different practitioners at the same time.
 Evidence intended to inspect / competing explanation / discriminating check: I will inspect SmartCareDataStore.has_practitioner_conflict() in data_store.py, especially how it compares practitioner IDs. Another possibility is that the appointment service passes the wrong practitioner ID to the conflict check. I can distinguish these causes by tracing the IDs passed into the method and comparing the result for matching and different practitioners.
-Member and saved sequence/time or commit showing this preceded consultation: u3119457 |
+Member and saved sequence/time or commit showing this preceded consultation: u3119457 | Commit SHA: ce03c985c33074a8f2048861a7a5bf64eae3d31e | This was committed before consulting with Copilot. 
 
 ### F8-02 human entry
 Likely cause and why plausible:
