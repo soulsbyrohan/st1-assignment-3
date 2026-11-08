@@ -81,13 +81,21 @@ Traceback — exception/assertion; expected/observed values; test line; call pat
 ## D. F8-02 diagnosis and repair
 
 - Symptom / observed behaviour: Looking up appointment A1 raises a `LookupError: Appointment not found` when the retained history tests expect the original appointment to still be retrivable.
+
 - Expected behaviour and requirement: FR-07 / AC-05.2 requires cancelled appointments to still be stored and accessible by their IDs.  
+
 - Minimal synthetic reproduction steps: Register patient P1 and practitioner D1, book appointment A1, cancel A1 and then retrieve A1.
+
 - Meaningful failing test path/name and exact relevant failure: `tests/test_services.py::test_fr07_cancelled_history_is_found_by_id_and_in_list` - `LookupError: Appointment not found` at `smartcare/services.py:138`
+
 - Human hypothesis and intended checks: see E, F8-02.
-- Supported root cause and inspected code/runtime evidence: [complete after diagnosis]
-- Smallest justified fix / diff / why other behaviour is preserved: [complete]
-- Repair SHA / focused verification result: [complete]
+
+- Supported root cause and inspected code/runtime evidence: `SmartCareDataStore.find_appointment()` excludes appointments whose status is CANCELLED using the condition `appointment.status.value != "cancelled"`. This is resulting cancelled appointments to be unretrievable through ID, even when FR-07 / AC-05.2 requires retained appointments to remain accessible. The previous observed LookupError is consistent with this condition.
+
+- Smallest justified fix / diff / why other behaviour is preserved: 
+Removing the condition `appointment.status.value != "cancelled"` from `SmartCareDataStore.find_appointment()`. This will allows cancelled appointments to be retrievable by ID as is required by FR-07 / AC-05.2. The exisiting ID validation and lookup behaviour should remain unchanged.
+
+- Repair SHA / focused verification result: Removed the incorrect CANCELLED status restriction from `SmartCareDataStore.find_appointment()`. The focused retain history test and FR-07 test suite passed after the repair. Repair commit SHA: f2634f68b07947c97d69f57406c9f4087aeecfed
 
 ## E. Human-first hypotheses
 
@@ -100,11 +108,12 @@ Member and saved sequence/time or commit showing this preceded consultation: [co
 
 ### F8-02 human entry
 Likely cause and why plausible:
-The possible issue the appointment lookup could be incorrectly excluding cancelled appointments because find_appointment() retrieves None from the data store, which is resulting in a LookupError even whn FR-07 requires cancelled appointments to remain retirevable.
+The possible issuse I see is that appointment lookup could be excluding cancelled appointments because find_appointment() is not giving an appointment from the data store which is giving a LookupError
 
 Evidence intended to inspect / competing explanation / discriminating check:
 I intent to inspect SmartCareDataStore.find_appointment() to see if is filtering appointments by status. Another possibilty is that when appointments are cancelled, its just deleting the appointments from the data store. So checking list_appointment() after cancellation to see if A1 is still being stored.
-Member and saved sequence/time or commit showing this preceded consultation: u3308969 - this hypothisis was recorded before consulting Copilot or touching any of the code.
+
+Member and saved sequence/time or commit showing this preceded consultation: u3308969 - this hypothisis was recorded before consulting Copilot or touching any of the code. commit SHA: 681d5f9604ba48ef706199c52e3f926f9724cc60
 
 ## F. GitHub Copilot prompts, findings and human decisions
 
@@ -118,11 +127,29 @@ Actual prompt / output reference and member: [complete]
 Final human conclusion and comparison with initial hypothesis: [complete]
 
 ### F8-02 Copilot review
-Actual prompt / output reference and member: [complete]
-1. Ranked suggestion / evidence check / observed evidence / correct, partly correct or wrong / accept, modify or reject with reason: [complete]
-2. Ranked suggestion / evidence check / observed evidence / correct, partly correct or wrong / accept, modify or reject with reason: [complete]
-3. Ranked suggestion / evidence check / observed evidence / correct, partly correct or wrong / accept, modify or reject with reason: [complete]
-Final human conclusion and comparison with initial hypothesis: [complete]
+Actual prompt / output reference and member: 
+u3308969 - Asked Copilot to investigate the F8-02 retained-history lookup error and suggest three possible causes. Copilot's response was reviewed against the existing code. No files were modified by Copilot.
+
+1. Ranked suggestion / evidence check / observed evidence / correct, partly correct or wrong / accept, modify or reject with reason:
+- Suggestion: Cancelled appointments is explicitly filtered out
+- Evidence: `data_store.py` checks `appointment.status.value != "cancelled"`.
+- Assesment: Correct
+- Decision: Accept. This explains well why the data store is returning None for cancelled appointments
+
+2. Ranked suggestion / evidence check / observed evidence / correct, partly correct or wrong / accept, modify or reject with reason:
+- Suggestion: The lookup could use a different or empty store
+- Evidence: The test creates the service using the same store where the appointment is first registered.
+- Assesment: Doesn't seem likely based on the tests setup
+- Decision: Reject, I don't see it being the cause of this failure.
+
+3. Ranked suggestion / evidence check / observed evidence / correct, partly correct or wrong / accept, modify or reject with reason:
+Suggestion: The requested ID could differ from the stored ID
+- Evidence: The test should book and retrieve appointment A1 using the same ID
+- Assesment: Very unlikely
+- Decision: Reject, I don't see it being the cause of this failure.
+
+Final human conclusion and comparison with initial hypothesis:
+Copilot helped confirmed what I thought in my intitial hypothesis that cancelled appointments were being excluded from lookup. Inspection of `SmartCareDataStore.find_appointment()` identified the status restriction responsible for the failure. The other explanations were less consistent with the test setup and observed behaviour.
 
 ## G. Failing to passing regression evidence
 
@@ -130,11 +157,14 @@ Final human conclusion and comparison with initial hypothesis: [complete]
 |---|---|---|---|
 | F8-01 before repair | [complete] | [complete] | [complete] |
 | F8-01 after repair | [complete] | [complete] | [complete] |
-| F8-02 before repair | [complete] | [complete] | [complete] |
-| F8-02 after repair | [complete] | [complete] | [complete] |
+| F8-02 before repair | 681d5f9604ba48ef706199c52e3f926f9724cc60 | `python -m pytest tests/test_services.py::test_fr07_cancelled_history_is_found_by_id_and_in_list -vv` from `project/` | Failed with `LookupError: Appointment not found` |
+| F8-02 after repair | f2634f68b07947c97d69f57406c9f4087aeecfed | `python -m pytest tests/test_services.py::test_fr07_cancelled_history_is_found_by_id_and_in_list -v` from `project/` | Passed after removing the status restriciton; FR-7 tests also passed |
 | Full suite after both repairs, before refactor | [complete] | [complete] | [complete] |
 
-Explain how the assertions detect each relevant incorrect result and protect previous behaviour: [complete]
+Explain how the assertions detect each relevant incorrect result and protect previous behaviour:
+
+For F8-02, the retained-history tests should verify that cancelled appointments remain stored and accessible by ID. The faulty lookup caused a LookupError becaused cancelled appointments were excluded. After removing the incorrect condition, the tests passed, which confirms that cancelled appointments remain retrievable.
+
 Unrelated failures investigated / resolution: [complete or not applicable with reason]
 
 ## H. Refactoring decision and before/after verification
