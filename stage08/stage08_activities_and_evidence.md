@@ -69,14 +69,17 @@ Traceback — exception/assertion; expected/observed values; test line; call pat
 
 ## C. F8-01 diagnosis and repair
 
-- Symptom / observed behaviour: [complete]
-- Expected behaviour and requirement: [complete]
-- Minimal synthetic reproduction steps: [complete]
-- Meaningful failing test path/name and exact relevant failure: [complete]
+- Symptom / observed behaviour: When running the FR-05 tests, the system incorrectly allowed two appointments for the same practitioner at the same time. It also rejected bookings for different practitioners at the same time. I ran python -m pytest tests/test_services.py -k fr05 -v from the project/ directory. The result was 3 failed, 3 passed, 29 deselected.
+- Expected behaviour and requirement: FR-05 / AC-04.1 requires the system to reject a second scheduled appointment for the same practitioner at the exact same date and time. AC-04.2 allows different practitioners to have appointments at the same date and time. When a conflicting booking is rejected, the original appointment should remain unchanged and no additional appointment should be stored.
+- Minimal synthetic reproduction steps: register patients P1 and P2 and practitioners D1 and D2. Book appointment called A1 with practitioner D1 at 9am. Attempt another booking, A2, with D1 at 9am. This should raise ValueError. Then in a new store, book A1 with D1 at 9am and A2 with D2 at 9am. Both bookings should succeed.
+- Meaningful failing test path/name and exact relevant failure: 
+`tests/test_services.py::test_fr05_same_practitioner_same_time_rejected` = Failed: DID NOT RAISE <class 'ValueError'>
+`tests/test_services.py::test_fr05_different_practitioners_same_time_allowed` = ValueError: Practitioner already has a SCHEDULED appointment at this time
+`tests/test_services.py::test_fr05_conflict_does_not_modify_existing_booking` = Failed: DID NOT RAISE <class 'ValueError'>
 - Human hypothesis and intended checks: see E, F8-01.
-- Supported root cause and inspected code/runtime evidence: [complete after diagnosis]
-- Smallest justified fix / diff / why other behaviour is preserved: [complete]
-- Repair SHA / focused verification result: [complete]
+- Supported root cause and inspected code/runtime evidence: Inspection of SmartCareDataStore.has_practitioner_conflict() on the debugging branch shows that the practitioner ID comparison uses != rather than ==. This means the method can report a conflict when practitioners are different, while failing to identify a conflict when they are the same.
+- Smallest justified fix / diff / why other behaviour is preserved: Change only the practitioner ID comparison in has_practitioner_conflict() from != to ==. This should restore the required conflict behaviour without changing appointment registration, cancellation, retained history or other validation rules.
+- Repair SHA / focused verification result: Repaired the bug in data_store.py that was causing the errors. Both the focused tests (py -m pytest tests/test_services.py -k fr05 -v) and the full-suite tests succesfully passed. Repair SHA: 22c5966a7354340358eca19c78662f325b4b1556
 
 ## D. F8-02 diagnosis and repair
 
@@ -155,7 +158,7 @@ Copilot helped confirmed what I thought in my intitial hypothesis that cancelled
 
 | Checkpoint | Code SHA or precise diff | Command and working directory | Actual result and artefact reference |
 |---|---|---|---|
-| F8-01 before repair | [complete] | [complete] | [complete] |
+| F8-01 before repair | 4c632b827affc1268368ac09437305473429c1ef | `python -m pytest tests/test_regressions.py -k f8_01 -v` directory: `project/`| FAILED tests/test_regressions.py::test_f8_01_same_practitioner_same_time_is_rejected - Failed: DID NOT RAISE <class 'ValueError'> |
 | F8-01 after repair | [complete] | [complete] | [complete] |
 | F8-02 before repair | 681d5f9604ba48ef706199c52e3f926f9724cc60 | `python -m pytest tests/test_services.py::test_fr07_cancelled_history_is_found_by_id_and_in_list -vv` from `project/` | Failed with `LookupError: Appointment not found` |
 | F8-02 after repair | f2634f68b07947c97d69f57406c9f4087aeecfed | `python -m pytest tests/test_services.py::test_fr07_cancelled_history_is_found_by_id_and_in_list -v` from `project/` | Passed after removing the status restriciton; FR-7 tests also passed |
