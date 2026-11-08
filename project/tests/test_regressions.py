@@ -38,3 +38,25 @@ def test_f8_01_same_practitioner_same_time_is_rejected():
     assert original.status is AppointmentStatus.SCHEDULED
     assert store.find_appointment("A2") is None
     assert store.list_appointments() == [original]
+
+def test_f8_02_cancelled_appointment_remains_retrievable():
+    # Creating a data store and registering participants
+    store = SmartCareDataStore()
+
+    PatientService(store).register_patient('P1', 'Alex Example')
+    PractitionerService(store).register_practitioner('D1', 'Taylor Example', 'General')
+
+    service = AppointmentService(store)
+
+    # Book and cancel appointment A1
+    original = service.book_appointment('A1', 'P1', 'D1', datetime(2026, 10, 1, 9))
+
+    service.cancel_appointment('A1')
+
+    # Confirm the appointment is cancelled
+    assert original.status is AppointmentStatus.CANCELLED
+
+    # Confirm the original appointment is still accessible
+    assert store.find_appointment('A1') is original
+    assert service.find_appointment('A1') is original
+    assert store.list_appointments() == [original]
