@@ -79,7 +79,7 @@ Traceback — exception/assertion; expected/observed values; test line; call pat
 - Human hypothesis and intended checks: see E, F8-01.
 - Supported root cause and inspected code/runtime evidence: Inspection of SmartCareDataStore.has_practitioner_conflict() on the debugging branch shows that the practitioner ID comparison uses != rather than ==. This means the method can report a conflict when practitioners are different, while failing to identify a conflict when they are the same.
 - Smallest justified fix / diff / why other behaviour is preserved: Change only the practitioner ID comparison in has_practitioner_conflict() from != to ==. This should restore the required conflict behaviour without changing appointment registration, cancellation, retained history or other validation rules.
-- Repair SHA / focused verification result: Repaired the bug in data_store.py that was causing the errors. Both the focused tests (py -m pytest tests/test_services.py -k fr05 -v) and the full-suite tests succesfully passed. Repair SHA: 22c5966a7354340358eca19c78662f325b4b1556
+- Repair SHA / focused verification result: Repaired the bug in data_store.py that was causing the errors. Both the focused tests (py -m pytest tests/test_services.py -k fr05 -v) and the full-suite tests succesfully passed. Repair SHA: 0876e19380ea03340ee090e75254c6e795b068c5
 
 ## D. F8-02 diagnosis and repair
 
@@ -123,11 +123,30 @@ Member and saved sequence/time or commit showing this preceded consultation: u33
 Use the full handout prompt separately for BOTH defects, after E. Keep each actual prompt or accessible reference; include observed behaviour, expected behaviour, reproduction, failing test, human hypothesis, relevant code, three ranked causes and discriminating checks, with the no-rewrite/no-invented-requirements constraints.
 
 ### F8-01 Copilot review
-Actual prompt / output reference and member: [complete]
-1. Ranked suggestion / evidence check / observed evidence / correct, partly correct or wrong / accept, modify or reject with reason: [complete]
-2. Ranked suggestion / evidence check / observed evidence / correct, partly correct or wrong / accept, modify or reject with reason: [complete]
-3. Ranked suggestion / evidence check / observed evidence / correct, partly correct or wrong / accept, modify or reject with reason: [complete]
-Final human conclusion and comparison with initial hypothesis: [complete]
+Actual prompt / output reference and member: u3119457 [Copilot review prompt](https://github.com/soulsbyrohan/st1-assignment-3/commit/72b47c3348093e7987b14d9f2799a3817423d8bc#commitcomment-208846290) [Copilot Response](https://github.com/soulsbyrohan/st1-assignment-3/commit/72b47c3348093e7987b14d9f2799a3817423d8bc#commitcomment-208846322)
+
+1. Ranked suggestion / evidence check / observed evidence / correct, partly correct or wrong / accept, modify or reject with reason: 
+- Suggestion: The practitioner ID comparison in SmartCareDataStore.has_practitioner_conflict() uses != when it should check for matching practitioner IDs.
+- Evidence check: Inspect the comparison in smartcare/data_store.py and compare its behaviour with the failed FR-05 tests.
+- Observed evidence: The faulty condition is appointment.practitioner.practitioner_id != practitioner_id. This checks whether IDs are different rather than equal. It explains why a second booking for D1 was allowed and a booking for D2 at the same time was rejected.
+- Assessment: Correct.
+- Decision: Accept. The incorrect comparison is the supported root cause. The smallest justified repair is changing != to ==.
+
+2. Ranked suggestion / evidence check / observed evidence / correct, partly correct or wrong / accept, modify or reject with reason:
+- Suggestion: AppointmentService.book_appointment() might be passing the wrong practitioner ID to the conflict check.
+- Evidence check: Inspect how book_appointment() retrieves the registered practitioner and passes its ID to has_practitioner_conflict().
+- Observed evidence: The service retrieves the practitioner using the supplied ID and passes practitioner.practitioner_id to the conflict check. The inspected code does not show an incorrect ID being passed. No separate runtime ID trace has been recorded.
+- Assessment: Not supported as the cause of the observed failures.
+- Decision: Reject as the root cause. The incorrect comparison in the data-store method explains the failures without requiring a problem in the service's ID handling.
+
+3. Ranked suggestion / evidence check / observed evidence / correct, partly correct or wrong / accept, modify or reject with reason: 
+- Suggestion: Another condition in the conflict check, such as appointment ID exclusion, datetime, status or the executed code version, might be causing the failures.
+- Evidence check: Inspect the appointment IDs, scheduled status, datetime values and branch code used by the tests.
+- Observed evidence: The tests use distinct appointment IDs, matching appointment times and scheduled appointments. The faulty practitioner ID comparison is present in the inspected debugging code. These other conditions do not explain why same-practitioner and different-practitioner bookings behave in the opposite way to the requirements.
+- Assessment: Plausible as a general debugging possibility, but not supported as the cause of this defect.
+- Decision: Reject as the root cause. No additional change to these conditions is justified by the available evidence.
+
+Final human conclusion and comparison with initial hypothesis: Copilot's highest-ranked suggestion agreed with my original hypothesis that practitioner IDs were being compared incorrectly. Inspection of has_practitioner_conflict() and the failing FR-05 tests supports this explanation. The other two suggestions were considered but were less consistent with the code and observed behaviour. I accepted the first diagnosis and rejected the other two as explanations for F8-01. The repair should change only the incorrect practitioner ID comparison, preserving the existing booking, validation and cancellation behaviour.
 
 ### F8-02 Copilot review
 Actual prompt / output reference and member: 
@@ -158,13 +177,15 @@ Copilot helped confirmed what I thought in my intitial hypothesis that cancelled
 
 | Checkpoint | Code SHA or precise diff | Command and working directory | Actual result and artefact reference |
 |---|---|---|---|
-| F8-01 before repair | 4c632b827affc1268368ac09437305473429c1ef | `python -m pytest tests/test_regressions.py -k f8_01 -v` directory: `project/`| FAILED tests/test_regressions.py::test_f8_01_same_practitioner_same_time_is_rejected - Failed: DID NOT RAISE <class 'ValueError'> |
-| F8-01 after repair | [complete] | [complete] | [complete] |
+| F8-01 before repair | 72b47c3348093e7987b14d9f2799a3817423d8bc | `python -m pytest tests/test_regressions.py -k f8_01 -v` directory: `project/`| FAILED tests/test_regressions.py::test_f8_01_same_practitioner_same_time_is_rejected - Failed: DID NOT RAISE <class 'ValueError'> |
+| F8-01 after repair | 0876e19380ea03340ee090e75254c6e795b068c5 | `python -m pytest tests/test_regressions.py -k f8_01 -v` directory: `project/` | tests/test_regressions.py::test_f8_01_same_practitioner_same_time_is_rejected PASSED     |
 | F8-02 before repair | 681d5f9604ba48ef706199c52e3f926f9724cc60 | `python -m pytest tests/test_services.py::test_fr07_cancelled_history_is_found_by_id_and_in_list -vv` from `project/` | Failed with `LookupError: Appointment not found` |
 | F8-02 after repair | f2634f68b07947c97d69f57406c9f4087aeecfed | `python -m pytest tests/test_services.py::test_fr07_cancelled_history_is_found_by_id_and_in_list -v` from `project/` | Passed after removing the status restriciton; FR-7 tests also passed |
-| Full suite after both repairs, before refactor | [complete] | [complete] | [complete] |
+| Full suite after both repairs, before refactor | 0876e19380ea03340ee090e75254c6e795b068c5 | `python -m pytest -q` directory: `project/` | 60 passed in 0.31s https://github.com/soulsbyrohan/st1-assignment-3/commit/0876e19380ea03340ee090e75254c6e795b068c5#commitcomment-208847966 |
 
 Explain how the assertions detect each relevant incorrect result and protect previous behaviour:
+
+The F8-01 regression test attempts to book A2 with the same practitioner at the same time as A1 and will require `ValueError`. It then checks that A1 is still the same SCHEDULED object, A2 was not stored and the appointment list still contains only A1. This detects the original F8-01 failure and also checks that rejection does not mutate existing records.
 
 For F8-02, the retained-history tests should verify that cancelled appointments remain stored and accessible by ID. The faulty lookup caused a LookupError becaused cancelled appointments were excluded. After removing the incorrect condition, the tests passed, which confirms that cancelled appointments remain retrievable.
 
