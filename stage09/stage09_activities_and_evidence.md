@@ -104,16 +104,16 @@ Responsibility check: explain how domain invariants, shared-store collections, s
 
 ## G. Ten formative answers
 
-1. What makes select_appointments pure, and what side effect breaks purity? <!-- response -->
-2. Which explicit inputs are needed, and why avoid a global store? <!-- response -->
-3. How can a new list reuse Appointment objects safely? <!-- response -->
-4. Why use a named key, and what breaks equal-time ties? <!-- response -->
-5. How do default and explicit status filters differ? <!-- response -->
-6. How do empty, unknown practitioner and invalid filter cases differ? <!-- response -->
-7. Which console errors recover, and how is unchanged state checked? <!-- response -->
+1. What makes select_appointments pure, and what side effect breaks purity? select_appointments is pure because it only uses its own inputs to calculate a result, it doesn't perform input/output and it doesn't modify any existing lists or objects, therefore it has no side effects. A side effect that would break purity is modifying an appointment object or printing an output.
+2. Which explicit inputs are needed, and why avoid a global store? As select_appointment requires appointments lists, practitioner ID and status filter, the explicit inputs makes the function testable and reusable. Avoiding a global store ensures that the results only depend on the given inputs.
+3. How can a new list reuse Appointment objects safely? A new list can reuse Appointment objects safely as long as the new list doesn't modify objects in Appointment class. 
+4. Why use a named key, and what breaks equal-time ties? A named key allows for sorting to be customised or improved without modifying the exisiting objects.
+5. How do default and explicit status filters differ? In this SmartCare system, when status is None that means that the appointment status is optional, which is default status. Explicit status is where a status is specified, when a specific status is supplied, only appointments with that status are included in the result.
+6. How do empty, unknown practitioner and invalid filter cases differ? Empty means that there are no appointments in the list or that match the criteria, unknown practitioner means the practitioner ID provided doesn't match any appointment, and an invalid filter means something, the filter key or appointment status, isn't recognised.
+7. Which console errors recover, and how is unchanged state checked? <!--response-->
 8. What is data integrity for registered participants, conflicts and history? <!-- response -->
-9. What is Copilot's review role, and who verifies findings? <!-- response -->
-10. How do pure functions and OOP responsibilities work together? <!-- response -->
+9. What is Copilot's review role, and who verifies findings? Copilt can act as in assistant in reviewing, as it is able to identify smells, improvements and issues. However, all suggestions and observations made by Copilot must be verified and checked by the student.
+10. How do pure functions and OOP responsibilities work together? Pure functions and OOP responsibilities work together by separating duties. OOP organises data and information into objects, and pure functions use thos objects to perform tasks. 
 
 ## H. Review, completion and common handover
 
