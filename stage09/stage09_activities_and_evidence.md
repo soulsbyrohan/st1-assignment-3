@@ -29,7 +29,7 @@ Plan before AI. This replaces schema/key design; no database tables are required
 |---|---|---|---|---|
 | appointment_sort_key | | | | |
 | select_appointments | | | | |
-| Service listing | | | | |
+| Service listing | practitioner_id: str, status: AppointmentStatus or None | list[Appointment] | Checks that the practitioner exists and the status filter is valid. Gets appointments from the data store and passes them to the pure query function for filtering and sorting. | Uses registered practitioners and appointments in SmartCareDataStore. Must preserve stored appointments and cancelled history. |
 | Console | | | | |
 
 Relate patient ID/name, practitioner ID/name/specialty, and appointment ID/actual participants/date_time/status to the existing contracts: <!-- response -->
@@ -59,7 +59,11 @@ Complete before GitHub Copilot. Record any interface/integrity decision and its 
 
 | Requirement | Input / session data | Operation and responsible component | Expected result or error | Test / evidence |
 |---|---|---|---|---|
-| | | | | |
+| QRY-04 | Registered practitioner D1 with no appointments | Service listing | Return an empty list `[]` | `test_listing_known_practitioner_with_no_appointments` |
+| QRY-04 | Unknown practitioner D999 | Service validation | Raise `LookupError` | `test_listing_unknown_practitioner_raises_lookup_error` |
+| QRY-04 | Blank, whitespace or non-text practitioner ID | Service validation | Raise `ValueError` | `test_listing_invalid_practitioner_id_raises_value_error` |
+| QRY-04 | Non-enum status such as `"scheduled"` | Service validation | Raise `ValueError` | `test_listing_invalid_status_raises_value_error` |
+
 
 Cover QRY-01–04, FP-01–03, UI-01–02 and relevant FR-01–09. Explain empty versus unknown versus invalid, enum conversion, actual object identity, error handling and unchanged state on rejection: <!-- response -->
 
@@ -67,7 +71,11 @@ Cover QRY-01–04, FP-01–03, UI-01–02 and relevant FR-01–09. Explain empty
 
 | Requirement / test ID | Code location | Case and meaningful assertion | Actual result | Evidence link |
 |---|---|---|---|---|
-| | | | | |
+| QRY-04 — known empty | `test_services.py` | Registered D1 with no appointments should return `[]`. | FAILED — `NotImplementedError: Stage 9: pure query` | [PR #16](https://github.com/soulsbyrohan/st1-assignment-3/pull/16) |
+| QRY-04 — unknown ID | `test_services.py` | Unknown D999 must raise `LookupError`. | PASSED | [PR #16](https://github.com/soulsbyrohan/st1-assignment-3/pull/16) |
+| QRY-04 — invalid ID | `test_services.py` | Empty, whitespace, `None` and numeric IDs must raise `ValueError`. | PASSED — four parameterised cases | [PR #16](https://github.com/soulsbyrohan/st1-assignment-3/pull/16) |
+| QRY-04 — invalid status | `test_services.py` | Strings and other non-enum status values must raise `ValueError`. | PASSED — four parameterised cases | [PR #16](https://github.com/soulsbyrohan/st1-assignment-3/pull/16) |
+
 
 Include practitioner isolation, every enum status/default all, equal-time ID tie-break, named-key reuse, repeated calls, empty/already-sorted fresh lists, unchanged source order/fields, known-empty/unknown/invalid service cases and retained history.
 
