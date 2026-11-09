@@ -10,7 +10,8 @@ from smartcare.domain import (
     Patient,
     Practitioner,
 )
-
+## import for Stage 09 
+from smartcare.queries import select_appointments
 
 class PatientService:
     """Coordinate patient registration and lookup through the shared store."""
@@ -161,4 +162,22 @@ class AppointmentService:
         ValueError; a known practitioner with no matches returns an
         empty list.
         """
-        raise NotImplementedError('Stage 9: practitioner appointments')
+        # Reject status filters that are not AppointmentStatus values.
+        # None is valid because it means all statuses.
+        if status is not None and not isinstance(status, AppointmentStatus):
+            raise ValueError('Invalid appointment status filter')
+
+        # Check that the practitioner actually exists.
+        # The data store also validates blank and invalid IDs.
+        practitioner = self.data_store.find_practitioner(practitioner_id)
+
+        if practitioner is None:
+            raise LookupError('Practitioner not found')
+
+        # Pass the stored appointments to the pure query function.
+        # It handles filtering and sorting without changing the store.
+        return select_appointments(
+            self.data_store.list_appointments(),
+            practitioner.practitioner_id,
+            status,
+        )
