@@ -240,32 +240,127 @@ For F8-02, the retained-history tests should verify that cancelled appointments 
 
 Unrelated failures investigated / resolution: [complete or not applicable with reason]
 
-## H. Refactoring decision and before/after verification
+H. Refactoring decision and before/after verification
 
-Smell and exact location: [complete]
-Small proposed structural change / why justified: [complete before editing]
-External behaviour to preserve / relevant tests: [complete]
-Before result: see G, full passing suite.
-Actual change / diff / separate refactor SHA: [complete]
-Focused and full after-refactor commands / working directory / results / evidence: [complete]
-Result — accepted, revised or rejected / reason / behaviour-preservation conclusion: [complete]
+Smell and exact location:
 
-## I. Git, human review and integration
+In project/smartcare/services.py, the AppointmentService.book_appointment() method was handling both appointment creation and practitioner booking conflict validation. Having both responsibilities in one method made the code longer and harder to maintain.
 
-Issues for both defects / refactor scope and owners: [complete]
-Branch / prepared, repair and refactor checkpoints: [link B/C/D/H]
-PR link and another member's reviewer identity: [complete]
-Key human feedback, difference from Copilot findings and response/outcome: [complete]
-Actual review approval / merge evidence: [complete]
-Integrated code SHA and team pull/retest command / working directory / result: [complete]
-Evidence-only later SHA / explanation if different: [complete or not applicable]
-Each member's substantive contribution and artefact: [complete]
+Small proposed structural change / why justified:
 
-## J. Required reflections
+I decided to move the practitioner conflict checking logic into a separate private helper method called _check_practitioner_conflict(). This makes the booking method easier to read and keeps the conflict validation separate from the main booking process.
 
-1. Which Copilot diagnosis appeared convincing but lacked evidence? [complete; report honestly if none and discuss the least-supported real suggestion]
-2. What evidence changed your group's view? [complete]
-3. How did regression tests protect the refactoring? [complete]
+External behaviour to preserve / relevant tests:
+
+The refactoring needed to preserve FR-05 and its acceptance criteria. The system should reject bookings for the same practitioner at the same date and time, allow different practitioners to be booked at the same time, and leave existing appointments unchanged when a conflict occurs. The existing FR-05 tests and full regression suite were used to check this.
+
+Before result:
+
+Section G records that the full test suite passed after the defects were fixed and before refactoring, with 60 tests passing.
+
+Actual change / diff / separate refactor SHA:
+
+I extracted the conflict validation logic from book_appointment() into _check_practitioner_conflict(). The helper uses SmartCareDataStore.has_practitioner_conflict() and raises a ValueError if a conflict is found. The booking method now calls this helper instead of handling the conflict checking directly.
+
+Branch: refactor/stage8-booking-conflict
+
+Refactoring commit SHA: d5c50f4922f9eeb35e766c00af0ecc070d5a93cc
+
+Focused and full after-refactor commands / working directory / results / evidence:
+
+Working directory: project/
+
+Full regression command: py -m pytest -q
+
+Result: 61 passed in 0.12 seconds, 0 failed.
+
+The FR-05 tests had also passed during the earlier verification. After completing the refactoring, I ran the full test suite again to check for any issues.
+
+Result — accepted, revised or rejected / reason / behaviour-preservation conclusion:
+
+I accepted the refactoring because it made the code more organised without changing the required functionality. All 61 tests passed after the changes, including the booking conflict tests. This gave me evidence that the existing functionality covered by the tests was still working correctly.
+
+I. Git, human review and integration
+
+Issues for both defects / refactor scope and owners:
+
+F8-01 involved incorrect practitioner booking conflict detection, while F8-02 involved cancelled appointments not being retrievable. Both defects were fixed by the group.
+
+My responsibility was refactoring the practitioner booking conflict validation in AppointmentService and verifying that the changes did not affect the existing functionality.
+
+F8-01 was handled by u3119457, F8-02 by u3308969, and the refactoring was completed by me (u3325731).
+
+Branch / prepared, repair and refactor checkpoints:
+
+Prepared debugging branch: debug/stage08
+
+F8-01 repair SHA: 0876e19380ea03340ee090e75254c6e795b068c5
+
+F8-02 repair SHA: f2634f68b07947c97d69f57406c9f4087aeecfed
+
+My refactoring branch: refactor/stage8-booking-conflict
+
+Refactoring commit SHA: d5c50f4922f9eeb35e766c00af0ecc070d5a93cc
+
+PR link and another member's reviewer identity:
+
+PR #13: https://github.com/soulsbyrohan/st1-assignment-3/pull/13
+
+The pull request was reviewed by EmilyNicLynh.
+
+Key human feedback, difference from Copilot findings and response/outcome:
+
+The reviewer checked my changes and commented that everything looked fine. They also reminded me to complete Sections H and J in the Stage 8 documentation.
+
+Unlike Copilot's earlier suggestions, which focused on possible causes of the bugs, this review focused on the completed changes and documentation. No code changes were requested in the feedback shown.
+
+Actual review approval / merge evidence:
+
+PR #13 was reviewed by EmilyNicLynh and successfully merged into main by ThomasLongCrowley. The pull request is now closed.
+
+The review comments and merge are visible on GitHub, although the screenshots do not show a formal GitHub approval.
+
+Integrated code SHA and team pull/retest command / working directory / result:
+
+After PR #13 was merged, I switched to main and ran git pull origin main to get the latest integrated changes.
+
+I then ran py -m pytest -q from the project/ directory.
+
+All 61 tests passed in 0.36 seconds, with no failures. This confirmed that the merged changes were working correctly with the rest of the project for the scenarios covered by the tests.
+
+Integrated commit SHA: b2716a8112d112b8afee87479232bfd185758cc9
+
+Evidence-only later SHA / explanation if different:
+
+Documentation commit: 751d8d9 (Update Stage 8 documentation). This was made separately on my refactoring branch after PR #13 had been merged, so it is not the integrated main SHA recorded above.
+
+Each member's substantive contribution and artefact:
+
+u3119457 investigated and repaired F8-01, including the practitioner conflict comparison and its verification.
+
+u3308969 investigated and repaired F8-02, including the cancelled appointment lookup and its verification.
+
+u3325731 (me) refactored the practitioner conflict validation into _check_practitioner_conflict(), ran the regression tests, created PR #13 and verified the integrated code after merging.
+
+The defect investigation, Copilot review and regression evidence are recorded in Sections C-G.
+
+J. Required reflections
+
+1. Which Copilot diagnosis appeared convincing but lacked evidence?
+
+Copilot suggested that the book_appointment() method might be sending the wrong practitioner ID when checking for conflicts. At first, this seemed reasonable because the system was allowing bookings that should have been rejected and rejecting ones that should have been allowed. But after looking through the code, we couldn't find anything wrong with how the ID was being passed. The actual issue was the != comparison in has_practitioner_conflict(), which should have been ==.
+
+2. What evidence changed your group's view?
+
+The failing tests were the main thing that helped us understand the problems. For F8-01, we noticed that the system was allowing two bookings for the same practitioner at the same time, which shouldn't happen. After checking the code, we found the incorrect comparison.
+
+For F8-02, the tests were giving a LookupError when trying to find a cancelled appointment. We then found that find_appointment() was excluding cancelled appointments. So instead of just guessing what was wrong, we used the test results and code to confirm the actual issues.
+
+3. How did regression tests protect the refactoring?
+
+Before I started refactoring, the tests were already passing after the bugs had been fixed. My part was to move the practitioner conflict checking logic into a separate method called _check_practitioner_conflict() to make the code more organised and easier to understand.
+
+After making the changes, I ran the full test suite again using py -m pytest -q, and all 61 tests passed. I also ran the tests after the changes were merged into main, and all 61 passed again. This helped me confirm that the refactoring hadn't affected the existing functionality covered by our tests and that the booking conflict checks were still working properly.
 
 ## K. Ten formative questions
 
