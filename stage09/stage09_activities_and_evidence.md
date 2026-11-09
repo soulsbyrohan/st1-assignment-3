@@ -63,6 +63,26 @@ Complete before GitHub Copilot. Record any interface/integrity decision and its 
 
 Cover QRY-01–04, FP-01–03, UI-01–02 and relevant FR-01–09. Explain empty versus unknown versus invalid, enum conversion, actual object identity, error handling and unchanged state on rejection: <!-- response -->
 
+
+**Console and workflow design — u3325731**
+
+For my part, I will focus on how the console should handle user interactions and connect with the existing SmartCare services. The console should use the same data store throughout the session so that registered patients, practitioners and appointments remain available until the user exits.
+
+The console will handle user input and display results, while the services will handle validation, bookings and cancellations. Invalid inputs should display an error without crashing the program or changing existing records.
+
+| Requirement | Input / session data | Operation and responsible component | Expected result or error | Test / evidence |
+|---|---|---|---|---|
+| UI-01 | Patient, practitioner and appointment details | Console uses the existing services | Users can register, find, book, cancel and list appointments through the menu | Test a complete menu workflow |
+| UI-02 | Invalid IDs, dates, statuses and menu choices | Console handles invalid inputs | Errors are displayed, the menu continues running and existing data remains unchanged | Test invalid inputs followed by valid actions |
+
+**Additional design decisions:**
+
+The console should convert status text into the correct `AppointmentStatus` enum before passing it to the service. Leaving the status blank should return appointments of all statuses.
+
+Cancelling an appointment should update its status rather than delete it. This allows the appointment to be found again and included in the all-status listing, while excluding it from a scheduled-only listing.
+
+I will also check that invalid operations do not affect existing records and that the user can continue using the menu afterward.
+
 ## C. Implementation and query verification
 
 | Requirement / test ID | Code location | Case and meaningful assertion | Actual result | Evidence link |
@@ -83,6 +103,14 @@ What the tests do and do not establish: <!-- response -->
 | Automated service workflow | | | | |
 
 Include registration/find, booking, conflict rejection, different-practitioner booking, cancellation, retrieval, listing/filtering, freed slot and exit; duplicate/unknown/blank IDs, malformed/impossible date, invalid status, unknown choice and repeated cancellation. Identify before/after state and subsequent successful action.
+
+| Scenario / acceptance ID | Reproducible inputs / artefact | Expected result | Observed result and state check | Evidence link |
+|---|---|---|---|---|
+| UI-01 full menu workflow | Run `python main.py --interactive` from `project/`. Register P1 and DR1, book A1, attempt a conflicting booking, cancel A1, retrieve A1 and book A2 in the freed slot. | Valid operations succeed, conflicts are rejected and cancelled appointments remain retrievable. | Registration, lookup, booking and cancellation worked as expected. The conflicting booking was rejected without affecting A1. After cancellation, A1 remained retrievable and A2 could use the freed time slot. Different-practitioner booking and Option 8 listing/filtering still need verification. | Terminal screenshots to be linked |
+| UI-02 invalid-input recovery | Test invalid menu choices, blank/duplicate IDs, unknown records, malformed/impossible dates and repeated cancellation, followed by valid operations. | Invalid inputs produce appropriate errors without crashing or changing existing records. | All tested invalid inputs were rejected. The menu continued running, the original patient remained unchanged, and a valid appointment could still be booked afterward. Invalid status filtering remains unverified until Option 8 is available. | Terminal screenshots to be linked |
+| Automated service workflow | Run `python -m pytest tests/test_workflows.py -v` and `python -m pytest -q` from `project/`. | New workflow tests and existing regression tests pass. | 12 workflow tests passed. Full regression suite: 73 passed, with no reported failures. | Test output screenshot to be linked |
+
+**Pending verification:** Option 8 requires the Stage 9 practitioner appointment listing service to be completed. Once integrated, we still need to test all-status listing, status filtering, invalid status handling and the remaining workflow scenarios.
 
 ## E. GitHub Copilot review and human decisions
 
