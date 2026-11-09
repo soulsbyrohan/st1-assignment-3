@@ -24,34 +24,46 @@ What is intentionally lost on exit? Temporary data, such as menu choices and deb
 ### A2 Interface and domain data plan
 
 Plan before AI. This replaces schema/key design; no database tables are required.
-
 | Function or component | Explicit inputs and types | Outputs | Responsibility and validation | Domain source / existing constraint |
 |---|---|---|---|---|
-| appointment_sort_key | | | | |
-| select_appointments | | | | |
+| appointment_sort_key | appointment: Appointment | tuple[datetime, str] | Returning ordering key | Uses appointment appointment_id and date_time |
+| select_appointments | appointments: list[Appointment], practitioner_id: str, status: AppointmentStatus, None = None | list[Appointment] | Filter and sort appointments and return new sorted list | Practitioner ID must match the appointment’s practitioner ID. |
 | Service listing | | | | |
 | Console | | | | |
 
-Relate patient ID/name, practitioner ID/name/specialty, and appointment ID/actual participants/date_time/status to the existing contracts: <!-- response -->
+Relate patient ID/name, practitioner ID/name/specialty, and appointment ID/actual participants/date_time/status to the existing contracts: 
+patient ID/name: Patient ID is uniquely identified with registered patient name,
+practitioner ID/name/specialty: Practitioner ID is uniquely identified with registered practitioner name and speciality,
+appointment ID/actual participants/date_time/status: Appointment ID is uniquely identified with appointment information 
 
 ### A3 Responsibility violations
 
 | Conceptual case | Violation | Correct boundary and reason |
 |---|---|---|
-| Appointment.cancel reads input | | |
-| Service prints/reads the menu | | |
-| Query sorts its source in place | | |
-| Store prints Appointment saved | | |
+| Appointment.cancel reads input | It is handling user input, which it should not be | The console should read the user’s input and then call Appointment.cancel |
+| Service prints/reads the menu | Service is doing menu interaction when it only do service operations | Console should display menu and handle menu interaction, service manages service operations |
+| Query sorts its source in place | Query is modifying the original appointment, breaking purity | Query should return a sorted copy of the original list, leaving the original list in tact |
+| Store prints Appointment saved | Store is doing presentation | Console start display save message, store should only |
 
 ### A4 Sorting comparison
 
-For `appointments.sort(key=appointment_sort_key)` and `result = sorted(appointments, key=appointment_sort_key)`, predict source order, return value and result identity. Give a meaningful mutation check: <!-- response -->
+For `appointments.sort(key=appointment_sort_key)` and `result = sorted(appointments, key=appointment_sort_key)`, predict source order, return value and result identity. Give a meaningful mutation check: 
 
-Score-example prediction and explanation of passing the named key: <!-- response -->
+appointments.sort(key=appointment_sort_key)
+<br>Source order: Modified (the original is sorted)
+<br>Return Value: None
+<br>Result identity: The original list is modified, no new list is returned
+
+<br>result = sorted(appointments, key=appointment_sort_key)
+<br>Source order: Unchanged
+<br>Return Value: New sorted list
+<br>Result identity: Different list
+
+Score-example prediction and explanation of passing the named key: Appointment_sort_key separates sorting logic from query logic and ensures appointments are sorted by date_time and appointment_id is used to differentiate appointments at the same date and time.
 
 ### A5 Exit question
 
-Explain cancellation versus deletion, and checks for same-session lookup, all-status listing and SCHEDULED-only exclusion: <!-- response -->
+Explain cancellation versus deletion, and checks for same-session lookup, all-status listing and SCHEDULED-only exclusion: Cancelling an appointment changes its status from SCHEDULLED to CANCELLED without deleting the original appointment. The cancelled appointment remains retrievable by ID and appears in an all-status listings, but, it is excluded when filtering for SCHEDULED appointments. These behaviours can be verified through lookup, listing and cancellation tests.
 
 ## B. Human design and contracts
 
