@@ -77,3 +77,44 @@ def run_menu() -> None:
     without crashing.
     """
     raise NotImplementedError('Stage 9 interactive menu is not yet completed')
+
+
+def handle_book_appointment(service: AppointmentService) -> None:
+    try:
+        # Ask the user to enter the details needed for a booking
+        appointment_id = input('Appointment ID: ')
+        patient_id = input('Patient ID: ')
+        practitioner_id = input('Practitioner ID: ')
+        date_text = input('Date (YYYY-MM-DD): ')
+        time_text = input('Time (HH:MM): ')
+
+        # Convert the entered date and time into a datetime object
+        when = parse_date_time(f'{date_text} {time_text}')
+
+        # Use the existing appointment service to create the booking
+        appointment = service.book_appointment(
+            appointment_id, patient_id, practitioner_id, when
+        )
+
+        # Display a confirmation with the booked appointment details
+        print(f'Appointment booked: {format_appointment(appointment)}')
+
+    # Handle invalid inputs or unknown records without crashing the console
+    except (ValueError, LookupError) as error:
+        print(f'Error: {error}')
+
+
+def handle_cancel_appointment(service: AppointmentService) -> None:
+    try:
+        # Ask the user which appointment they want to cancel
+        appointment_id = input('Appointment ID to cancel: ')
+
+        # Use the existing appointment service to cancel the appointment
+        appointment = service.cancel_appointment(appointment_id)
+
+        # Display a confirmation with the cancelled appointment details
+        print(f'Appointment cancelled: {format_appointment(appointment)}')
+
+    # Handle invalid IDs, unknown appointments or repeated cancellation
+    except (ValueError, LookupError) as error:
+        print(f'Error: {error}')
