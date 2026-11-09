@@ -1,5 +1,5 @@
-"""Simple workflows using a shared SmartCareDataStore object."""
 
+"""Simple workflows using a shared SmartCareDataStore object."""
 
 from datetime import datetime
 
@@ -10,7 +10,8 @@ from smartcare.domain import (
     Patient,
     Practitioner,
 )
-
+## import for Stage 09 
+from smartcare.queries import select_appointments
 
 class PatientService:
     """Coordinate patient registration and lookup through the shared store."""
@@ -29,17 +30,15 @@ class PatientService:
         return patient
 
     def find_patient(self, patient_id: str) -> Patient:
-        """Stage 6 TODO: return the stored patient for a valid patient ID.
+        """Return the stored patient for a valid patient ID.
 
-        Completion must raise LookupError for absence and ValueError for
-        a blank/invalid ID. It must not create a replacement patient.
-        The starter deliberately raises NotImplementedError.
+        Raise LookupError when the patient does not exist.
         """
-
         patient = self.data_store.find_patient(patient_id)
-        
+
         if patient is None:
             raise LookupError('Patient not found')
+
         return patient
 
 
@@ -75,8 +74,10 @@ class PractitionerService:
         no practitioner has the requested ID.
         """
         practitioner = self.data_store.find_practitioner(practitioner_id)
+
         if practitioner is None:
             raise LookupError('Practitioner not found')
+
         return practitioner
 
 
@@ -103,29 +104,50 @@ class AppointmentService:
         """
         patient = self.data_store.find_patient(patient_id)
         practitioner = self.data_store.find_practitioner(practitioner_id)
+
         if patient is None:
             raise LookupError('Patient not found')
+
         if practitioner is None:
             raise LookupError('Practitioner not found')
+
         appointment = Appointment(
             appointment_id,
             patient,
             practitioner,
             date_time,
         )
+
         if self.data_store.find_appointment(
             appointment.appointment_id,
         ) is not None:
             raise ValueError('Appointment ID already exists')
-        if self.data_store.has_practitioner_conflict(
+
+        # Check whether the practitioner is already booked.
+        self._check_practitioner_conflict(
             practitioner.practitioner_id,
             date_time,
-        ):
-            raise ValueError(
-                'Practitioner already has a SCHEDULED appointment at this time',
-            )
+        )
+
         self.data_store.add_appointment(appointment)
         return appointment
+
+    def _check_practitioner_conflict(
+        self,
+        practitioner_id: str,
+        date_time: datetime,
+    ) -> None:
+        """Check if a practitioner already has a scheduled appointment."""
+
+        conflict_found = self.data_store.has_practitioner_conflict(
+            practitioner_id,
+            date_time,
+        )
+
+        if conflict_found:
+            raise ValueError(
+                'Practitioner already has a SCHEDULED appointment at this time'
+            )
 
     def find_appointment(self, appointment_id: str) -> Appointment:
         """Return the stored appointment; raise LookupError when absent.
@@ -134,8 +156,10 @@ class AppointmentService:
         records.
         """
         appointment = self.data_store.find_appointment(appointment_id)
+
         if appointment is None:
             raise LookupError('Appointment not found')
+
         return appointment
 
     def cancel_appointment(self, appointment_id: str) -> Appointment:
@@ -161,4 +185,22 @@ class AppointmentService:
         ValueError; a known practitioner with no matches returns an
         empty list.
         """
-        raise NotImplementedError('Stage 9: practitioner appointments')
+        # Reject status filters that are not AppointmentStatus values.
+        # None is valid because it means all statuses.
+        if status is not None and not isinstance(status, AppointmentStatus):
+            raise ValueError('Invalid appointment status filter')
+
+        # Check that the practitioner actually exists.
+        # The data store also validates blank and invalid IDs.
+        practitioner = self.data_store.find_practitioner(practitioner_id)
+
+        if practitioner is None:
+            raise LookupError('Practitioner not found')
+
+        # Pass the stored appointments to the pure query function.
+        # It handles filtering and sorting without changing the store.
+        return select_appointments(
+            self.data_store.list_appointments(),
+            practitioner.practitioner_id,
+            status,
+        )

@@ -160,6 +160,13 @@ Why can 100% code coverage coexist with poor software verification?
 | TEST-FR05-05 | Fresh store; P1, P2, D1; A1 booked at 09:00. | Cancel A1 and book A2 in same slot. | A1 `CANCELLED`, A2 `SCHEDULED`, both retrievable, count 2. | Verifies cancellation releases the slot without erasing history. |
 | TEST-FR05-06 | Fresh store; P1, P2, D1; A1 booked at 09:00. | Attempt conflicting A2. | `ValueError`; A1 ID, patient, practitioner, time and status unchanged; list equals `[original]`. | Checks that rejection does not mutate existing data. |
 
+| TEST-FR07-01 | Register P1, D1; book A1 in one fresh store | Call service.cancel_appointment(A1) | Identity, `CANCELLED`, `find_appointment(A1) is original`, `list_appointments() == [original]` | Directly proves original record retained by ID and list (AC-05.2). |
+| TEST-FR07-02 | Create a valid A1 booking | Cancel A1, book A2 at same practitioner/time | A1 CANCELLED, A2 SCHEDULED, both accessible and list length 2 | Verifies history survives subsequent booking. |
+| TEST-FR07-03 | Cancel A1 once and capture stored list | Attempt second cancellation | `pytest.raises(ValueError)` and same status/list | Tests failed transition leaves retained history unchanged. |
+| TEST-FR07-04 | Store a COMPLETED Appointment linked to registered P1, D1 | Attempt cancellation via service | `ValueError`, COMPLETED unchanged, same object in list | Illegal status transition does not erase stored record. |
+| TEST-FR07-05 | Store and cancel A1 | Try cancelling absent A999 | `LookupError`, A1 and stored list unchanged | Invalid lookup cannot corrupt history. |
+| TEST-FR07-06 | Store and cancel A1 | Parametrise invalid ID `""`, `"   "`, `None` | `ValueError` for each; unchanged status and list | Tests precise public input boundary without inspecting private fields. |
+
 ## E Domain Test Evidence
 
 | Test ID | Behaviour | Test file/function | Result |
@@ -347,6 +354,7 @@ FR-07 uses pytest.mark.parametrize to test empty, whitespace-only and None appoi
 | u3325731 | Wrote six FR-05 service tests for booking conflicts and related cases. After the PR review, I also added eight Practitioner domain tests for valid details, empty fields, spaces-only fields and trimming extra spaces. The latest full test run passed all 41 tests. | [#7](https\://github.com/soulsbyrohan/st1-assignment-3/pull/7) |
 | U3308969 | Created three FR-06 domain tests covering successful cancellation, repeated cancellation and rejection of completed appointments. Made sure all three tests passed locally and documented their requirement traceability, test design and negative cases in Sections B–G. Did Activity 2 in Section A and do the Copilot Sections H and I. | [PR #8](https://github.com/soulsbyrohan/st1-assignment-3/pull/8) |
 | u3306036 | Created Stage 7 FR-01 tests, 2 service tests for AC-01.1 and AC-01.2 under FR-01 and 5 domain tests for patient construction and required-field validation. Tested all tests locally and documented behaviours and results in sections A-G.| [#9](https://github.com/soulsbyrohan/st1-assignment-3/pull/9) |
+| u3119457 | Designed six FR-07 service tests (8 parametrised cases) (AC-05.2) to verify that cancelled appointments remain stored and accessible in SmartCare | [PR #10](https://github.com/soulsbyrohan/st1-assignment-3/pull/10) |
 
 ## N Formative Questions
 1. What question does verification answer?  
