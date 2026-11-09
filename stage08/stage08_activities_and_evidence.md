@@ -21,38 +21,73 @@ For each, choose symptom, evidence or hypothesis/opinion, and explain your reaso
 - Traceback points to smartcare/services.py line 42 in the example.
 The example line number is illustrative; inspect the actual line in your run. The removal hypothesis must be tested against the current project, which has no public delete operation.
 
-Response and reason: [complete]
+| Statement | Classification | Reason |
+|---|---|---|
+| Appointment disappears after cancellation. | Symptom | It describes what happens to an appointment after it is cancelled.  |
+| The data-store removal path is probably being called. | Hypothesis | A possible explanation that needs to be tested against the code. |
+| The failing test shows `store.find_appointment('A1')` returns `None`. | Evidence | It is a concrete result that is observed during testing. |
+| The service layer is badly designed. | Opinion | It is an opinion or judgement with no evidence or testable explanation.  |
+| Traceback points to `smartcare/services.py` line 42 in the example. | Evidence | Identifies where the example failure occurred, but does not prove its root cause. |
 
 ### A.2 Build a debugging record
 Choose the cancelled-history scenario or a same-practitioner/time booking. Before changing code, record expected behaviour, observed behaviour, minimal reproduction, a hypothesis and evidence to inspect. Use a requirement to justify the expectation. Keep the initial hypothesis even if later evidence disproves it.
 
-Response and reason: [complete]
+Response and reason: 
+Scenario: F8-02 Retained Appointment History
+
+- Expected behaviour: FR-07 / AC-05.2 requires cancelled appointments to remain stored and retrievable by ID.
+- Observed behaviour: Looking up cancelled appointment A1 raised `LookupError: Appointment not found`.
+- Minimal reproduction: Register patient P1 and practitioner D1, book appointment A1, cancel A1, then attempt to retrieve A1.
+- Initial hypothesis: The appointment lookup might be excluding cancelled appointments even though they remain stored.
+- Evidence to inspect: The failing traceback, `SmartCareDataStore.find_appointment()`, `AppointmentService.find_appointment()` and `list_appointments()` after cancellation.
 
 ### A.3 Test defect or product defect
 A test expects cancelled appointments to be deleted, but FR-07 says history must be retained. What should be changed? Explain why. Also decide whether a test expecting different practitioners at the same time to conflict reflects AC-04.2. Do not assume every failing test is correct.
 
-Response and reason: [complete]
+A test that expects cancelled appointments to be deleted, but FR-07 says history 
+must be retained is a test defect. The test should be changed to meet the 
+requirement, as it is currently expecting something that is not what the requirement 
+wants.  
 
 ### A.4 Refactoring smell hunt
 Consider a hypothetical 70-line AppointmentService method containing duplicate status strings, direct collection manipulation, printing, validation and four nested conditionals. Identify the smells and propose small refactorings that preserve required behaviour. The direct collection work replaces the old storage-specific scenario; use the existing SmartCareDataStore boundary. Do not implement an extra architecture.
 Classify these proposed changes as refactoring, repair or feature: rename appt to appointment; extract a repeated conflict helper; add rescheduling; restore retained cancellation lookup; replace a magic status string with the existing enum. Explain the behaviour that must remain unchanged.
 
-Response and reason: [complete]
+| Unclear variable name | Rename `appt` to `appointment` | Refactoring | Improves readability. |
+| Repeated conflict logic | Extract a repeated conflict helper | Refactoring | Reduces duplicate logic.. |
+| Missing functionality | Add rescheduling | Feature | Add new functionality. |
+| Incorrect cancellation history behaviour | Restore retained cancellation lookup | Repair | Corrects behaviour. |
+| Magic status strings | Replace status strings with the existing enum | Refactoring | Improves maintainability |
+| Direct collection manipulation | Use existing `SmartCareDataStore` methods | Refactoring | Keeps data management within the correct component. |
+| Printing inside services | Move printing and messages to the console layer | Refactoring | Separates business logic from user interaction. |
+| Repeated validation | Extract validation into a focused helper | Refactoring | Reduces duplication and simplifies maintenance. |
+| Four nested conditionals | Simplify conditions using early returns | Refactoring | Reduces nesting and improves readability. |
+| Overly long method | Split the method into smaller focused functions | Refactoring | Makes code easier to understand and test. |
 
 ### A.5 Traceback and hypothesis ranking
 Using one actual failure, identify its exception/assertion, expected and observed values, test line, application call path and supporting requirement. List three plausible causes and rank them by fit with the available evidence. For each cause, name a check that could distinguish it from the others. Explain why a traceback alone does not establish the cause.
 
-Response and reason: [complete]
+Response and reason: 
+Actual failure: F8-02 Retained-History Lookup
+
+- Failing test: `test_fr07_cancelled_history_is_found_by_id_and_in_list`
+- Requirement: FR-07 / AC-05.2 Cancelled appointments remain stored and retrievable.
+- Expected behaviour: `find_appointment('A1')` returns the original cancelled appointment.
+- Observed behaviour: `LookupError: Appointment not found`.
+- Test line: [Insert actual failing test line number from traceback]
+- Application failure location: `smartcare/services.py:138`, where the service raises `LookupError` after receiving `None` from the data store.
+- Application call path: Retained-history test → `AppointmentService.cancel_appointment()` → `SmartCareDataStore.find_appointment()` → cancellation → `AppointmentService.find_appointment()` → `SmartCareDataStore.find_appointment()`.
 
 ### A.6 Exit question
 Why is changing code immediately after seeing a failure often a poor debugging strategy?
 
-Response and reason: [complete]
+Response and reason: 
+Changing code immediately after seeing a failure is a poor debugging strategy as going straight into code without understanding the cause of the issue might introduce new bugs to the system.
 
 
-Classification responses (1–5, each with reason): [complete]
-Tutorial debugging record — expected; observed; reproduction; hypothesis; evidence to inspect: [complete]
-Traceback — exception/assertion; expected/observed values; test line; call path; requirement; ranked causes and discriminating checks: [complete]
+Classification responses (1–5, each with reason): See A.1.
+Tutorial debugging record — expected; observed; reproduction; hypothesis; evidence to inspect: See A.2.
+Traceback — exception/assertion; expected/observed values; test line; call path; requirement; ranked causes and discriminating checks: See A.5.
 
 ## B. Stage 7 baseline and safe preparation
 
