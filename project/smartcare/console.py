@@ -278,3 +278,4 @@ def handle_cancel_appointment(service: AppointmentService) -> None:
     # Handle invalid IDs, unknown appointments or repeated cancellation
     except (ValueError, LookupError) as error:
         print(f'Error: {error}')
+    
