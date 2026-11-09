@@ -59,9 +59,16 @@ Complete before GitHub Copilot. Record any interface/integrity decision and its 
 
 | Requirement | Input / session data | Operation and responsible component | Expected result or error | Test / evidence |
 |---|---|---|---|---|
-| | | | | |
+| FR-04 / UI-01 | Appointment ID, patient ID, practitioner ID and date/time | Console collects input and calls `AppointmentService.book_appointment()` | Valid booking creates a SCHEDULED appointment; invalid inputs or booking conflicts are rejected without altering existing records | |
+| FR-06 / UI-01-02 | Appointment ID | Console calls `AppointmentService.cancel_appointment()` | Valid cancellation changes appointment status to CANCELLED and retains the record; repeated cancellation or invalid IDs display an error without terminating the console | |
 
 Cover QRY-01–04, FP-01–03, UI-01–02 and relevant FR-01–09. Explain empty versus unknown versus invalid, enum conversion, actual object identity, error handling and unchanged state on rejection: <!-- response -->
+
+For FR-04 and FR-06, the console collects user input and calls the existing AppointmentService methods. The separate date and time inputs are combined and converted into a datetime object using parse_date_time().
+
+Invalid inputs, unknown IDs, booking conflicts and repeated cancellations are handled by displaying an error without terminating the console. Invalid inputs include incorrect date formats or missing values, while unknown IDs refer to records that do not exist.
+
+Successful cancellation retains the original appointment object and changes its status to CANCELLED. Rejected operations leave existing appointment records unchanged.
 
 ## C. Implementation and query verification
 
@@ -88,19 +95,26 @@ Include registration/find, booking, conflict rejection, different-practitioner b
 
 Human design completed before AI: <!-- reference -->
 Actual prompt/context supplied: <!-- paste or accessible reference -->
+u3308969: [Copilot Prompt](https://github.com/soulsbyrohan/st1-assignment-3/commit/d3b59a07db4db20ec82106827324e75aec99258f#commitcomment-208920251)
 Actual response: <!-- accessible reference -->
+u3308969: [Copilot Response](https://github.com/soulsbyrohan/st1-assignment-3/commit/d3b59a07db4db20ec82106827324e75aec99258f#commitcomment-208920279)
 
 | AI finding | Code/test evidence | Severity | Accept/Modify/Reject and reason | Change or no change | Actual verification |
 |---|---|---|---|---|---|
-| | | | | | |
+| u3308969: Date/time validation correct | `parse_date_time()` and `test_console.py` | None | Accept — validation meets requirements | No change | 40 focused tests passed |
+| u3308969: Booking and cancellation rules preserved | `AppointmentService` and `test_services.py` | None | Accept — existing business rules are preserved | No change | 40 focused tests passed |
+| u3308969: Uncaught `EOFError` | Console booking and cancellation helpers | Low | Modify/defer — better handled at menu level | No change to helpers | No EOF-specific test performed |
 
 Responsibility check: explain how domain invariants, shared-store collections, service coordination, pure queries and console effects remain separate: <!-- response -->
 
 ## F. Required reflections
 
 1. Which integration concern was architectural rather than a filtering/sorting detail? <!-- response -->
+u3308969: Making sure that the console used the existing `AppointmentService` methods rather than implementing booking and cancellation rules itself. The console handles user input and errors, while the service manages appointment operations and the domain controls status changes.
 2. Which Copilot suggestion did you reject as over-engineering, and why? <!-- response -->
+u3308969:  Copilot suggested handling `EOFError` when console input closes. I chose not to add this to my booking and cancellation helpers because it was outside their main responsibility. This could be handled at the main menu level if needed.
 3. How did you prove cancelled appointments remain retrievable and listable in the same session? <!-- response -->
+u3308969: I used pytest assertions to verify that cancelling an appointment changes its status to `CANCELLED` while retaining the original appointment object. The existing service and regression tests also check that cancelled appointments can still be found by ID and included in appointment listings.
 
 ## G. Ten formative answers
 
