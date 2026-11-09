@@ -78,6 +78,10 @@ Complete before GitHub Copilot. Record any interface/integrity decision and its 
 | QRY-04 | Blank, whitespace or non-text practitioner ID | Service validation | Raise `ValueError` | `test_listing_invalid_practitioner_id_raises_value_error` |
 | QRY-04 | Non-enum status such as `"scheduled"` | Service validation | Raise `ValueError` | `test_listing_invalid_status_raises_value_error` |
 
+u3119457 (human design): For the service-level appointment listing, I decided to keep validation in AppointmentService rather than putting it in the query function.
+The service checks that the status filter is a valid AppointmentStatus value or None, and that the practitioner is registered. An invalid ID or filter raises ValueError, while an unknown practitioner raises LookupError.
+A valid practitioner with no matching appointments should receive an empty list, not an error. The service then passes the appointments to select_appointments(), which handles the filtering and sorting.
+This keeps the responsibilities separate and avoids changing the original appointments or losing cancelled history.
 
 Cover QRY-01–04, FP-01–03, UI-01–02 and relevant FR-01–09. Explain empty versus unknown versus invalid, enum conversion, actual object identity, error handling and unchanged state on rejection: <!-- response -->
 
@@ -117,16 +121,26 @@ Include registration/find, booking, conflict rejection, different-practitioner b
 Human design completed before AI: <!-- reference -->
 Actual prompt/context supplied: <!-- paste or accessible reference -->
 u3308969: [Copilot Prompt](https://github.com/soulsbyrohan/st1-assignment-3/commit/d3b59a07db4db20ec82106827324e75aec99258f#commitcomment-208920251)
+u3119457: [Copilot Prompt](https://github.com/soulsbyrohan/st1-assignment-3/pull/16#issuecomment-6739338286)
 Actual response: <!-- accessible reference -->
 u3308969: [Copilot Response](https://github.com/soulsbyrohan/st1-assignment-3/commit/d3b59a07db4db20ec82106827324e75aec99258f#commitcomment-208920279)
+u3119457: [Copilot Response](https://github.com/soulsbyrohan/st1-assignment-3/pull/16#issuecomment-6739433255)
 
 | AI finding | Code/test evidence | Severity | Accept/Modify/Reject and reason | Change or no change | Actual verification |
 |---|---|---|---|---|---|
 | u3308969: Date/time validation correct | `parse_date_time()` and `test_console.py` | None | Accept — validation meets requirements | No change | 40 focused tests passed |
 | u3308969: Booking and cancellation rules preserved | `AppointmentService` and `test_services.py` | None | Accept — existing business rules are preserved | No change | 40 focused tests passed |
 | u3308969: Uncaught `EOFError` | Console booking and cancellation helpers | Low | Modify/defer — better handled at menu level | No change to helpers | No EOF-specific test performed |
+| u3119457: Service validation and query coordination correct | `services.py`, `data_store.py` and `queries.py` | Optional | Accept — the service correctly validates inputs and uses the query for listing | No change | 11 focused tests passed; 85 full-suite tests passed |
+| u3119457: Successful listing and status filtering not tested | `make_appointments()` and `test_services.py` | Important | Modify — agreed more testing was needed, but one combined test covers the main requirements without adding unnecessary separate tests | Added `test_listing_with_existing_appointments()` to test successful listing, filtering, ordering and cancelled history | 11 tests passsed locally |
+| u3119457: New list and original object identity not verified | `test_services.py` and `test_queries.py` | Important | Modify — included checks in the same combined test rather than creating another test | Added assertions for a new list and original appointment objects | PASSED — test_listing_with_existing_appointments |
+| u3119457: Failed requests not tested with existing appointments | `test_services.py` previously checked invalid inputs using an empty store | Important | Modify — included an invalid-status request with existing appointments in the combined test | Added checks that stored appointment order and statuses remain unchanged after rejection | PASSED — test_listing_with_existing_appointments |
+| u3119457: Console listing not implemented | `run_menu()` in `console.py` | Important | Accept/defer — console integration is required for Stage 9 but is assigned to another group member | No change to my service code; console integration to be completed by the group | Console verification to be finished |
+| u3119457: Missing type annotations in test helpers | `listing_setup()` and `make_appointments()` | Optional | Reject — annotations are not necessary for the required functionality and the existing helpers are readable | No change | No functional defect identified |
 
 Responsibility check: explain how domain invariants, shared-store collections, service coordination, pure queries and console effects remain separate: <!-- response -->
+
+u3119457: The domain classes maintain valid appointment data and cancellation rules. The data store keeps the registered patients, practitioners and appointments. The service validates practitioner IDs and status filters, while the query filters and sorts the appointments without changing the stored records. Keeping these responsibilities separate makes the application easier to understand and test
 
 ## F. Required reflections
 
