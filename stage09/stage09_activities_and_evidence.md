@@ -110,8 +110,8 @@ Responsibility check: explain how domain invariants, shared-store collections, s
 4. Why use a named key, and what breaks equal-time ties? A named key allows for sorting to be customised or improved without modifying the exisiting objects.
 5. How do default and explicit status filters differ? In this SmartCare system, when status is None that means that the appointment status is optional, which is default status. Explicit status is where a status is specified, when a specific status is supplied, only appointments with that status are included in the result.
 6. How do empty, unknown practitioner and invalid filter cases differ? Empty means that there are no appointments in the list or that match the criteria, unknown practitioner means the practitioner ID provided doesn't match any appointment, and an invalid filter means something, the filter key or appointment status, isn't recognised.
-7. Which console errors recover, and how is unchanged state checked? <!--response-->
-8. What is data integrity for registered participants, conflicts and history? <!-- response -->
+7. Which console errors recover, and how is unchanged state checked? Invalid dates, unknown IDs, booking conflicts and repeated cancellations display an error without terminating the console. Tests will check that any rejected operations do not change any existing appointment records.
+8. What is data integrity for registered participants, conflicts and history? Data integrity means appointments reference registered patients and practitioners, conflicting bookings are rejected and cancelled appointments remain accessible and stored without deleting them.
 9. What is Copilot's review role, and who verifies findings? Copilt can act as in assistant in reviewing, as it is able to identify smells, improvements and issues. However, all suggestions and observations made by Copilot must be verified and checked by the student.
 10. How do pure functions and OOP responsibilities work together? Pure functions and OOP responsibilities work together by separating duties. OOP organises data and information into objects, and pure functions use thos objects to perform tasks. 
 
