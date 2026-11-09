@@ -12,14 +12,14 @@ Stage 8 integrated SHA, command, working directory and actual result: <!-- compl
 
 | Information | Required session/domain or transient state? | Requirement or reason |
 |---|---|---|
-| Patient identity | | |
-| Appointment history | | |
-| Temporary menu choice | | |
-| Practitioner specialty | | |
-| Debug print output | | |
-| Appointment status | | |
+| Patient identity | Session/Domain | Must identify the patient throughout the session in order to ensure that appointments are linked to the correct patient. |
+| Appointment history | Session/Domain | All appointments, scheduled, completed or cancelled, must be available for lookup. |
+| Temporary menu choice | Transient | Only needed when the user is making a selection. |
+| Practitioner specialty | Session/Domain | Is part of practitioner information and is required when making appointments. |
+| Debug print output | Transient | Used only for temporary debugging. |
+| Appointment status | Session/Domain | Required to track whether an appointment is scheduled, completed or cancelled. |
 
-What is intentionally lost on exit? <!-- response -->
+What is intentionally lost on exit? Temporary data, such as menu choices and debugging outputs, is intentionally lost on exit.
 
 ### A2 Interface and domain data plan
 
@@ -109,7 +109,7 @@ Responsibility check: explain how domain invariants, shared-store collections, s
 3. How can a new list reuse Appointment objects safely? A new list can reuse Appointment objects safely as long as the new list doesn't modify objects in Appointment class. 
 4. Why use a named key, and what breaks equal-time ties? A named key allows for sorting to be customised or improved without modifying the exisiting objects.
 5. How do default and explicit status filters differ? In this SmartCare system, when status is None that means that the appointment status is optional, which is default status. Explicit status is where a status is specified, when a specific status is supplied, only appointments with that status are included in the result.
-6. How do empty, unknown practitioner and invalid filter cases differ? Empty means that there are no appointments in the list or that match the criteria, unknown practitioner means the practitioner ID provided doesn't match any appointment, and an invalid filter means something, the filter key or appointment status, isn't recognised.
+6. How do empty, unknown practitioner and invalid filter cases differ? An empty result means no appointment matching the criteria. An unknown practitioner mean the provided practitioner ID shouldn't match the registered practitioner. Invalid filter means the practitioner ID or appointment status isn't the correct type or format.
 7. Which console errors recover, and how is unchanged state checked? Invalid dates, unknown IDs, booking conflicts and repeated cancellations display an error without terminating the console. Tests will check that any rejected operations do not change any existing appointment records.
 8. What is data integrity for registered participants, conflicts and history? Data integrity means appointments reference registered patients and practitioners, conflicting bookings are rejected and cancelled appointments remain accessible and stored without deleting them.
 9. What is Copilot's review role, and who verifies findings? Copilt can act as in assistant in reviewing, as it is able to identify smells, improvements and issues. However, all suggestions and observations made by Copilot must be verified and checked by the student.
