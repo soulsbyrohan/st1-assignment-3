@@ -14,11 +14,12 @@ from smartcare.services import (
 
 
 def parse_date_time(text: str) -> datetime:
-    """Parse YYYY-MM-DD HH:MM; raise ValueError for invalid input."""
+    """Parse YYYY-MM-DD HH:MM and reject invalid dates."""
     if (
         not isinstance(text, str)
         or re.fullmatch(
-            '[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}', text
+            r'[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}',
+            text,
         ) is None
     ):
         raise ValueError('Use date/time format YYYY-MM-DD HH:MM')
@@ -43,7 +44,7 @@ def format_appointment(appointment: Appointment) -> str:
 
 
 def run_demo() -> None:
-    """Demonstrate registration and booking using synthetic records."""
+    """Demonstrate registration and booking with synthetic records."""
     data_store = SmartCareDataStore()
     patients = PatientService(data_store)
     practitioners = PractitionerService(data_store)
@@ -71,7 +72,7 @@ def run_demo() -> None:
 
 
 def run_menu() -> None:
-    """Run the interactive SmartCare menu with one shared data store."""
+    """Run the interactive SmartCare menu using one shared store."""
     data_store = SmartCareDataStore()
     patients = PatientService(data_store)
     practitioners = PractitionerService(data_store)
@@ -110,7 +111,9 @@ def run_menu() -> None:
                 patient_id = input('Enter patient ID: ').strip()
 
                 patient = patients.find_patient(patient_id)
-                print(f'Patient found: {patient.patient_id} - {patient.name}')
+                print(
+                    f'Patient found: {patient.patient_id} - {patient.name}'
+                )
 
             elif choice == '3':
                 practitioner_id = input(
@@ -232,3 +235,46 @@ def run_menu() -> None:
             print('\nExiting SmartCare.')
             print('Session data will be lost.')
             break
+
+
+def handle_book_appointment(service: AppointmentService) -> None:
+    """Handle a booking using the existing appointment service."""
+    try:
+        # Ask the user to enter the details needed for a booking
+        appointment_id = input('Appointment ID: ')
+        patient_id = input('Patient ID: ')
+        practitioner_id = input('Practitioner ID: ')
+        date_text = input('Date (YYYY-MM-DD): ')
+        time_text = input('Time (HH:MM): ')
+
+        # Convert the entered date and time into a datetime object
+        when = parse_date_time(f'{date_text} {time_text}')
+
+        # Use the existing appointment service to create the booking
+        appointment = service.book_appointment(
+            appointment_id, patient_id, practitioner_id, when
+        )
+
+        # Display a confirmation with the booked appointment details
+        print(f'Appointment booked: {format_appointment(appointment)}')
+
+    # Handle invalid inputs or unknown records without crashing
+    except (ValueError, LookupError) as error:
+        print(f'Error: {error}')
+
+
+def handle_cancel_appointment(service: AppointmentService) -> None:
+    """Handle cancellation using the existing appointment service."""
+    try:
+        # Ask the user which appointment they want to cancel
+        appointment_id = input('Appointment ID to cancel: ')
+
+        # Use the existing service to cancel the appointment
+        appointment = service.cancel_appointment(appointment_id)
+
+        # Display the cancelled appointment details
+        print(f'Appointment cancelled: {format_appointment(appointment)}')
+
+    # Handle invalid IDs, unknown appointments or repeated cancellation
+    except (ValueError, LookupError) as error:
+        print(f'Error: {error}')

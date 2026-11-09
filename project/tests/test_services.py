@@ -663,3 +663,141 @@ def test_duplicate_patient_id_is_rejected():
 
     assert service.find_patient('P1') is original
     assert original.name == 'Alex Example'
+
+# =========================================================
+# STAGE 09 - SERVICE APPOINTMENT LISTING AND VALIDATION
+# =========================================================
+
+@pytest.fixture
+def listing_setup():
+    ##Create fresh patients, practitioners and services for each test
+    store = SmartCareDataStore()
+    patients = PatientService(store)
+    practitioners = PractitionerService(store)
+
+    patients.register_patient('P1', 'Alex Example')
+    second_patient = patients.register_patient('P2', 'Sam Example')
+    first_practitioner = practitioners.register_practitioner(
+        'D1', 'Taylor Example', 'General'
+    )
+    practitioners.register_practitioner(
+        'D2', 'Jordan Example', 'Cardiology'
+    )
+
+    return store, AppointmentService(store), second_patient, first_practitioner
+
+
+def make_appointments(listing_setup):
+    ##Prepare appointments with different times, statuses and practitioners
+    store, service, second_patient, first_practitioner = listing_setup
+    nine = datetime(2026, 10, 1, 9)
+    ten = datetime(2026, 10, 1, 10)
+    eleven = datetime(2026, 10, 1, 11)
+
+    # Book 10 am first to check that listing puts appointments in time order.
+    later = service.book_appointment('A9', 'P1', 'D1', ten)
+
+    # Keep A2 as cancelled history, then reuse its 9 am time slot for A1.
+    cancelled = service.book_appointment('A2', 'P1', 'D1', nine)
+    service.cancel_appointment('A2')
+    replacement = service.book_appointment('A1', 'P2', 'D1', nine)
+
+    # Add a completed appointment to check all three status filters.
+    completed = Appointment(
+        'A5', second_patient, first_practitioner,
+        eleven, AppointmentStatus.COMPLETED
+    )
+    store.add_appointment(completed)
+
+    # D2's appointment must not appear when listing D1's appointments.
+    other = service.book_appointment('B1', 'P2', 'D2', nine)
+
+    return store, service, replacement, cancelled, later, completed, other
+
+
+def test_listing_known_practitioner_with_no_appointments(listing_setup):
+    ##A registered practitioner with no bookings gets an empty list
+    store, service, _, _ = listing_setup
+
+    assert service.list_practitioner_appointments('D1') == []
+    assert store.list_appointments() == []
+
+
+def test_listing_unknown_practitioner_raises_lookup_error(listing_setup):
+    ##An ID that is valid but not registered raises LookupError
+    store, service, _, _ = listing_setup
+
+    with pytest.raises(LookupError):
+        service.list_practitioner_appointments('D999')
+
+    assert store.list_appointments() == []
+
+@pytest.mark.parametrize('invalid_id', ['', '   ', None, 42])
+
+def test_listing_invalid_practitioner_id_raises_value_error(
+    listing_setup, invalid_id
+):
+    ##Blank IDs and values that are not text must be rejected
+    store, service, _, _ = listing_setup
+
+    with pytest.raises(ValueError):
+        service.list_practitioner_appointments(invalid_id)
+
+    assert store.list_appointments() == []
+
+@pytest.mark.parametrize('invalid_status', ['scheduled', '', 1, False])
+
+def test_listing_invalid_status_raises_value_error(
+    listing_setup, invalid_status
+):
+    ##Status filters must use AppointmentStatus, not strings or numbers
+    store, service, _, _ = listing_setup
+
+    with pytest.raises(ValueError):
+        service.list_practitioner_appointments('D1', invalid_status)
+
+def test_listing_with_existing_appointments(listing_setup):
+    # Set up appointments with different times and statuses.
+    store, service, replacement, cancelled, later, completed, other = (
+        make_appointments(listing_setup)
+    )
+
+    # Remember the appointments and their statuses before listing.
+    before = store.list_appointments()
+    before_statuses = [a.status for a in before]
+
+    # D1 should get all appointments in the correct order.
+    result = service.list_practitioner_appointments('D1')
+
+    assert result == [replacement, cancelled, later, completed]
+    assert [a.appointment_id for a in result] == [
+        'A1', 'A2', 'A9', 'A5'
+    ]
+
+    # D2's appointment should not appear.
+    assert other not in result
+
+    # Check that each status filter works.
+    assert service.list_practitioner_appointments(
+        'D1', AppointmentStatus.SCHEDULED
+    ) == [replacement, later]
+
+    assert service.list_practitioner_appointments(
+        'D1', AppointmentStatus.CANCELLED
+    ) == [cancelled]
+
+    assert service.list_practitioner_appointments(
+        'D1', AppointmentStatus.COMPLETED
+    ) == [completed]
+
+    # The result must be a new list with the original objects.
+    assert result is not before
+    assert result[0] is replacement
+    assert result[1] is cancelled
+
+    # An invalid request should not change existing appointments.
+    with pytest.raises(ValueError):
+        service.list_practitioner_appointments('D1', 'scheduled')
+
+    assert store.list_appointments() == before
+    assert [a.status for a in store.list_appointments()] == before_statuses
