@@ -755,3 +755,49 @@ def test_listing_invalid_status_raises_value_error(
 
     with pytest.raises(ValueError):
         service.list_practitioner_appointments('D1', invalid_status)
+
+def test_listing_with_existing_appointments(listing_setup):
+    # Set up appointments with different times and statuses.
+    store, service, replacement, cancelled, later, completed, other = (
+        make_appointments(listing_setup)
+    )
+
+    # Remember the appointments and their statuses before listing.
+    before = store.list_appointments()
+    before_statuses = [a.status for a in before]
+
+    # D1 should get all appointments in the correct order.
+    result = service.list_practitioner_appointments('D1')
+
+    assert result == [replacement, cancelled, later, completed]
+    assert [a.appointment_id for a in result] == [
+        'A1', 'A2', 'A9', 'A5'
+    ]
+
+    # D2's appointment should not appear.
+    assert other not in result
+
+    # Check that each status filter works.
+    assert service.list_practitioner_appointments(
+        'D1', AppointmentStatus.SCHEDULED
+    ) == [replacement, later]
+
+    assert service.list_practitioner_appointments(
+        'D1', AppointmentStatus.CANCELLED
+    ) == [cancelled]
+
+    assert service.list_practitioner_appointments(
+        'D1', AppointmentStatus.COMPLETED
+    ) == [completed]
+
+    # The result must be a new list with the original objects.
+    assert result is not before
+    assert result[0] is replacement
+    assert result[1] is cancelled
+
+    # An invalid request should not change existing appointments.
+    with pytest.raises(ValueError):
+        service.list_practitioner_appointments('D1', 'scheduled')
+
+    assert store.list_appointments() == before
+    assert [a.status for a in store.list_appointments()] == before_statuses
