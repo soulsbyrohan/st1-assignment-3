@@ -226,3 +226,4 @@ def test_different_practitioners_can_share_time(monkeypatch, capsys):
     assert 'A1: P1 with DR1, 2026-12-01 09:00, scheduled' in output
     assert 'A2: P1 with DR2, 2026-12-01 09:00, scheduled' in output
     assert 'Practitioner already has a SCHEDULED appointment' not in output
+        
