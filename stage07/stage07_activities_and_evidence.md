@@ -86,20 +86,17 @@ Why can 100% code coverage coexist with poor software verification?
 | FR-01 | Whitespace characters as ID are rejected | Test-01-05 | Domain | test_whitespace_patient_id_rejected() in test_domain.py | Patient ID is rejected and raises ValueError | Passed | Student-authored  |
 | FR-01 | Blank name is rejected | Test-01-06 | Domain | test_blank_patient_name_rejected() in test_domain.py | Patient name is rejected and raises ValueError | Passed | Student-authored  |
 | FR-01 | Whitespace characters as name are rejected | Test-01-07 | Domain | test_whitespace_patient_name_rejected() in test_domain.py | Patient name is rejected and raises ValueError | Passed | Student-authored  |
-
 | FR-05 | successful booking contract | TEST-FR05-01 | Positive | `tests/test_services.py::test_fr05_available_practitioner_booking` | Available practitioner can be booked; appointment has correct participants, date/time and `SCHEDULED` status. | PASS | Student-authored |
 | FR-05 | AC-04.1 | TEST-FR05-02 | Negative | `tests/test_services.py::test_fr05_same_practitioner_same_time_rejected` | Same practitioner at the same date/time is rejected with `ValueError`; no second record is created. | PASS | Student-authored |
 | FR-05 | AC-04.2 | TEST-FR05-03 | Positive | `tests/test_services.py::test_fr05_different_practitioners_same_time_allowed` | Different practitioners may each have an appointment at the same date/time. | PASS | Student-authored |
 | FR-05 | exact datetime conflict contract | TEST-FR05-04 | Boundary | `tests/test_services.py::test_fr05_same_practitioner_different_times_allowed` | Same practitioner can be booked at 09:00 and 09:01. | PASS | Student-authored |
 | FR-05 / FR-07 | cancelled bookings do not block rebookings | TEST-FR05-05 | Positive / state transition | `tests/test_services.py::test_fr05_cancelled_slot_can_be_rebooked` | Cancelled appointment remains stored; a replacement booking at the same slot succeeds. | PASS | Student-authored |
 | FR-05 | AC-04.1 | TEST-FR05-06 | Negative / integrity | `tests/test_services.py::test_fr05_conflict_does_not_modify_existing_booking` | Rejected booking leaves original appointment fields and appointment collection unchanged. | PASS | Student-authored |
-
 | FR-06 | AC-05.1 | TEST-06-01 | Positive domain | test_domain_cancel_scheduled_appointment | Scheduled appointment changes to CANCELLED | PASS | Student-authored |
 | FR-06 | AC-05.3 | TEST-06-02 | Negative domain | test_domain_cancel_already_cancelled | Repeated cancellation raises ValueError; status remains CANCELLED | PASS | Student-authored |
 | FR-06 | Completed-state cancellation contract | TEST-06-03 | Negative domain | test_domain_cancel_completed_appointment | Completed cancellation raises ValueError; status remains COMPLETED | PASS | Student-authored |
 | FR-06 | AC-05.1 | TEST-06-04 | Positive service | test_cancel_scheduled_appointment | Service cancels a scheduled appointment, changes its status to CANCELLED and returns the original object | Previously PASS | Student-authored |
 | FR-06 | AC-05.3 | TEST-06-05 | Negative service | test_cancel_already_cancelled_appointment | Repeated cancellation raises ValueError and leaves the status unchanged | PASS | Student-authored |
-
 | FR-07 | AC-05.2| TEST-FR07-01 | Positive / integration | test_fr07_cancelled_history_is_found_by_id_and_in_list | Cancelled A1 remains identical via service lookup, store lookup and listing | PASS | Student-authored|
 | FR-07 | AC-05.2 | TEST-FR07-02 | Positive / integration |test_fr07_rebooking_does_not_erase_cancelled_history | Original cancelled and replacement bookings both remain stored | PASS | Student-authored |
 | FR-07 | AC-05.2 | TEST-FR07-03 | Negative | test_fr07_repeated_cancellation_preserves_history | `ValueError`; status and stored list exactly unchanged | PASS | Student-authored |

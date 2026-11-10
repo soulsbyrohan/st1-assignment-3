@@ -4,7 +4,7 @@ Common UG and PG record. All Assignment 3 stage materials are provided from the 
 
 Group: Group 1 (Wednesday 2:30pm-4:30pm)
 
-Members and responsibilities: u3325731 — console and workflow integration; u3119457 — service-level listing and validation; u3308969 — date/time and booking/cancellation console review. Confirm the full group allocation before submission.
+Members and responsibilities: u3325731 — console and workflow integration; u3119457 — service-level listing and validation; u3308969 — date/time and booking/cancellation console review. Confirm the full group allocation before submission; u3306036 - query implementation and testing.
 
 Stage 8 integrated SHA, command, working directory and actual result: `b2716a8112d112b8afee87479232bfd185758cc9` (earlier confirmed Stage 8 main checkpoint); `py -m pytest -q` from `project/`: 61 passed. Verify whether a later Stage 8 documentation commit changed the final baseline.
 

@@ -5,12 +5,15 @@ Baseline: Stage 6 foundation, 2026 revision 2. This starter deliberately leaves 
 
 ## Group index
 
-- Group and tutorial: [complete]
-- Member names, GitHub usernames and UG/PG cohorts: [complete]
-- Shared repository URL: [complete]
-- Latest completed stage: [complete]
-- Verified code SHA: [complete]
-- Test command, working directory and observed result: [complete]
+- Group and tutorial: Group 1 Wednesday 2:30pm-4:30pm
+- Member names, GitHub usernames and UG/PG cohorts: Rohan Soulsby, soulsbyrohan | Ishraf Anas, Ishraf-Chy | Emily Nicole, EmilyNicLynh | Thomas Crowley, ThomasLongCrowley. UG
+- Shared repository URL: https://github.com/soulsbyrohan/st1-assignment-3
+- Latest completed stage: Stage 12
+- Verified code SHA: 3aa1be27cb16ca40da3732f4777c0d80b82d7376 
+- Test command, working directory and observed result: 
+<br>Working directory: `project/`
+<br>Test Command: `python -m pytest -q`
+<br>Observed Result: 99 passed
 - Final submitted SHA, if different from tested code SHA: [complete; explain evidence-only changes]
 
 Do not put student IDs, private peer ratings, credentials or personal contact details here.

@@ -2,8 +2,8 @@
 
 BLANK student response template. Supplied from the beginning in stage12/ in your EXISTING repository; complete it only when you reach Stage 12 after the previous applicable stage is integrated, verified and recorded; preserve project/, tests, earlier records and Git history. UG/common and PG/extended scope must be explicit. Use concise results and versioned links, not copied logs or source. No staff answers or fabricated approvals.
 
-Group/tutorial: [response]
-Members and UG/PG applicability: [response]
+Group/tutorial: Group 1 Wednesday 2:30pm-4:30pm
+Members and UG/PG applicability: UG
 
 
 ## A Release scope and starting SHA
@@ -18,24 +18,23 @@ Feature freeze / owner / verifier: [response]
 
 ## B Requirements and release readiness matrix
 
-Tutorial activity 1: All tests pass, README setup is incomplete, one dependency is unreviewed and a known limitation is undocumented. Decide Release / Release with conditions / Do not release and justify: [response]
+Tutorial activity 1: All tests pass, README setup is incomplete, one dependency is unreviewed and a known limitation is undocumented. Decide Release / Release with conditions / Do not release and justify:
+<br>Release with conditions - All tests passed, meaning all implementations work correctly, however README setup is incomplete, one dependency is unreviewed and a known limitation is undocumented. These issues should be fixed before release, but they don’t affect the actual behaviour of the software.
+
 
 Tutorial activity 2 and actual readiness matrix. Add exact requirement/acceptance IDs, evidence and reviewer; distinguish common/PG applicability.
 
 | Release claim / requirement / scope | Evidence | Location/link and SHA | Reviewer | Sufficient? | Gap/action |
 |---|---|---|---|---|---|
-| Cancellation history works | [response] | [response] | [response] | [response] | [response] |
-| Architecture responsibilities are appropriate | [response] | [response] | [response] | [response] | [response] |
-| Rescheduling is safe — PG only | [response] | [response] | [response] | [response] | [response] |
-| AI use is responsible — common recheck / PG assurance | [response] | [response] | [response] | [response] | [response] |
-| System is maintainable | [response] | [response] | [response] | [response] | [response] |
-| FR-01–03 register/find and validation | [response] | [response] | [response] | [response] | [response] |
-| FR-04–05 booking/conflict rules | [response] | [response] | [response] | [response] | [response] |
-| FR-06–08 cancellation/history/find | [response] | [response] | [response] | [response] | [response] |
-| FR-09 and QRY/FP listing/filter/order/purity | [response] | [response] | [response] | [response] | [response] |
-| UI full console sequence and error recovery | [response] | [response] | [response] | [response] | [response] |
+| Cancellation history works | FR-06 and FR-07 tests confirm that cancelled appointments are stored | test_services.py and test_regressions.py | u3306036 | Yes | None |
+| Architecture responsibilities are appropriate | [response] | [response] | All members | Yes | None |
+| System is maintainable | Readable code structure, tests, named functions | Source code and pull reviews | All members | Yes | None |
+| FR-01–03 register/find and validation | FR-01 and FR-03 tests confirm that registration, lookup and validation work; invalid IDs are rejected | test_services.py and test_domain.py | u3308969 | Yes | None |
+| FR-04–05 booking/conflict rules | FR-04 and FR-05 tests confirm that an available practitioner can be booked and cannot be double-booked, different practitioners can share a time slot and the same practitioner can have different time slots.  | test_services.py and test_domain.py | u3306036 | Yes | None |
+| FR-06–08 cancellation/history/find | FR-06 and FR-08 tests confirm that only a SCHEDULED appointment can be cancelled, and cancelled appointments remain in history and can be searched up. | test_services.py and test_regressions.py | u3119457 | Yes | None |
+| FR-09 and QRY/FP listing/filter/order/purity | FR-09 and QRY/FP tests confirm appointment lists can be filtered, sorted and returned in new lists without modifying the  | test_queries.py | u3308969 | Yes | None |
+| UI full console sequence and error recovery | [response] | [response] | u3308969 | [response] | [response] |
 | Session-only scope / FR-10 retired | [response] | [response] | [response] | [response] | [response] |
-| PG RES and assurance integration | [response] | [response] | [response] | [response] | [response] |
 
 
 ## C Full regression results
@@ -116,20 +115,43 @@ Missing local file or setup gap / remedy and recheck: [response]
 
 ## G Known limitations debt and release notes
 
-Delivered features: [response]
-Important fixes: [response]
-Architecture/quality improvements: [response]
-Known limitations: [response]
-AI-assisted development note: [response]
+Delivered features:
+- Patient/practitioner registration and lookup
+- Appointment booking and cancellation with retained history
+- Practitioner conflicting checking
+- Appointment filtering by status
+- Appointment sorting by date and time and appointment ID
+- Console interaction
+
+
+Important fixes:
+- Invalid ID rejection
+- Practitioner conflict checking
+- Cancelled appointment storage
+- Appointment filtering and sorting
+
+
+Architecture/quality improvements:
+- Responsibilities are separated across services, shared data store, domain classes, query functions and a console interface
+
+
+Known limitations:
+- No login system
+- No database - data store stores data for current session and data is lost when program is exited
+
+
+AI-assisted development note:
+Github Copilot was used in this project to assist in review and offer suggestions and possible improvements.
+
 
 | Debt item | Impact | Priority | Future action | Accepted? / release rationale |
 |---|---|---|---|---|
 | [response] | [response] | [response] | [response] | [response] |
-Session-only synthetic data and minute-precision local time: [response]
-Production auth/roles, portal, notifications, billing/insurance, clinical AI exclusions: [response]
-Scale/concurrency, timezone policy, operations/monitoring, accessibility/usability limitations: [response]
-Difference between accepted scope limit and unresolved required behaviour: [response]
-PG assurance residual risks / owner / status or not applicable: [response]
+Session-only synthetic data and minute-precision local time: Session-only synthetic data and minute-precision local time: Synthetic data is stored in each session, all data is lost once program is exited | Data is lost once program exited | Medium | Add a database | Accepted - Out of scope of project requirements |
+Production auth/roles, portal, notifications, billing/insurance, clinical AI exclusions: User authentication and access control, push notifications, payment and insurance handling, clinical AI assistance | Cannot support healthcare clinics | High | Implement user authentication and access control, push notifications, payment and insurance handling and clinical AI assistance features | Accepted - Out of scope of project requirements |
+Scale/concurrency, timezone policy, operations/monitoring, accessibility/usability limitations: Limited scale, concurrency, timezone handling, operations and monitoring, and accessibility and usability | System may not be able to handle working with multiple users or operations | Medium | Implement scale and concurrency, timezone handling, operations and monitoring, and accessibility and usability support | Accepted - Out of scope of project requirements |
+Difference between accepted scope limit and unresolved required behaviour: Scope limitations and unresolved behaviour | Scope limitations can still allow for release, but unresolved behaviour prevents release | High | State scope and verify all behaviours are tested and work correctly | Accepted - Out of scope of project requirements |
+
 
 
 ## H Release findings and corrective action
@@ -199,25 +221,36 @@ Remaining administration or release dependency: [response]
 
 ## M Formative questions
 
-1. What is a release candidate? [response]
 
-2. What is feature freeze and why is it used? [response]
+1. What is a release candidate? A release candidate is a pre-release version of a software containing all of its planned features coded, completed and tested. It is the near-final version of a software.
 
-3. What is regression testing in a release context? [response]
 
-4. What is a known limitation? [response]
+2. What is feature freeze and why is it used? A feature freeze is a period during software development where features stop being added or changed to allow testers to have time to find and fix any bugs in the program.
 
-5. What is technical debt? [response]
 
-6. What are release notes? [response]
+3. What is regression testing in a release context? Regression testing, in a context release, is where functional and non-functional tests are rerun on existing softwares after changes have been made to the code, bugs have been fixed or new features have been added.
 
-7. What is software maintenance? [response]
 
-8. What is the purpose of the individual demonstration/viva? [response]
+4. What is a known limitation? A known limitation is an acknowledged limitation, boundary or weakness in a system.
 
-9. What should the final responsible-AI check establish before release? [response]
 
-10. What is the main course conclusion about AI and the role of the software engineer? [response]
+5. What is technical debt? Technical debt is the future cost as a result of choosing quick and temporary solutions, over long term, sustainable choices, during software development.
+
+
+6. What are release notes? Release notes are documentation that comes with the launch of a new software product or the launch of an update in a software.
+
+
+7. What is software maintenance? Software maintenance is the practice of updating, modifying and managing a software after it has been launched in order to keep the software efficient, secure and reliable.
+
+
+8. What is the purpose of the individual demonstration/viva?  The purpose of the individual demonstration/viva is to ensure that the development team can verify their technical ownership. It also assesses the team’s understanding of the product in terms of design choices, implementation decisions and team member contributions.
+
+
+9. What should the final responsible-AI check establish before release? The final responsible-AI check before release should establish the system meets all requirements and behaves correctly, and also checks the reliability and security of the software. All AI reviews and suggestions must be verified and assessed by a human team member.
+
+
+10. What is the main course conclusion about AI and the role of the software engineer? The main course conclusion about AI and the role of the software engineer is that AI is a helpful and intelligent tool to use in software development, testing and documentation, however it does not replace the software engineer. The soft engineer is still responsible for verifying all AI suggestions, design and implementation decisions, and ensuring the final product meets all requirements.
+
 
 
 ## N Reflection viva and handover
