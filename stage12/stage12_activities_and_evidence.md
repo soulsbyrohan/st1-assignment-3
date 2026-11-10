@@ -38,41 +38,50 @@ Tutorial activity 2 and actual readiness matrix. Add exact requirement/acceptanc
 | PG RES and assurance integration | [response] | [response] | [response] | [response] | [response] |
 
 
-## C Full regression results
+### C. Integrated Regression Testing
 
-| Suite/scope | Environment/version | Working directory and command | Tested SHA | Actual result | Evidence link |
-|---|---|---|---|---|---|
-| Complete common | [response] | [response] | [response] | [response] | [response] |
-| Complete PG if applicable | [response] | [response] | [response] | [response] | [response] |
-| Affected focused checks after correction | [response] | [response] | [response] | [response] | [response] |
-| Full integrated recheck | [response] | [response] | [response] | [response] | [response] |
-Prior assertions preserved / reviewed test diff: [response]
-Remaining failure / limitation: [response]
+The integrated SmartCare application was tested after the workflow test corrections were merged into the main branch.
+
+- **Branch:** `main`
+- **Commit SHA:** `3aa1be27cb16ca40da3732f4777c0d80b82d7376`
+- **Command:** `py -m pytest -q`
+- **Result:** 99 passed in 0.42 seconds, with no failures.
+
+During an earlier regression run, two workflow tests failed because their assertions expected outdated console success messages. The test expectations were corrected to match the current implementation, and the corrections were merged through a pull request.
+
+A fresh regression run on the updated main branch confirmed that all 99 tests passed, including the Option 8 listing/filtering and different-practitioner booking scenarios.
+
+### D. Manual Console Demonstration
+
+The SmartCare console was launched using `py main.py --interactive`. A continuous interactive session was used to demonstrate patient and practitioner registration, appointment booking, conflict handling, cancellation, lookup, filtering, chronological sorting and error recovery.
+
+**Observed results:**
+
+| Scenario | Result |
+|---|---|
+| Register and retrieve practitioners | DR1 and DR2 registered successfully; DR1 lookup succeeded |
+| Practitioner booking conflict | A2 rejected because DR1 already had a scheduled appointment at the requested time |
+| Different practitioner at same time | A3 successfully booked with DR2 |
+| Rejected appointment lookup | A2 returned `Appointment not found` |
+| Cancellation | A1 changed to `cancelled` |
+| Cancellation history | A1 remained retrievable with its original details |
+| Repeated cancellation | Rejected because only scheduled appointments may be cancelled |
+| Appointment isolation | A3 remained scheduled after cancelling A1 |
+| Option 8 status filtering | Cancelled A1 displayed under DR1; scheduled filter returned no matches before new bookings |
+| Practitioner-specific listing | DR1 and DR2 displayed their respective appointments |
+| Unknown practitioner | DR99 returned `Practitioner not found` |
+| Chronological sorting | DR1 appointments displayed in order A1, A5, A4 despite A4 being booked before A5 |
+| Invalid date format | Invalid date input rejected; corrected input accepted |
+
+The demonstration showed that appointment operations maintained consistent session state and that invalid actions did not prevent subsequent valid operations.
 
 
-## D Console and end to end demonstration
+**Manual console demonstration evidence**
 
-| Demo step | Synthetic setup/input | Expected requirement | Observed result | Evidence/link |
-|---|---|---|---|---|
-| Problem and stakeholders | [response] | [response] | [response] | [response] |
-| Register and find Patient and two Practitioners | [response] | [response] | [response] | [response] |
-| Valid booking | [response] | [response] | [response] | [response] |
-| Same practitioner exact-time conflict rejected | [response] | [response] | [response] | [response] |
-| Different practitioner same time allowed | [response] | [response] | [response] | [response] |
-| Cancel SCHEDULED and retain/find CANCELLED object | [response] | [response] | [response] | [response] |
-| Invalid/repeated cancellation rejected | [response] | [response] | [response] | [response] |
-| Default all-status listing | [response] | [response] | [response] | [response] |
-| Explicit filtering / empty vs unknown / deterministic order | [response] | [response] | [response] | [response] |
-| Invalid date/status/menu/lookup recovery and continued operation | [response] | [response] | [response] | [response] |
-| Session-only limitation and normal exit | [response] | [response] | [response] | [response] |
-| One meaningful requirement-linked pytest test explained | [response] | [response] | [response] | [response] |
-| Architecture and one actual AI decision / known limitation | [response] | [response] | [response] | [response] |
-| PG reschedule identity/participants/time and no-op | [response] | [response] | [response] | [response] |
-| PG conflict/invalid status/failure non-mutation | [response] | [response] | [response] | [response] |
-| PG old slot / current lookup/list ordering / assurance risks | [response] | [response] | [response] | [response] |
-Stable demo owner / fresh process / command: [response]
-PG demonstrations through service/tests or not applicable: [response]
+All screenshots for practitioner registration, booking conflicts, cancellation history, Option 8 filtering, and chronological sorting are available in the evidence folder.
 
+[View Stage 12 Console Demonstration Evidence](evidence/)
+    
 
 ## E Final code quality and AI review
 
