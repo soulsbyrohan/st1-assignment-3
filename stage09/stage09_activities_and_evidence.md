@@ -71,6 +71,12 @@ Complete before GitHub Copilot. Record any interface/integrity decision and its 
 
 | Requirement | Input / session data | Operation and responsible component | Expected result or error | Test / evidence |
 |---|---|---|---|---|
+| QRY-01 | Appointment list with practitioner IDs | Calls select_appointments() | Only appointments with D1 are returned | test_only_select_requested_practitioner() |
+| QRY-02 | Appointment list containing scheduled, completed and cancelled appointments | Calls select_appointments() | Appointments are sorted by status | test_qry02_status_filter() |
+| QRY-03 | Original list of appointments | Calls on appointment_sort_key() in select_appointments() | New list is sorted by date and time, and then appointment ID | test_qry03_sorting() |
+| FP-01 | Same appointments with same inputs | Calls select_appointments() | Same results are returned for both | test_fp01_query_is_repeatable() |
+| FP-02 | Original appointment list | Calls select_appointments() | New sorted list is return; original list is unchanged | test_fp02_new_list(), test_fp02_empty_list(), test_fp02_already_sorted() |
+| FP-03 | Appointment object | Calls appointment_sort_key() | Returns appointment date and time, and appointment ID | test_fp03_appointment_key_sort() |
 | FR-04 / UI-01 | Appointment ID, patient ID, practitioner ID and date/time | Console collects input and calls `AppointmentService.book_appointment()` | Valid booking creates a SCHEDULED appointment; invalid inputs or booking conflicts are rejected without altering existing records | `test_console.py` (date validation and formatting), `test_services.py` (booking and conflict rules) |
 | FR-06 / UI-01-02 | Appointment ID | Console calls `AppointmentService.cancel_appointment()` | Valid cancellation changes appointment status to CANCELLED and retains the record; repeated cancellation or invalid IDs display an error without terminating the console | `test_console.py` (cancelled appointment formatting), `test_services.py` (cancellation and retained history) |
 | QRY-04 | Registered practitioner D1 with no appointments | Service listing | Return an empty list `[]` | `test_listing_known_practitioner_with_no_appointments` |
@@ -95,6 +101,12 @@ Successful cancellation retains the original appointment object and changes its 
 
 | Requirement / test ID | Code location | Case and meaningful assertion | Actual result | Evidence link |
 |---|---|---|---|---|
+| QRY-01 - Only the requested practitioner's appointments, with another practitioner as a control | test_queries.py | Query with three appointments, with one practitioner assigned to two and another practitioner assigned to the third. Assert only the appointments with the requested practitioner is returned. | Pass | [PR #18](https://github.com/soulsbyrohan/st1-assignment-3/pull/18#pullrequestreview-5823660128)  |
+| QRY-02 - Default all statuses; each explicit enum status; no-match status produces an empty result | test_queries.py  | Query with three appointments. Assert scheduled and cancelled appointments are in lists, while completed is not as it is a completed appointment. | Pass | [PR #18](https://github.com/soulsbyrohan/st1-assignment-3/pull/18#pullrequestreview-5823660128) |
+| QRY-03 - Date/time ordering and equal-time appointment-ID tie-break, with source order and fields unchanged | test_queries.py  | Query has three appointments and makes a fourth appointment that is scheduled at the same time as appointment one. Assert appointments are sorted date and time, and if they are the same sort by appointment ID | Pass | [PR #18](https://github.com/soulsbyrohan/st1-assignment-3/pull/18#pullrequestreview-5823660128) |
+| FP-01 - Repeat unchanged inputs; inspect code for hidden state, input/output and side effects | test_queries.py | Execute the query twice with the same inputs. Assert the results are the same | Pass | [PR #18](https://github.com/soulsbyrohan/st1-assignment-3/pull/18#pullrequestreview-5823660128) |
+| FP-02 - Distinct returned list for empty, already-sorted and unsorted inputs; contained objects remain unchanged| test_queries.py | Assert result is not appointments | Pass | [PR #18](https://github.com/soulsbyrohan/st1-assignment-3/pull/18#pullrequestreview-5823660128) |
+| FR-03 - Test the named key directly and check sorting actually uses it | test_queries.py | Call appointment_sort_key(). Assert return values are date_time and appointment_id | Pass | [PR #18](https://github.com/soulsbyrohan/st1-assignment-3/pull/18#pullrequestreview-5823660128) |
 | QRY-04 — known empty | `test_services.py` | Registered D1 with no appointments should return `[]`. | FAILED — `NotImplementedError: Stage 9: pure query` | [PR #16](https://github.com/soulsbyrohan/st1-assignment-3/pull/16) |
 | QRY-04 — unknown ID | `test_services.py` | Unknown D999 must raise `LookupError`. | PASSED | [PR #16](https://github.com/soulsbyrohan/st1-assignment-3/pull/16) |
 | QRY-04 — invalid ID | `test_services.py` | Empty, whitespace, `None` and numeric IDs must raise `ValueError`. | PASSED — four parameterised cases | [PR #16](https://github.com/soulsbyrohan/st1-assignment-3/pull/16) |
@@ -118,16 +130,24 @@ Include registration/find, booking, conflict rejection, different-practitioner b
 
 ## E. GitHub Copilot review and human decisions
 
-Human design completed before AI: <!-- reference -->
-Actual prompt/context supplied: <!-- paste or accessible reference -->
-u3308969: [Copilot Prompt](https://github.com/soulsbyrohan/st1-assignment-3/commit/d3b59a07db4db20ec82106827324e75aec99258f#commitcomment-208920251)
-u3119457: [Copilot Prompt](https://github.com/soulsbyrohan/st1-assignment-3/pull/16#issuecomment-6739338286)
-Actual response: <!-- accessible reference -->
-u3308969: [Copilot Response](https://github.com/soulsbyrohan/st1-assignment-3/commit/d3b59a07db4db20ec82106827324e75aec99258f#commitcomment-208920279)
-u3119457: [Copilot Response](https://github.com/soulsbyrohan/st1-assignment-3/pull/16#issuecomment-6739433255)
+Human design completed before AI: 
+<br>u3306036: Queries implementation & query tests.
+<br>Actual prompt/context supplied: <!-- paste or accessible reference -->
+<br>u3306036: [Copilot Prompt](https://github.com/soulsbyrohan/st1-assignment-3/commit/273ecef4e64ebcc193c003755a219be1ea50a617#diff-f62b046c5dcce9c524f27c903ce92b2b2da5ae370b8f893b0dd788418cc8936d)
+<br>u3308969: [Copilot Prompt](https://github.com/soulsbyrohan/st1-assignment-3/commit/d3b59a07db4db20ec82106827324e75aec99258f#commitcomment-208920251)
+<br>u3119457: [Copilot Prompt](https://github.com/soulsbyrohan/st1-assignment-3/pull/16#issuecomment-6739338286)
+<br>Actual response: <!-- accessible reference -->
+<br>u3306036: [Copilot Response](https://github.com/soulsbyrohan/st1-assignment-3/commit/273ecef4e64ebcc193c003755a219be1ea50a617#diff-f62b046c5dcce9c524f27c903ce92b2b2da5ae370b8f893b0dd788418cc8936d)
+<br>u3308969: [Copilot Response](https://github.com/soulsbyrohan/st1-assignment-3/commit/d3b59a07db4db20ec82106827324e75aec99258f#commitcomment-208920279)
+<br>u3119457: [Copilot Response](https://github.com/soulsbyrohan/st1-assignment-3/pull/16#issuecomment-6739433255)
+
 
 | AI finding | Code/test evidence | Severity | Accept/Modify/Reject and reason | Change or no change | Actual verification |
 |---|---|---|---|---|---|
+| u3306036: Query filter, sort and return without modification | queries.py and test_queries.py | None | Accept - matches implementation and tests | No change | Verified through running pytest; all 8 tests passed |
+| u3306036: Console listing workflow is not implemented | console.py and main.py | Important | Modify - observartion is correct but is out of query implementation scope | No change | Console verification to be finished  |
+| u3306036: Add a query-level no-match test with a non-empty input list | test_queries.py | Low | Reject - exisiting provide sufficient evidence for the required query behaviour | No change | Exisiting tests passed; all 8 tests passed |
+| u3306036: Test service recovery with existing records | services.py and test_services.py | Low | Reject - concerns service implementations | No change | Exisiting query tests passed; all 8 tests passed |
 | u3308969: Date/time validation correct | `parse_date_time()` and `test_console.py` | None | Accept — validation meets requirements | No change | 40 focused tests passed |
 | u3308969: Booking and cancellation rules preserved | `AppointmentService` and `test_services.py` | None | Accept — existing business rules are preserved | No change | 40 focused tests passed |
 | u3308969: Uncaught `EOFError` | Console booking and cancellation helpers | Low | Modify/defer — better handled at menu level | No change to helpers | No EOF-specific test performed |
@@ -145,11 +165,13 @@ u3119457: The domain classes maintain valid appointment data and cancellation ru
 ## F. Required reflections
 
 1. Which integration concern was architectural rather than a filtering/sorting detail? <!-- response -->
-u3308969: Making sure that the console used the existing `AppointmentService` methods rather than implementing booking and cancellation rules itself. The console handles user input and errors, while the service manages appointment operations and the domain controls status changes.
+<br>u3306036: The architectural concern was ensuring responsibilities were separated between services, queries and the data store. The query functions only filter and sort appointments and does not handle any other operation.
+<br>u3308969: Making sure that the console used the existing `AppointmentService` methods rather than implementing booking and cancellation rules itself. The console handles user input and errors, while the service manages appointment operations and the domain controls status changes.
 2. Which Copilot suggestion did you reject as over-engineering, and why? <!-- response -->
-u3308969:  Copilot suggested handling `EOFError` when console input closes. I chose not to add this to my booking and cancellation helpers because it was outside their main responsibility. This could be handled at the main menu level if needed.
+<br>u3306036: I rejected the Copilot suggestion of adding a service test, as this suggestion moves onto service implementation when my responsibility was query implementation.
+<br>u3308969:  Copilot suggested handling `EOFError` when console input closes. I chose not to add this to my booking and cancellation helpers because it was outside their main responsibility. This could be handled at the main menu level if needed.
 3. How did you prove cancelled appointments remain retrievable and listable in the same session? <!-- response -->
-u3308969: I used pytest assertions to verify that cancelling an appointment changes its status to `CANCELLED` while retaining the original appointment object. The existing service and regression tests also check that cancelled appointments can still be found by ID and included in appointment listings.
+<br>u3308969: I used pytest assertions to verify that cancelling an appointment changes its status to `CANCELLED` while retaining the original appointment object. The existing service and regression tests also check that cancelled appointments can still be found by ID and included in appointment listings.
 
 ## G. Ten formative answers
 
