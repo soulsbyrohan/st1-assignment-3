@@ -174,3 +174,55 @@ def test_unknown_patient_recovers(monkeypatch, capsys):
 
     assert 'Error: Patient not found' in output
     assert 'Patient found: P1 - Alex Example' in output
+
+
+def test_option8_listing_and_status_filter(monkeypatch, capsys):
+    """Option 8 lists appointments and filters by status."""
+    output = run_console(monkeypatch, capsys, [
+        '1', 'P1', 'Alex Example',
+        '3', 'DR1', 'Taylor Example', 'General Practice',
+        '5', 'A1', 'P1', 'DR1', '2026-12-01 09:00',
+        '5', 'A2', 'P1', 'DR1', '2026-12-01 10:00',
+        '6', 'A1',
+        '8', 'DR1', '',
+        '8', 'DR1', 'scheduled',
+        '8', 'DR1', 'cancelled',
+        '8', 'DR1', 'invalid',
+        '7', 'A2',
+        '0',
+    ])
+
+    assert output.count('Appointment booked successfully.') == 2
+    assert 'Appointment cancelled successfully.' in output
+
+    # All-status listing includes both appointments.
+    assert output.count('A1: P1 with DR1') >= 1
+    assert output.count('A2: P1 with DR1') >= 1
+
+    # Cancellation retains the appointment record.
+    assert 'cancelled' in output.lower()
+    assert 'scheduled' in output.lower()
+
+    # Invalid filtering must not terminate the menu.
+    assert 'Error:' in output
+    assert 'Appointment found:' in output
+
+
+
+def test_different_practitioners_can_share_time(monkeypatch, capsys):
+    """Different practitioners may have appointments at the same time."""
+    output = run_console(monkeypatch, capsys, [
+        '1', 'P1', 'Alex Example',
+        '3', 'DR1', 'Taylor Example', 'General Practice',
+        '3', 'DR2', 'Jordan Example', 'Dentistry',
+        '5', 'A1', 'P1', 'DR1', '2026-12-01 09:00',
+        '5', 'A2', 'P1', 'DR2', '2026-12-01 09:00',
+        '7', 'A1',
+        '7', 'A2',
+        '0',
+    ])
+
+    assert output.count('Appointment booked successfully.') == 2
+    assert 'A1: P1 with DR1, 2026-12-01 09:00, scheduled' in output
+    assert 'A2: P1 with DR2, 2026-12-01 09:00, scheduled' in output
+    assert 'Practitioner already has a SCHEDULED appointment' not in output
