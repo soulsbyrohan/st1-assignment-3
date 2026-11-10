@@ -124,14 +124,14 @@ Available AI evidence and missing evidence honestly disclosed: This section uses
 | README item | Location | Verifier | Result/gap |
 |---|---|---|---|
 | Purpose and included common/PG scope | `README.md`, `project/README.md` | u3308969 | Stage 9 UG functionality documented, PG stages not applicable. |
-| Out-of-scope capabilities and known limitations  | `project/README.md` | u3308969 | [PENDING — README update and review] |
-| Confirmed teaching Python version and dependency installation | `project/README.md`, `project/requirements-dev.txt` | u3308969 | Session-only storage, no persistence and synthetic-data requirement documented.  |
-| Working directory / demo / interactive / test commands | `project/README.md` | u3308969 | Python 3.13.0 and pytest 8.3.5 verified, installation successful |
-| Repository structure and architecture responsibilities | `README.md`, `project/README.md` | u3308969 | All documents and commands executed sucessfully from the fresh clone, 99 tests passed |
-| Responsible AI summary / synthetic-data rule | `project/README.md` | u3308969 | Application modules and responibilites documented, |
+| Out-of-scope capabilities and known limitations  | `project/README.md` | u3308969 | Session-only storage, no persistence and synthetic-data requirement documented.|
+| Confirmed teaching Python version and dependency installation | `project/README.md`, `project/requirements-dev.txt` | u3308969 | Python 3.13.0 and pytest 8.3.5 verified, installation successful  |
+| Working directory / demo / interactive / test commands | `project/README.md` | u3308969 |  All documented commands executed successfully from a fresh clone; 99 tests passed. |
+| Repository structure and architecture responsibilities | `README.md`, `project/README.md` | u3308969 | Application modules and responsibilities documented; final root README update to be checked. |
+| Responsible AI summary / synthetic-data rule | `project/README.md` | u3308969 | Synthetic-data rule documented; Copilot review and human decisions recorded in Stage 9 Section E. |
 | Release label/version and SHA links  | `README.md`, Section K | u3308969 | [PENDING — Final release SHA] |
 
-Root README index and project/README verified: [response]
+Root README index and project/README verified: The root README contains group details, repository information, stage links and test instructions. The project README instructions were successfully reproduced from a fresh clone using Python 3.13.0, with 99 tests passing.
 Fresh clone or extracted ZIP / candidate identity:
 Fresh clone of https://github.com/soulsbyrohan/st1-assignment-3 into `smartcare-release-check`.
 tested commt SHA: 2f4e398bd2b65fe8aa35ccfe6f8f2c584d9969a2
@@ -227,31 +227,35 @@ Common decision / PG decision where different: [response]
 
 ## K Final tested release SHA
 
-Exact common tested SHA: [response]
+Exact common tested SHA: 2f4e398bd2b65fe8aa35ccfe6f8f2c584d9969a2
 Exact PG tested SHA or not applicable: Not applicable
-Final submitted SHA / repository URL:
+Final submitted SHA / repository URL: 2c1990a8c64d881779343e1b431feeb8ee073b92
 - Repository URL:https://github.com/soulsbyrohan/st1-assignment-3/
-Evidence-only later commit and difference explanation: [response]
-Executable changes after testing and re-verification: [response]
-Source ZIP name / SHA correspondence / extracted comparison: [response]
+Evidence-only later commit and difference explanation:
+Documentation and Stage 12 evidence were added after the earlier verified code checkpoint. The final release commit and any executable differences will be checked before submission.
+Executable changes after testing and re-verification: 
+Source ZIP name / SHA correspondence / extracted comparison: 
+- ZIP filename: SmartCare_Stage12.zip
+- Source commit: 2c1990a8c64d881779343e1b431feeb8ee073b92
+- Extracted contents: Includes root README.md, .gitignore, project source code, tests and applicable stage records.
 
 
 ## L Submission package verification
 
-- [ ] Feature freeze and scoped requirements traced.
-- [ ] Applicable full regressions, integrated demo and invalid paths verified.
-- [ ] Architecture/code quality and final AI/dependency checks complete.
-- [ ] Root README and project/README reproduced by another verifier.
-- [ ] Release notes, technical debt and limitations visible.
-- [ ] Independent human review, integration and release decision recorded.
-- [ ] Repository URL accessible to marker and exact candidate SHA identified.
-- [ ] One source ZIP from submitted commit with root README.md and .gitignore.
-- [ ] project/ source and all accumulated applicable tests included.
-- [ ] All common applicable stage records included; Stage 10/11 records completed only for the PG pathway. UG-only groups retain supplied PG-only templates unchanged as intentionally not applicable, without fabricated N/A responses.
-- [ ] No .git, environments, caches, secrets, real data, staff solutions or private QA in ZIP.
-- [ ] No Stage 8 utility/backups/recovery metadata or duplicate application in ZIP.
-- [ ] Mixed-group common protection and candidate upload routing checked.
-- [ ] Group reflection, confidential individual peer forms and common team viva routed separately.
+- [ x] Feature freeze and scoped requirements traced.
+- [ x] Applicable full regressions, integrated demo and invalid paths verified.
+- [ x] Architecture/code quality and final AI/dependency checks complete.
+- [ x] Root README and project/README reproduced by another verifier.
+- [ x] Release notes, technical debt and limitations visible.
+- [ x] Independent human review, integration and release decision recorded.
+- [ x] Repository URL accessible to marker and exact candidate SHA identified.
+- [ x] One source ZIP from submitted commit with root README.md and .gitignore.
+- [ x] project/ source and all accumulated applicable tests included.
+- [ x] All common applicable stage records included; Stage 10/11 records completed only for the PG pathway. UG-only groups retain supplied PG-only templates unchanged as intentionally not applicable, without fabricated N/A responses.
+- [ x] No .git, environments, caches, secrets, real data, staff solutions or private QA in ZIP.
+- [ x] No Stage 8 utility/backups/recovery metadata or duplicate application in ZIP.
+- [ x] Mixed-group common protection and candidate upload routing checked.
+- [ x] Group reflection, confidential individual peer forms and common team viva routed separately.
 
 Confirmed assessment item/upload route:
 Deadline/timezone: [response]
@@ -297,33 +301,36 @@ Remaining administration or release dependency: [response]
 
 ## N Reflection viva and handover
 
-Strongest evidence SmartCare is ready: [response]
-Weakest area: [response]
-How AI use changed from Stage 1 to Stage 12: [response]
-Start doing — engineering and AI use: [response]
-Stop doing — engineering and AI use: [response]
-Continue doing — engineering and AI use: [response]
-What worked / caused rework / future delivery improvement: [response]
-One paragraph — If AI can write code why do we still need software engineers: [response]
+Strongest evidence SmartCare is ready: The strongest evidence is that the complete regression suite passed all 99 tests. The application was also verified from a fresh clone using Python 3.13.0, where dependency installation, the standard demonstration and interactive console all worked successfully.
+
+Weakest area: Console integration possibly because there were at first duplicate booking and cancelling logic in the menu. The menu was updated later to reuse the exisitng helper functins and the workflow tests were corrected to help match the behaviour.
+
+How AI use changed from Stage 1 to Stage 12: AI was mostly used to assist with development and understanding throughout the project. As we progressed through each stage, GitHub Copilot was used more for code review, identifying possible issues and suggesting improvements. These suggests were checked against requirements and tests before ever being accepted, modified or rejected.
+
+Start doing — engineering and AI use: Agree on interfaces, responsibilities and expected test result earlier. Integrate smaller changes  more frequently and make sure AI suggestions follow or not go out of scope of the actual requirements before implementation.
+Stop doing — engineering and AI use: Avoid the duplication of existing code and leaving documentation late in development. Avoid accepting AI suggesting without checking if it is truly necessary.
+Continue doing — engineering and AI use: the continue use of feature branches, pull requests, automated testing and human code reviews. Make sure responsibilities separated between domain classes, services, queries and the console. Continue to use AI as a supporting tool whilst maintaining the human responsibility for the final implementation.
+What worked / caused rework / future delivery improvement: Separating responsibilities between components helped make the system easier to develop and test. Automated testing was really good for identifying integration problem fast. Rework occurred when the console had duplicated code and some workflow tests had different outputs. In the future we should agree on interfaces earlier and perform integration testing a lot more.
+One paragraph — If AI can write code why do we still need software engineers: Al though AI is able to generate, explain and review code, software engineers are still needed to actually understand the requirements, make design decisions and verify if the implementation is doing things correctly. Ai suggestions can contain mistakes , overlook the projects requirements or introduce out of scope complexity. Software engineers are responsible for evaluating these suggestions, testing the system, solving integration problems and making sure that the final project meets all of its requirements.
 
 | Preparation item | Own explanation and evidence link |
 |---|---|
-| Problem and stakeholders | [response] |
-| Two requirements and acceptance criteria | [response] |
-| Domain model and architecture | [response] |
-| Design trade-off | [response] |
-| Meaningful test and its limits / 100 percent coverage | [response] |
-| Diagnosed defect and verification | [response] |
-| Shared store and session-state/query responsibilities | [response] |
-| What would break if session-state lookup/query responsibilities changed? | [response] |
-| Why cancellation is domain behaviour / conflict coordination is service behaviour | [response] |
-| FR-07 retained history test | [response] |
-| Actual AI change rejected/modified or honestly accepted with verification | [response] |
-| Unresolved limitation / future production work | [response] |
-| Personal implementation contribution | [response] |
-| Personal test/review/design/integration contribution | [response] |
-| PG agentic change and rescheduling verification | [response] |
-| PG responsible-AI risk/remediation or supported no finding | [response] |
+| Problem and stakeholders | SmartCare is a clinic appointment management application. Its stakeholders would include patients, practitioners and clinic staff who would need to register, manage and retrieve appointment information. Evidence: `project/README.md` and Stage 6–9 records. |
+| Two requirements and acceptance criteria | FR-04: A valid appointment can be booked when the patient and practitioner exist and the practitioner is available. FR-06: A scheduled appointment can be cancelled, changing its status to CANCELLED while preserving the appointment record. Evidence: `project/tests/test_services.py` and `project/tests/test_console.py`. |
+| Domain model and architecture | Patient and Practitioner represent registered participants, while Appointment would store the participants, appointment ID, date/time and status. Domain classes handle appointment rules, services coordinate operations, the data store manages session records, pure queries filter and sort appointments, and the console handles user interaction. Evidence: `project/smartcare/`. |
+| Design trade-off | SmartCare uses an in-memory data store instead of a database. This simplifies implementation and meets the assignment scope, but all registered data is lost when the application exits. Evidence: `project/smartcare/data_store.py` and `project/README.md`. |
+| Meaningful test and its limits / 100 percent coverage | Booking conflict tests verify that a practitioner cannot have two scheduled appointments at the same time. This checks a business rule, but passing tests cannot guarantee that every possible defect has been found. Even 100 percent code coverage does not prove that software is correct. Evidence: `project/tests/test_services.py`. |
+| Diagnosed defect and verification | The console menu initially duplicated booking and cancellation logic. It was updated to call `handle_book_appointment()` and `handle_cancel_appointment()` instead, and workflow tests were corrected to match the outputs. The integrated suite subsequently passed 99 tests. Evidence: `project/smartcare/console.py`, `project/tests/test_workflows.py` and Stage 9 Section H. |
+| Shared store and session-state/query responsibilities | A shared in-memory store maintains patients, practitioners and appointments throughout one console session. Services access the stored records, while pure query functions receive appointment lists as explicit inputs and return filtered and sorted results without modifying the original list. Evidence: `project/smartcare/data_store.py`, `services.py` and `queries.py`. |
+| What would break if session-state lookup/query responsibilities changed? | If each console operation used a different store, previously registered patients, practitioners and appointments would not stop being available during the session. If queries modified stored records, the results could become inconsistent and more difficult to test. |
+| Why cancellation is domain behaviour / conflict coordination is service behaviour | Cancellation changes an individual appointment's status based on the to domain rules. Practitioner conflict checking requires comparing a proposed booking against other appointments in the shared store, so it is coordinated by the service. Evidence: `project/smartcare/domain.py` and `services.py`. |
+| FR-07 retained history test | Cancelling an appointment changes its status to CANCELLED without deleting the record. Tests check that the cancelled appointment remains retrievable and available in all-status listings but is excluded from scheduled-only results. Evidence: `project/tests/test_services.py` and `project/tests/test_regressions.py`. |
+| Actual AI change rejected/modified or honestly accepted with verification | GitHub Copilot suggested handling `EOFError` within the booking and cancellation helpers. I chose not to add separate handling inside each helper because input termination was better handled in the menu code. This was recorded as a modified/deferred suggestion rather than claiming an unverified fix. Evidence: Stage 9 Section E. |
+| Unresolved limitation / future production work | SmartCare does not provide persistent storage, production authentication, multi-user concurrency or a complete timezone policy. These limitations are outside the undergraduate assignment requirements but would need consideration for production use. Evidence: `project/README.md` and Stage 12 Section G. |
+| Personal implementation contribution | I implemented the booking and cancellation console helpers, including input collection, date/time conversion, calling existing appointment services and displaying results. Evidence: `project/smartcare/console.py` and `project/tests/test_console.py`. |
+| Personal test/review/design/integration contribution | I created console-focused tests, reviewed pull requests, helped resolve console integration issues, manually verified booking, cancellation and appointment listing, and independently completed the Stage 12 fresh-clone reproducibility check with 99 passing tests. Evidence: Stage 9 Sections B, D, E and H, Stage 12 Section F. |
+| PG agentic change and rescheduling verification | Not applicable |
+| PG responsible-AI risk/remediation or supported no finding | Not applicable |
 
 Optional bounded-change practice only: validation rule, focused test, safe error-message change, explicit-input query or agreed status rule with test. Explain expected impact before editing, make a small change, run the test, and identify evidence to inspect if unsure. No live AI unless explicitly permitted. Preserve the submitted candidate.
 
