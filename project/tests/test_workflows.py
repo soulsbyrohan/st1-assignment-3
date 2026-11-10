@@ -173,6 +173,7 @@ def test_unknown_patient_recovers(monkeypatch, capsys):
     assert 'Patient found: P1 - Alex Example' in output
 
 
+
 def test_option8_listing_and_status_filter(monkeypatch, capsys):
     """Option 8 lists appointments and filters by status."""
     output = run_console(monkeypatch, capsys, [
@@ -189,21 +190,22 @@ def test_option8_listing_and_status_filter(monkeypatch, capsys):
         '0',
     ])
 
-    assert output.count('Appointment booked successfully.') == 2
-    assert 'Appointment cancelled successfully.' in output
+    assert output.count('Appointment booked:') == 2
+    assert 'Appointment cancelled: A1' in output
 
-    # All-status listing includes both appointments.
-    assert output.count('A1: P1 with DR1') >= 1
-    assert output.count('A2: P1 with DR1') >= 1
+    # Default listing includes both appointments.
+    assert 'A1: P1 with DR1, 2026-12-01 09:00, cancelled' in output
+    assert 'A2: P1 with DR1, 2026-12-01 10:00, scheduled' in output
 
-    # Cancellation retains the appointment record.
+    # Status filters produce appointment listings.
+    assert 'Appointments:' in output
     assert 'cancelled' in output.lower()
     assert 'scheduled' in output.lower()
 
-    # Invalid filtering must not terminate the menu.
-    assert 'Error:' in output
+    # Invalid status is rejected without stopping the menu.
+    assert 'Error: Invalid status.' in output
     assert 'Appointment found:' in output
-
+    assert 'A2: P1 with DR1, 2026-12-01 10:00, scheduled' in output
 
 
 def test_different_practitioners_can_share_time(monkeypatch, capsys):
@@ -219,8 +221,13 @@ def test_different_practitioners_can_share_time(monkeypatch, capsys):
         '0',
     ])
 
-    assert output.count('Appointment booked successfully.') == 2
+    assert output.count('Appointment booked:') == 2
+
+    assert 'Appointment booked: A1: P1 with DR1' in output
+    assert 'Appointment booked: A2: P1 with DR2' in output
+
     assert 'A1: P1 with DR1, 2026-12-01 09:00, scheduled' in output
     assert 'A2: P1 with DR2, 2026-12-01 09:00, scheduled' in output
+
     assert 'Practitioner already has a SCHEDULED appointment' not in output
-        
+    assert output.count('Appointment found:') == 2
