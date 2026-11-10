@@ -2,7 +2,7 @@
 
 Common UG and PG record. All Assignment 3 stage materials are provided from the beginning. Complete this stage only after the previous applicable stage has been integrated, verified and recorded. Use this supplied record in stage09/ in your EXISTING repository. Preserve project/, all earlier tests, records and responses. Do not download another starter or copy staff solutions. Use the Stage 9 handout and Overview/revision 2 baseline. Keep responses concise and link accessible artefacts; do not paste entire logs or private peer ratings.
 
-Group: <!-- complete -->
+Group: Group 1 (Wednesday 2:30pm-4:30pm)
 
 Members and responsibilities: u3325731 — console and workflow integration; u3119457 — service-level listing and validation; u3308969 — date/time and booking/cancellation console review. Confirm the full group allocation before submission.
 
@@ -213,7 +213,8 @@ This result covers the integrated test suite, not just my console tests. The lat
 
 ## E. GitHub Copilot review and human decisions
 
-Human design completed before AI: <!-- reference -->
+Human design completed before AI:
+Look at section B: Human Design and Contracts, this documents the planned inputs, expected resulsts validation and responsibilites before the Copilot reviews.
 
 Actual prompt/context supplied: <!-- paste or accessible reference -->
 
@@ -256,7 +257,7 @@ Human design completed before AI:
 
 Responsibility check: explain how domain invariants, shared-store collections, service coordination, pure queries and console effects remain separate: <!-- response -->
 
-u3119457: The domain classes maintain valid appointment data and cancellation rules. The data store keeps the registered patients, practitioners and appointments. The service validates practitioner IDs and status filters, while the query filters and sorts the appointments without changing the stored records. Keeping these responsibilities separate makes the application easier to understand and test
+u3119457: The domain classes maintain valid appointment data and cancellation rules. The data store keeps the registered patients, practitioners and appointments. The service validates practitioner IDs and status filters, while the query filters and sorts the appointments without changing the stored records. Keeping these responsibilities separate makes the application easier to understand and test. The console handles user input, displays results and errors, and calls the servies without implementing any business rules itself.
 
 ## F. Required reflections
 
@@ -303,19 +304,51 @@ u3308969: I used pytest assertions to verify that cancelling an appointment chan
 
 ## H. Review, completion and common handover
 
-Issues and bounded branches: <!-- links -->
+Issues and bounded branches:
+- [Issue #17](https://github.com/soulsbyrohan/st1-assignment-3/issues/17) — Booking and cancellation console helpers (`feature/stage09-console-booking-cancellation`).
+- [Issue #19](https://github.com/soulsbyrohan/st1-assignment-3/issues/19) — Pure queries (`feature/stage09-queries`).
+- Service listing and validation — `feature/stage09-service-listing` (PR #16).
+- Additional service tests — `stage09-testservices-copilotadditions` (PR #20).
+- Console integration — `feature/stage9-console` (PR #21).
+- Workflow test corrections — `fix/stage12-workflow-tests` (PR #22).
 
-PR/diff and another-member human reviewer: <!-- actual links/name -->
+PR/diff and another-member human reviewer:
+- [PR #15 — Booking and cancellation helpers](https://github.com/soulsbyrohan/st1-assignment-3/pull/15) Reviewed by u3306036
+- [PR #16 — Service listing and validation](https://github.com/soulsbyrohan/st1-assignment-3/pull/16) Reviewed by u3308969
+- [PR #18 — Queries and tests](https://github.com/soulsbyrohan/st1-assignment-3/pull/18) Reviewed by u3308969
+- [PR #20 — Additional service tests](https://github.com/soulsbyrohan/st1-assignment-3/pull/20) Quick fix, no need for human review
+- [PR #21 — Interactive console](https://github.com/soulsbyrohan/st1-assignment-3/pull/21) Reviewed by u3308969
+- [PR #22 — Workflow test corrections](https://github.com/soulsbyrohan/st1-assignment-3/pull/22) Workflow test corrections, no need for human review.
 
-Review responses and Copilot comparison: <!-- links -->
+Human reviewers: u3308969 and u3306036
 
-Integrated common Stage 9 SHA: <!-- complete -->
+Review responses and Copilot comparison: 
+Human PR reviews and copilot reviews were used to check the Stage 9 implementation. Copilot reviewd validation, query behaviour and possible other improvements, while the human review also identified integration issues, such as duplicated booking and cancellation logic in the console.
 
-Full regression command, working directory, actual count/result and evidence: <!-- complete -->
+So the console was updated to resue already existing booking and cancellation helpers. Workflow tests were updated to match the new outputs
 
-README run instructions and scope/limitations: <!-- link -->
+Copilot promts, responses and human decsions are recorded in Section E, Human PR reviews and responses are available through Stage 9 PR links.
 
-Unresolved issues and support/action: <!-- complete -->
+Integrated common Stage 9 SHA: 3aa1be27cb16ca40da3732f4777c0d80b82d7376
+
+Full regression command, working directory, actual count/result and evidence:
+- Working directory: `project/`
+- Command: `python -m pytest -q`
+- Actual Result: 99 passed
+- Tested SHA: 3aa1be27cb16ca40da3732f4777c0d80b82d7376
+- Evidence: Terminal output: 99 passed
+
+README run instructions and scope/limitations:
+`project/README.md` has been updated to include the completed Stage 9 functionallity, such as interactive menu options, application setup, test commands, system architecture and session-only storage limitations.
+
+Unresolved issues and support/action: 
+No issues unreslved in terms of code integration. The full regression suite passed all 99 tests.
+
+UG common candidate / PG future branch plan:
+
+the verified Stage 9 common candidate is recored under the SHA above with 99 tests passing
+
+Stages 10 and 11 are PG-only so we can move straight to Stage 12.
 
 ### Console and workflow handover — u3325731
 
