@@ -71,8 +71,8 @@ Complete before GitHub Copilot. Record any interface/integrity decision and its 
 
 | Requirement | Input / session data | Operation and responsible component | Expected result or error | Test / evidence |
 |---|---|---|---|---|
-| FR-04 / UI-01 | Appointment ID, patient ID, practitioner ID and date/time | Console collects input and calls `AppointmentService.book_appointment()` | Valid booking creates a SCHEDULED appointment; invalid inputs or booking conflicts are rejected without altering existing records | |
-| FR-06 / UI-01-02 | Appointment ID | Console calls `AppointmentService.cancel_appointment()` | Valid cancellation changes appointment status to CANCELLED and retains the record; repeated cancellation or invalid IDs display an error without terminating the console | |
+| FR-04 / UI-01 | Appointment ID, patient ID, practitioner ID and date/time | Console collects input and calls `AppointmentService.book_appointment()` | Valid booking creates a SCHEDULED appointment; invalid inputs or booking conflicts are rejected without altering existing records | `test_console.py` (date validation and formatting), `test_services.py` (booking and conflict rules) |
+| FR-06 / UI-01-02 | Appointment ID | Console calls `AppointmentService.cancel_appointment()` | Valid cancellation changes appointment status to CANCELLED and retains the record; repeated cancellation or invalid IDs display an error without terminating the console | `test_console.py` (cancelled appointment formatting), `test_services.py` (cancellation and retained history) |
 | QRY-04 | Registered practitioner D1 with no appointments | Service listing | Return an empty list `[]` | `test_listing_known_practitioner_with_no_appointments` |
 | QRY-04 | Unknown practitioner D999 | Service validation | Raise `LookupError` | `test_listing_unknown_practitioner_raises_lookup_error` |
 | QRY-04 | Blank, whitespace or non-text practitioner ID | Service validation | Raise `ValueError` | `test_listing_invalid_practitioner_id_raises_value_error` |
