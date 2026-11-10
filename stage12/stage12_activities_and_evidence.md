@@ -97,24 +97,28 @@ All screenshots for practitioner registration, booking conflicts, cancellation h
 
 | Review area | Code/evidence location | Finding or no finding | Correction/no change and recheck |
 |---|---|---|---|
-| OOP responsibilities and pure-query boundaries | [response] | [response] | [response] |
-| PascalCase and snake_case naming | [response] | [response] | [response] |
-| Useful type hints and meaningful docstrings | [response] | [response] | [response] |
-| Four-space indentation and imports/layout | [response] | [response] | [response] |
-| Focused methods / duplication / dead or commented code | [response] | [response] | [response] |
-| Globals / leakage / unnecessary inheritance or frameworks | [response] | [response] | [response] |
-| No SQLite/persistence/repository ABCs/speculative features | [response] | [response] | [response] |
-| Synthetic data / secrets / dependencies / provenance | [response] | [response] | [response] |
-| Significant common Copilot contributions and human verification | [response] | [response] | [response] |
-| PG plan/diff/test approvals and Stage 11 VERIFY/TRUST | [response] | [response] | [response] |
+| OOP responsibilities and pure-query boundaries | `domain.py`, `data_store.py`, `services.py`, `queries.py`, `console.py` | Each file has its own job. Domain classes check rules, the store keeps records, services handle tasks, queries filter and sort, and the console handles user input. | No change needed. The Stage 09 test record shows 99 passing tests. |
+| PascalCase and snake_case naming | `project/smartcare/` | Class names such as `AppointmentService` use PascalCase. Methods and variables use snake_case. | No issue found. |
+| Useful type hints and meaningful docstrings | `domain.py`, `services.py`, `queries.py`, `test_services.py` | Main methods have type hints and descriptions. Some test helpers do not have return types written out. | No required change; the helpers are still easy to understand. |
+| Four-space indentation and imports/layout | `services.py`, `queries.py`, `test_services.py` | Indentation is generally consistent. Some blank lines and comments could be tidier. | Only a small style issue, not a problem with how the program works. |
+| Focused methods / duplication / dead or commented code | `services.py`, `console.py` | The menu uses existing booking and cancellation helpers. An old commented-out `NotImplementedError` remains in `services.py`. | The comment does not affect the program. No change was made. |
+| Globals / leakage / unnecessary inheritance or frameworks | `data_store.py`, `queries.py`, `console.py` | The console uses one shared store per session. Queries use information passed to them rather than global variables. | No issue found in the reviewed code. |
+| No SQLite/persistence/repository ABCs/speculative features | `data_store.py`, `project/README.md` | SmartCare keeps data in memory instead of a database. Data is lost when the program closes. | No change needed. Permanent storage is outside our UG requirements. |
+| Synthetic data / secrets / dependencies / provenance | `project/tests/`, `requirements-dev.txt`, `.gitignore` | Tests use made-up patient details. The testing dependency is `pytest==8.3.5`. The Git ignore file excludes common temporary files. | The reviewed GitHub file list did not show secret-named files or caches. This does not prove the contents of a final ZIP have been checked. |
+| Significant common Copilot contributions and human verification | [Stage 08 evidence](../stage08/stage08_activities_and_evidence.md), [Stage 09 evidence](../stage09/stage09_activities_and_evidence.md), [PR #20](https://github.com/soulsbyrohan/st1-assignment-3/pull/20) | Copilot helped us find problems and missing test cases. We checked its suggestions before deciding what to change. | I added one combined service test. My 11 focused tests passed, and the group later recorded 99 passing tests. |
+| PG plan/diff/test approvals and Stage 11 VERIFY/TRUST | `stage10_pg/`, `stage11_pg/` | Not applicable. Everyone in our group is an undergraduate student. | No PG work was required. |
 
 | AI claim | Affected requirement/code | Human check | Accept/Modify/Reject and reason | Actual outcome/action or no change |
 |---|---|---|---|---|
-| [response] | [response] | [response] | [response] | [response] |
-Access route or approved equivalent / limitations: [response]
-Available AI evidence and missing evidence honestly disclosed: [response]
+| Practitioner IDs were compared incorrectly | FR-05, `data_store.py`, [issue #14](https://github.com/soulsbyrohan/st1-assignment-3/issues/14) | We checked the `!=` comparison against the failing booking tests. | Accept — matching practitioner IDs should use `==`. | The code was fixed and Stage 08 regression tests were recorded. |
+| Cancelled appointments could not be found | FR-07, `data_store.py`, [issue #12](https://github.com/soulsbyrohan/st1-assignment-3/issues/12) | We checked the old lookup condition against the cancelled-history tests. | Accept — cancelling an appointment must not remove its history. | The incorrect condition was removed. |
+| Service tests needed successful-listing checks | QRY-04, `test_services.py`, [Copilot response](https://github.com/soulsbyrohan/st1-assignment-3/pull/16#issuecomment-6739433255) | I checked that the older tests mostly covered invalid inputs. | Modify — I wrote one combined test instead of lots of separate tests. | [PR #20](https://github.com/soulsbyrohan/st1-assignment-3/pull/20) added `test_listing_with_existing_appointments()`. All 11 focused listing tests passed in my local run. |
+| The interactive menu was unfinished | UI-01/UI-02, `console.py`, [PR #21](https://github.com/soulsbyrohan/st1-assignment-3/pull/21) | We checked the old placeholder and the completed menu with options 0–8. | Accept — the menu needed to work for the assignment. | The menu was implemented and Stage 12 includes a manual demonstration. |
+| Add type hints to test helpers | `test_services.py` | I checked whether this was required for the tests to pass. | Reject/defer — it was an optional style suggestion rather than a bug. | No change made. |
 
+Access route or approved equivalent / limitations: The [Stage 08](../stage08/stage08_activities_and_evidence.md) and [Stage 09](../stage09/stage09_activities_and_evidence.md) records link to our actual Copilot prompts, responses and decisions. My [Stage 09 prompt](https://github.com/soulsbyrohan/st1-assignment-3/pull/16#issuecomment-6739338286) and [response](https://github.com/soulsbyrohan/st1-assignment-3/pull/16#issuecomment-6739433255) are also on GitHub.
 
+Available AI evidence and missing evidence honestly disclosed: This section uses the Copilot reviews completed in the earlier stages. A separate Stage 12 Copilot review was not provided.
 ## F README and reproducibility check
 
 | README item | Location | Verifier | Result/gap |
@@ -181,27 +185,35 @@ Github Copilot was used in this project to assist in review and offer suggestion
 | Scale/concurrency, timezone policy, operations/monitoring, accessibility/usability limitations: Limited scale, concurrency, timezone handling, operations and monitoring, and accessibility and usability | System may not be able to handle working with multiple users or operations | Medium | Implement scale and concurrency, timezone handling, operations and monitoring, and accessibility and usability support | Accepted - Out of scope of project requirements |
 | Difference between accepted scope limit and unresolved required behaviour: Scope limitations and unresolved behaviour | Scope limitations can still allow for release, but unresolved behaviour prevents release | High | Clearly documented the accpted scop limitations and make sure to verify that all required behaviours work correctly before release. | Accepted - Scope limiations accepted if its outside the assignment requriemtns. Unresolved requred defects are not be accepted and must first be fixed before offical release |
 
-
-
 ## H Release findings and corrective action
 
 | Requirement/claim | Reproduction/observation | Impact/severity | Owner/action | Corrective diff | Focused/full recheck | Residual limit |
 |---|---|---|---|---|---|---|
-| [response] | [response] | [response] | [response] | [response] | [response] | [response] |
-Justified no-change conclusion if no defect found: [response]
-Release blockers still open / status: [response]
+| Interactive console (UI-01/UI-02) | The old menu was unfinished. The new menu has options 0–8 for registration, booking, cancellation, finding and listing appointments. | High at the time; **fixed**. | Group completed the menu. | [PR #21](https://github.com/soulsbyrohan/st1-assignment-3/pull/21) | The Stage 09 record shows 99 passing tests. [Stage 12 screenshots](evidence/) show a manual console test. | Data is lost after exit, as required. |
+| Workflow tests | Two tests failed because they expected old console messages. | Important; **fixed**. | Group changed the test expectations to match the correct output. | [PR #22](https://github.com/soulsbyrohan/st1-assignment-3/pull/22) | The recorded Stage 09 result was 99 passed at `3aa1be27`. | No failing test reported in that run. |
+| Service appointment listing tests (QRY-04) | The older service tests did not check a successful listing of stored appointments. | Important; **fixed**. | I added one test for listing, status filters, order and unchanged data. | [PR #20](https://github.com/soulsbyrohan/st1-assignment-3/pull/20) | My 11 focused listing tests passed. The group later recorded 99 passing tests. | No further problem found from this review. |
+| README information | `project/README.md` explains how to run and test SmartCare. The root README has the group details but still contains some starter wording. | Minor documentation issue. | Group updated the project README. | [PR #23](https://github.com/soulsbyrohan/st1-assignment-3/pull/23) | The commands and limits are written in the project README. | Some old wording remains in the root README. |
+| Stage 12 tests and console evidence | Section C records 99 passing tests. Section D records a console walkthrough with screenshots. | Evidence recorded. | Group added and reviewed the evidence. | [PR #24](https://github.com/soulsbyrohan/st1-assignment-3/pull/24) — merged. | [Review comment](https://github.com/soulsbyrohan/st1-assignment-3/pull/24#pullrequestreview-5841424052) and [screenshots](evidence/). | Tests were recorded at the Stage 09 SHA, before later documentation commits. |
 
+Justified no-change conclusion if no defect found: I did not find another required code problem in the areas I reviewed. The console and workflow problems were fixed. I would not add extra features that are outside the UG assignment.
+
+Release blockers still open / status: The reviewed Stage 09 code and tests have a recorded passing result, and the group has documented a console demonstration. The group release decision and submission checks are handled in the other Stage 12 sections; this review does not claim to be the final release approval.
 
 ## I Git review and integration evidence
 
-Issue / PR / diff links and reviewed SHA: [response]
-Independent reviewer / feedback / response: [response]
-Integration commit / full recheck: [response]
-Tracked and untracked file inspection / cleanliness: [response]
-Secrets/staff material/caches/tool-metadata exclusion check: [response]
-Candidate recovery plan / known-good SHA: [response]
-Named substantive contributions: [response]
+Issue / PR / diff links and reviewed SHA: [F8-01 issue #14](https://github.com/soulsbyrohan/st1-assignment-3/issues/14), [F8-02 issue #12](https://github.com/soulsbyrohan/st1-assignment-3/issues/12), [Stage 08 PR #13](https://github.com/soulsbyrohan/st1-assignment-3/pull/13), [service listing PR #16](https://github.com/soulsbyrohan/st1-assignment-3/pull/16), [queries PR #18](https://github.com/soulsbyrohan/st1-assignment-3/pull/18), [extra service tests PR #20](https://github.com/soulsbyrohan/st1-assignment-3/pull/20), [console PR #21](https://github.com/soulsbyrohan/st1-assignment-3/pull/21), [workflow tests PR #22](https://github.com/soulsbyrohan/st1-assignment-3/pull/22), [README PR #23](https://github.com/soulsbyrohan/st1-assignment-3/pull/23), [Stage 12 evidence PR #24](https://github.com/soulsbyrohan/st1-assignment-3/pull/24). The recorded 99-pass Stage 09 version is [3aa1be27cb16ca40da3732f4777c0d80b82d7376](https://github.com/soulsbyrohan/st1-assignment-3/commit/3aa1be27cb16ca40da3732f4777c0d80b82d7376). GitHub `main` was last inspected at [fb9eb9425ea915e07cde31ee16009ce1a85f8805](https://github.com/soulsbyrohan/st1-assignment-3/commit/fb9eb9425ea915e07cde31ee16009ce1a85f8805).
 
+Independent reviewer / feedback / response: [Thomas reviewed PR #16](https://github.com/soulsbyrohan/st1-assignment-3/pull/16#pullrequestreview-5823012944) and said the service work looked good, while queries were still being completed. [Emily reviewed PR #15](https://github.com/soulsbyrohan/st1-assignment-3/pull/15#pullrequestreview-5824310897). Thomas also [requested changes on PR #21](https://github.com/soulsbyrohan/st1-assignment-3/pull/21#pullrequestreview-5835995569); updated console and workflow code was later merged. Thomas [reviewed PR #24](https://github.com/soulsbyrohan/st1-assignment-3/pull/24#pullrequestreview-5841424052) and said there were no major issues. These were actual review comments, not a separate final release approval.
+
+Integration commit / full recheck: The Stage 09 record reports `python -m pytest -q` from `project/`: **99 passed** at commit `3aa1be27cb16ca40da3732f4777c0d80b82d7376`. Earlier, I ran 11 passing service listing tests and an 85-test full suite before the later console changes. More recent changes through `fb9eb942` include documentation and Stage 12 evidence, so the 99-pass result is linked specifically to its tested commit.
+
+Tracked and untracked file inspection / cleanliness: The GitHub list of tracked files was inspected and did not show unexpected caches, backups or credential-named files. This does not show untracked files on group members' computers, so I cannot confirm local working-tree cleanliness from the repository alone.
+
+Secrets/staff material/caches/tool-metadata exclusion check: `.gitignore` excludes virtual environments, caches, `.env` and Stage 08 temporary files. The reviewed tests use made-up details. I did not inspect an actual final source ZIP, so this is not a claim that the full package was checked.
+
+Candidate recovery plan / known-good SHA: The known passing checkpoint is `3aa1be27cb16ca40da3732f4777c0d80b82d7376` with 99 passing tests. Git history lets the group return to this version if a later change causes a problem. The newer GitHub `main` version includes extra documentation and evidence work.
+
+Named substantive contributions: soulsbyrohan (u3119457) — Stage 08 F8-01 debugging, Stage 09 appointment listing and validation ([PR #16](https://github.com/soulsbyrohan/st1-assignment-3/pull/16)), extra service tests ([PR #20](https://github.com/soulsbyrohan/st1-assignment-3/pull/20)) and preparation of Stage 12 Sections E, H and I. ThomasLongCrowley (u3308969) — cancellation, console helpers, reviews and Stage 09 handover. EmilyNicLynh (u3306036) — query code and tests ([PR #18](https://github.com/soulsbyrohan/st1-assignment-3/pull/18)), earlier tests and reviews. Ishraf-Chy (u3325731) — Stage 08 refactoring, Stage 09 console ([PR #21](https://github.com/soulsbyrohan/st1-assignment-3/pull/21)), workflow tests ([PR #22](https://github.com/soulsbyrohan/st1-assignment-3/pull/22)), README ([PR #23](https://github.com/soulsbyrohan/st1-assignment-3/pull/23)) and Stage 12 demonstration/test evidence ([PR #24](https://github.com/soulsbyrohan/st1-assignment-3/pull/24)).
 
 ## J Human release decision
 
