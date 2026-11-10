@@ -89,7 +89,11 @@ The service checks that the status filter is a valid AppointmentStatus value or 
 A valid practitioner with no matching appointments should receive an empty list, not an error. The service then passes the appointments to select_appointments(), which handles the filtering and sorting.
 This keeps the responsibilities separate and avoids changing the original appointments or losing cancelled history.
 
-Cover QRY-01–04, FP-01–03, UI-01–02 and relevant FR-01–09. Explain empty versus unknown versus invalid, enum conversion, actual object identity, error handling and unchanged state on rejection: <!-- response -->
+Cover QRY-01–04, FP-01–03, UI-01–02 and relevant FR-01–09. Explain empty versus unknown versus invalid, enum conversion, actual object identity, error handling and unchanged state on rejection: 
+
+For QRY-01–03, test that appointments are filtered by requested practitioner and status, sorted by date and time and appointment ID, without modifying the original appointments list.
+
+For FP-01–03, test that the same appointments with the same inputs return the same results, a new list is returned while keeping the original list in tact, and sorting key can return new list with ordered appointments.
 
 For FR-04 and FR-06, the console collects user input and calls the existing AppointmentService methods. The separate date and time inputs are combined and converted into a datetime object using parse_date_time().
 
