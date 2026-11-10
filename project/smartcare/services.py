@@ -10,7 +10,7 @@ from smartcare.domain import (
     Patient,
     Practitioner,
 )
-## import for Stage 09 
+## import for Stage 09
 from smartcare.queries import select_appointments
 
 class PatientService:
