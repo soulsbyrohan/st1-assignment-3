@@ -1,8 +1,5 @@
 
 """Stage 9 tests for SmartCare console workflows."""
-
-from unittest.mock import patch
-
 import pytest
 
 from smartcare.console import run_menu
@@ -55,7 +52,7 @@ def test_booking_and_appointment_lookup(monkeypatch, capsys):
         '0',
     ])
 
-    assert 'Appointment booked successfully.' in output
+    assert 'Appointment booked: A1' in output
     assert 'Appointment found:' in output
     assert 'A1: P1 with DR1' in output
 
@@ -72,7 +69,7 @@ def test_practitioner_conflict_is_rejected(monkeypatch, capsys):
         '0',
     ])
 
-    assert output.count('Appointment booked successfully.') == 1
+    assert output.count('Appointment booked:') == 1
     assert 'Practitioner already has a SCHEDULED appointment' in output
     assert 'Appointment found:' in output
     assert 'Error: Appointment not found' in output
@@ -91,9 +88,9 @@ def test_cancelled_appointment_remains_available(monkeypatch, capsys):
         '0',
     ])
 
-    assert 'Appointment cancelled successfully.' in output
+    assert 'Appointment cancelled: A1' in output
     assert 'A1: P1 with DR1, 2026-12-01 09:00, cancelled' in output
-    assert 'Appointment booked successfully.' in output
+    assert 'Appointment booked: A2' in output
     assert 'A2: P1 with DR1, 2026-12-01 09:00, scheduled' in output
 
 
@@ -131,7 +128,7 @@ def test_invalid_dates_do_not_create_appointments(
 
     assert 'Error:' in output
     assert 'Error: Appointment not found' in output
-    assert 'Appointment booked successfully.' in output
+    assert 'Appointment booked: A1' in output
 
 
 def test_unknown_menu_choice_recovers(monkeypatch, capsys):
@@ -158,7 +155,7 @@ def test_repeated_cancellation_is_rejected(monkeypatch, capsys):
         '0',
     ])
 
-    assert output.count('Appointment cancelled successfully.') == 1
+    assert output.count('Appointment cancelled:') == 1
     assert 'Error:' in output
     assert 'A1: P1 with DR1, 2026-12-01 09:00, cancelled' in output
 

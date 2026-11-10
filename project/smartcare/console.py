@@ -146,40 +146,10 @@ def run_menu() -> None:
                 )
 
             elif choice == '5':
-                appointment_id = input(
-                    'Enter appointment ID: '
-                ).strip()
-                patient_id = input('Enter patient ID: ').strip()
-                practitioner_id = input(
-                    'Enter practitioner ID: '
-                ).strip()
-                date_text = input(
-                    'Enter date/time (YYYY-MM-DD HH:MM): '
-                ).strip()
-
-                date_time = parse_date_time(date_text)
-
-                appointment = appointments.book_appointment(
-                    appointment_id,
-                    patient_id,
-                    practitioner_id,
-                    date_time,
-                )
-
-                print('Appointment booked successfully.')
-                print(format_appointment(appointment))
+                handle_book_appointment(appointments)
 
             elif choice == '6':
-                appointment_id = input(
-                    'Enter appointment ID to cancel: '
-                ).strip()
-
-                appointment = appointments.cancel_appointment(
-                    appointment_id
-                )
-
-                print('Appointment cancelled successfully.')
-                print(format_appointment(appointment))
+                handle_cancel_appointment(appointments)
 
             elif choice == '7':
                 appointment_id = input(
@@ -244,11 +214,10 @@ def handle_book_appointment(service: AppointmentService) -> None:
         appointment_id = input('Appointment ID: ')
         patient_id = input('Patient ID: ')
         practitioner_id = input('Practitioner ID: ')
-        date_text = input('Date (YYYY-MM-DD): ')
-        time_text = input('Time (HH:MM): ')
+        date_text = input('Date/Time (YYYY-MM-DD HH:MM): ')
 
         # Convert the entered date and time into a datetime object
-        when = parse_date_time(f'{date_text} {time_text}')
+        when = parse_date_time(date_text)
 
         # Use the existing appointment service to create the booking
         appointment = service.book_appointment(
