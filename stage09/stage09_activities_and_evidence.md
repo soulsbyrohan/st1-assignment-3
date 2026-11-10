@@ -159,9 +159,19 @@ My implementation files were `project/smartcare/console.py` and `project/tests/t
 
 Include practitioner isolation, every enum status/default all, equal-time ID tie-break, named-key reuse, repeated calls, empty/already-sorted fresh lists, unchanged source order/fields, known-empty/unknown/invalid service cases and retained history.
 
-Purity explanation from code inspection, including absence of hidden state and I/O: <!-- response -->
+Purity explanation from code inspection, including absence of hidden state and I/O: 
+The select_appointments() function is pure because it only uses the information passed into it. It filters and sorts appointments without changing the original list or appointment objects. It uses sorted() to create a new list instead of sorting the original list directly.
 
-What the tests do and do not establish: <!-- response -->
+The function also does not use input(), print() or a global data store. This means running it again with the same inputs should give the same results without changing anything.
+
+What the tests do and do not establish: 
+The tests show that the query functions correctly filter appointments by practitioner and status, sort them in the correct order and return new lists without changing the original data.
+
+The service tests also check valid and invalid practitioner IDs, invalid status values, empty results and successful appointment listings. My additional test_listing_with_existing_appointments() checks that cancelled appointments are kept, the results are ordered correctly and existing records are not changed by an invalid status request.
+
+During my earlier testing, 11 focused service-listing tests passed and 85 tests passed in the full suite. After the group's Stage 9 changes were integrated, the group recorded 99 passing tests using python -m pytest -q from project/ at commit 3aa1be27cb16ca40da3732f4777c0d80b82d7376.
+
+The tests cover the required examples, but they cannot guarantee that every possible input or situation has been tested. They also do not test permanent data storage, as SmartCare only keeps records during the current session.
 
 ## D. Integrated console and workflow evidence
 
