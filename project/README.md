@@ -1,20 +1,106 @@
-# SmartCare Stage 6 starter
 
-Requirements baseline: SmartCare A3 2026 revision 2. Python 3.13 and pytest 8.3.5 verified. Runtime uses only the standard library.
+# SmartCare — Stage 9
 
-From this directory, using a Python environment with the development dependency installed:
+SmartCare is a Python-based appointment management system developed for Software Technology Assignment 3.
 
-```sh
-python main.py
-python -m pytest
+The application supports patient and practitioner registration, appointment booking, cancellation, lookup, and practitioner appointment listing through an interactive console.
+
+## Requirements
+
+- Python 3.13 or later
+- pytest 8.3.5 for testing
+- Python standard library for application runtime
+
+Install development dependencies if required:
+
+```bash
+py -m pip install -r requirements-dev.txt
 ```
 
-If needed in your approved environment: `python -m pip install -r requirements-dev.txt`.
+## Running SmartCare
 
-The demo registers synthetic records and books/finds an appointment. All supplied tests pass. Data exists only in this session and is lost on exit; FR-10 restart persistence is retired. Use synthetic information only.
+Open a terminal inside the `project` directory.
 
-`domain.py` contains the entities, status and guarded cancellation. `data_store.py` holds three dictionaries through add/find/list methods. The three services share that object. Supplied registration, booking, appointment lookup and conflict checking work. IDs are trimmed, non-blank and case-sensitive. Properties provide read-only identity/appointment state; changes go through domain methods. No special architecture terminology is required.
+### Interactive console
 
-Stage 6 TODOs: service patient/practitioner lookup and cancellation. Stage 9 TODOs: pure query, named sort key, service listing and interactive menu. The starter TODO contracts are in docstrings. All three Stage 6 TODO calls deliberately raise NotImplementedError; future TODOs remain stubs. No PG rescheduling or assurance solution is supplied.
+```bash
+py main.py --interactive
+```
 
-Service booking accepts IDs and a `datetime` (local, minute precision). Console parser accepts exactly `YYYY-MM-DD HH:MM`. Store lookups return None when absent; service lookups raise LookupError. Invalid values, duplicates, conflicts and illegal transitions raise ValueError. Lists are new containers holding the stored objects. No age, duration, patient-conflict or past-date rules apply.
+The console provides the following options:
+
+| Option | Function |
+|---|---|
+| 0 | Exit |
+| 1 | Register patient |
+| 2 | Find patient |
+| 3 | Register practitioner |
+| 4 | Find practitioner |
+| 5 | Book appointment |
+| 6 | Cancel appointment |
+| 7 | Find appointment |
+| 8 | List practitioner appointments |
+
+### Standard demonstration
+
+```bash
+py main.py
+```
+
+This runs the application's predefined demonstration.
+
+## Running Tests
+
+Run the complete test suite:
+
+```bash
+py -m pytest -q
+```
+
+Run workflow tests only:
+
+```bash
+py -m pytest tests/test_workflows.py -v
+```
+
+The integrated Stage 12 regression run on commit
+`3aa1be27cb16ca40da3732f4777c0d80b82d7376`
+reported 99 passing tests.
+
+## System Design
+
+SmartCare separates its responsibilities across several Python modules:
+
+- `domain.py` — domain entities, appointment statuses and business rules.
+- `data_store.py` — in-memory storage for patients, practitioners and appointments.
+- `services.py` — registration, booking, cancellation and lookup operations.
+- `queries.py` — practitioner appointment selection, filtering and sorting.
+- `console.py` — interactive user interface and input handling.
+- `main.py` — application entry point.
+
+## Appointment Rules
+
+- Patient, practitioner and appointment IDs must be valid and unique.
+- A practitioner cannot have two scheduled appointments at the same date and time.
+- Different practitioners can have appointments at the same time.
+- Cancelling an appointment changes its status without deleting its record.
+- Cancelled appointments remain available for lookup and listing.
+- Practitioner appointments can be filtered by scheduled, cancelled or completed status.
+- Appointment listings are ordered chronologically.
+- Invalid inputs are handled without terminating the console session.
+
+## Date and Time Format
+
+Appointments use the following input format:
+
+`YYYY-MM-DD HH:MM`
+
+Example: `2026-12-01 09:00`
+
+## Data Storage and Limitations
+
+SmartCare uses an in-memory data store shared by the application services during a session.
+
+Data is not saved permanently and is lost when the application exits. Restart persistence is outside the current scope.
+
+The application is intended for educational demonstration and testing. Use synthetic patient and practitioner information only.
