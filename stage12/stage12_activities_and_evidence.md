@@ -8,12 +8,21 @@ Members and UG/PG applicability: UG
 
 ## A Release scope and starting SHA
 
-Release label/version and requirements baseline: [response]
-Common starting SHA / branch / applicable members: [response]
-PG starting SHA / branch / applicable members or not applicable: [response]
-Working-state review and approved integration: [response]
-Protected common candidate and PG differences: [response]
-Feature freeze / owner / verifier: [response]
+Release label/version and requirements baseline: SmartCare Assignment 3: UG common release candidate v1.0
+This release follows the main overview requirments, including FR-01-09, QRY-01-04, FP-01-03 and UI-01-2.
+Common starting SHA / branch / applicable members: 
+- Branch: `main`
+- Starting SHA: 2f4e398bd2b65fe8aa35ccfe6f8f2c584d9969a2
+- Applicable members: u3308969, u3119457, u3325731, u3306036
+PG starting SHA / branch / applicable members or not applicable: Not applicable
+Working-state review and approved integration: The integrated Stage 9 implementation passed all 99 tests at commit 3aa1be27cb16ca40da3732f4777c0d80b82d7376. The updated README documents the application, commands and session-only limitations.
+The Stage 9 implementation includes the patient and practitioner registration and lookup, appointment booking, cancellation, retained appointment history, pure queries, service lisiting and an interactive console.
+Protected common candidate and PG differences: Not applicable
+The UG commonc candidate includes Stages 6, 7, 8 and 9. Stage 10 rescheduling and stage 11 assurance activities are outside of what is required for undergraduate
+Feature freeze / owner / verifier:
+- Feature freeze: No further functions will be added after Stage 9 integration. Only any type of issues will be corrected.
+- Owner: u3325731
+- Verifier: u3308969
 
 
 ## B Requirements and release readiness matrix
@@ -27,14 +36,16 @@ Tutorial activity 2 and actual readiness matrix. Add exact requirement/acceptanc
 | Release claim / requirement / scope | Evidence | Location/link and SHA | Reviewer | Sufficient? | Gap/action |
 |---|---|---|---|---|---|
 | Cancellation history works | FR-06 and FR-07 tests confirm that cancelled appointments are stored | test_services.py and test_regressions.py | u3306036 | Yes | None |
-| Architecture responsibilities are appropriate | [response] | [response] | All members | Yes | None |
+| Architecture responsibilities are appropriate | Domain classes manage appointment rules, services help coordinate operations and validation, pure queries filter and sort without modifying stored data and the console handles the input / output | `project/smartcare/domain.py`, `services.py`, `queries.py`, `console.py`, Stage 9 Sections B and E, Tested SHA: 3aa1be27cb16ca40da3732f4777c0d80b82d7376  | All members | Yes | None |
+| AI use is responsible | GitHub Copilot suggestions were reviewed and verified by students, with decisions to accept, modify or reject documented. | Stage 9 Section E, Stage 12 Section E | All members | Pending final review | Complete final Stage 12 AI review |
 | System is maintainable | Readable code structure, tests, named functions | Source code and pull reviews | All members | Yes | None |
-| FR-01–03 register/find and validation | FR-01 and FR-03 tests confirm that registration, lookup and validation work; invalid IDs are rejected | test_services.py and test_domain.py | u3308969 | Yes | None |
-| FR-04–05 booking/conflict rules | FR-04 and FR-05 tests confirm that an available practitioner can be booked and cannot be double-booked, different practitioners can share a time slot and the same practitioner can have different time slots.  | test_services.py and test_domain.py | u3306036 | Yes | None |
-| FR-06–08 cancellation/history/find | FR-06 and FR-08 tests confirm that only a SCHEDULED appointment can be cancelled, and cancelled appointments remain in history and can be searched up. | test_services.py and test_regressions.py | u3119457 | Yes | None |
-| FR-09 and QRY/FP listing/filter/order/purity | FR-09 and QRY/FP tests confirm appointment lists can be filtered, sorted and returned in new lists without modifying the  | test_queries.py | u3308969 | Yes | None |
-| UI full console sequence and error recovery | [response] | [response] | u3308969 | [response] | [response] |
-| Session-only scope / FR-10 retired | [response] | [response] | [response] | [response] | [response] |
+| FR-01–03 register/find and validation | FR-01 and FR-03 tests confirm that registration, lookup and validation work; invalid IDs are rejected | test_services.py and test_domain.py | u33257131 | Yes | None |
+| FR-04–05 booking/conflict rules | FR-04 and FR-05 tests confirm that an available practitioner can be booked and cannot be double-booked, different practitioners can share a time slot and the same practitioner can have different time slots.  | test_services.py and test_domain.py | u3308969 | Yes | None |
+| FR-06–08 cancellation/history/find | FR-06 and FR-08 tests confirm that only a SCHEDULED appointment can be cancelled, and cancelled appointments remain in history and can be searched up. | test_services.py and test_regressions.py | u3308969 | Yes | None |
+| FR-09 and QRY/FP listing/filter/order/purity | FR-09 and QRY/FP tests confirm appointment lists can be filtered, sorted and returned in new lists without modifying the original appointment list or objects | test_queries.py | u3308969 | Yes | None |
+| UI full console sequence and error recovery | Manual testing verified registration, lookup, booking, conflict rejection, different-practitioner booking, cancellation, retained history, appointment listing/filtering, invalid-status recovery and normal exit. Automated workflow tests cover additional invalid inputs. | `project/tests/test_workflows.py`, Stage 9 Section D, tested SHA 3aa1be27cb16ca40da3732f4777c0d80b82d7376 | u3325731 | Yes | None for verified scenarios |
+| Session-only scope / FR-10 retired | SmartCare uses an in-memory data store. Patient, practitioner and appointment records are lost when the application exits. Persistence is outside the revision 2 scope. | `project/README.md`, `project/smartcare/data_store.py` | All members | Yes | Accepted scope limitation; no persistence required |
+
 
 
 ## C Full regression results
@@ -99,18 +110,28 @@ Available AI evidence and missing evidence honestly disclosed: [response]
 
 | README item | Location | Verifier | Result/gap |
 |---|---|---|---|
-| Purpose and included common/PG scope | [response] | [response] | [response] |
-| Out-of-scope capabilities and known limitations | [response] | [response] | [response] |
-| Confirmed teaching Python version and dependency installation | [response] | [response] | [response] |
-| Working directory / demo / interactive / test commands | [response] | [response] | [response] |
-| Repository structure and architecture responsibilities | [response] | [response] | [response] |
-| Responsible AI summary / synthetic-data rule | [response] | [response] | [response] |
-| Release label/version and SHA links | [response] | [response] | [response] |
+| Purpose and included common/PG scope | `README.md`, `project/README.md` | u3308969 | Stage 9 UG functionality documented, PG stages not applicable. |
+| Out-of-scope capabilities and known limitations  | `project/README.md` | u3308969 | [PENDING — README update and review] |
+| Confirmed teaching Python version and dependency installation | `project/README.md`, `project/requirements-dev.txt` | u3308969 | Session-only storage, no persistence and synthetic-data requirement documented.  |
+| Working directory / demo / interactive / test commands | `project/README.md` | u3308969 | Python 3.13.0 and pytest 8.3.5 verified, installation successful |
+| Repository structure and architecture responsibilities | `README.md`, `project/README.md` | u3308969 | All documents and commands executed sucessfully from the fresh clone, 99 tests passed |
+| Responsible AI summary / synthetic-data rule | `project/README.md` | u3308969 | Application modules and responibilites documented, |
+| Release label/version and SHA links  | `README.md`, Section K | u3308969 | [PENDING — Final release SHA] |
+
 Root README index and project/README verified: [response]
-Fresh clone or extracted ZIP / candidate identity: [response]
-Verifier and clean environment / actual version: [response]
-Setup/run/test commands and observed results: [response]
-Missing local file or setup gap / remedy and recheck: [response]
+Fresh clone or extracted ZIP / candidate identity:
+Fresh clone of https://github.com/soulsbyrohan/st1-assignment-3 into `smartcare-release-check`.
+tested commt SHA: 2f4e398bd2b65fe8aa35ccfe6f8f2c584d9969a2
+Verifier and clean environment / actual version:
+- Verifier: u3308969
+- Environment/version: Windows PowerSHell, python 3.13.0, pytest 8.3.5
+Setup/run/test commands and observed results:
+- `py -m pip install -r requirements-dev.txt` — successful.
+- `py main.py` — demonstration completed successfully.
+- `py main.py --interactive` — menu displayed; option 0 exited normally.
+- `py -m pytest -q` — 99 passed in 0.18s.
+Missing local file or setup gap / remedy and recheck:
+No missing files or setup issues were identified during the fers-clone verification.
 
 
 ## G Known limitations debt and release notes
@@ -146,11 +167,10 @@ Github Copilot was used in this project to assist in review and offer suggestion
 
 | Debt item | Impact | Priority | Future action | Accepted? / release rationale |
 |---|---|---|---|---|
-| [response] | [response] | [response] | [response] | [response] |
-Session-only synthetic data and minute-precision local time: Session-only synthetic data and minute-precision local time: Synthetic data is stored in each session, all data is lost once program is exited | Data is lost once program exited | Medium | Add a database | Accepted - Out of scope of project requirements |
-Production auth/roles, portal, notifications, billing/insurance, clinical AI exclusions: User authentication and access control, push notifications, payment and insurance handling, clinical AI assistance | Cannot support healthcare clinics | High | Implement user authentication and access control, push notifications, payment and insurance handling and clinical AI assistance features | Accepted - Out of scope of project requirements |
-Scale/concurrency, timezone policy, operations/monitoring, accessibility/usability limitations: Limited scale, concurrency, timezone handling, operations and monitoring, and accessibility and usability | System may not be able to handle working with multiple users or operations | Medium | Implement scale and concurrency, timezone handling, operations and monitoring, and accessibility and usability support | Accepted - Out of scope of project requirements |
-Difference between accepted scope limit and unresolved required behaviour: Scope limitations and unresolved behaviour | Scope limitations can still allow for release, but unresolved behaviour prevents release | High | State scope and verify all behaviours are tested and work correctly | Accepted - Out of scope of project requirements |
+| Session-only synthetic data and minute-precision local time: Synthetic data is stored in each session, all data is lost once program is exited. Appointment times use mintue precision without explicit timezone handling. | Data is lost once program exited | Medium | Add a database | Accepted - Out of scope of project requirements |
+| Production auth/roles, portal, notifications, billing/insurance, clinical AI exclusions: User authentication and access control, push notifications, payment and insurance handling, clinical AI assistance | Cannot support healthcare clinics | High | Consider user authentication and access control, push notifications, payment and insurance handling if the application is developed further. | Accepted - Out of scope of project requirements |
+| Scale/concurrency, timezone policy, operations/monitoring, accessibility/usability limitations: Limited scale, concurrency, timezone handling, operations and monitoring, and accessibility and usability | System may not be able to handle working with multiple users or operations | Medium | Implement scale and concurrency, timezone handling, operations and monitoring, and accessibility and usability support | Accepted - Out of scope of project requirements |
+| Difference between accepted scope limit and unresolved required behaviour: Scope limitations and unresolved behaviour | Scope limitations can still allow for release, but unresolved behaviour prevents release | High | Clearly documented the accpted scop limitations and make sure to verify that all required behaviours work correctly before release. | Accepted - Scope limiations accepted if its outside the assignment requriemtns. Unresolved requred defects are not be accepted and must first be fixed before offical release |
 
 
 
@@ -187,8 +207,9 @@ Common decision / PG decision where different: [response]
 ## K Final tested release SHA
 
 Exact common tested SHA: [response]
-Exact PG tested SHA or not applicable: [response]
-Final submitted SHA / repository URL: [response]
+Exact PG tested SHA or not applicable: Not applicable
+Final submitted SHA / repository URL:
+- Repository URL:https://github.com/soulsbyrohan/st1-assignment-3/
 Evidence-only later commit and difference explanation: [response]
 Executable changes after testing and re-verification: [response]
 Source ZIP name / SHA correspondence / extracted comparison: [response]
@@ -211,10 +232,10 @@ Source ZIP name / SHA correspondence / extracted comparison: [response]
 - [ ] Mixed-group common protection and candidate upload routing checked.
 - [ ] Group reflection, confidential individual peer forms and common team viva routed separately.
 
-Confirmed assessment item/upload route: [response]
+Confirmed assessment item/upload route:
 Deadline/timezone: [response]
-Repository access arrangement: [response]
-Mixed-candidate upload arrangement: [response]
+Repository access arrangement: Group Repository: https://github.com/soulsbyrohan/st1-assignment-3
+Mixed-candidate upload arrangement: One common candidate will be submitted
 Oral/video recording/accessibility arrangements: [response]
 Remaining administration or release dependency: [response]
 
